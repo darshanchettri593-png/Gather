@@ -21,7 +21,7 @@ export function MainLayout() {
     <div className={`flex min-h-screen flex-col bg-background ${isEventDetail ? 'pb-0' : 'pb-[80px]'}`}>
       {!hideHeader && (
         <header 
-          className="sticky top-0 z-50 w-full"
+          className="fixed top-0 z-50 w-full"
           style={{
             backgroundColor: "rgba(242, 242, 239, 0.75)",
             backdropFilter: "blur(20px)",
@@ -80,7 +80,7 @@ export function MainLayout() {
       )}
 
       {/* Main layout wrapper, remove default padding on settings and profile */}
-      <main className="flex-1 w-full max-w-5xl mx-auto">
+      <main className={`flex-1 w-full max-w-5xl mx-auto ${!hideHeader ? 'pt-[56px]' : ''}`}>
         <Outlet />
       </main>
 
