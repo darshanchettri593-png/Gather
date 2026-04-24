@@ -140,7 +140,7 @@ export function CreateEventPage() {
             type="text" 
             placeholder="Event Name"
             maxLength={60}
-            className="w-full text-[24px] font-semibold text-black bg-transparent border-none placeholder:text-neutral-300 focus:outline-none focus:ring-0 px-4 py-3"
+            className="w-full text-[28px] font-semibold text-black bg-transparent border-none placeholder:text-neutral-300 focus:outline-none focus:ring-0 px-4 py-3"
             value={title}
             onChange={e => setTitle(e.target.value)}
           />
@@ -155,7 +155,7 @@ export function CreateEventPage() {
 
         {/* 3. Vibe */}
         <div className="space-y-2">
-          <label className="block text-[12px] font-normal text-neutral-500">
+          <label className="block text-[13px] font-semibold text-neutral-500 uppercase tracking-wide">
             Vibe
           </label>
           <div className="flex flex-wrap gap-2">
@@ -165,10 +165,10 @@ export function CreateEventPage() {
                  <button
                    key={v.id}
                    onClick={() => setVibe(v.id)}
-                   className={`px-3 py-2 text-[14px] transition-colors ${
+                   className={`px-4 h-[32px] text-[16px] transition-colors ${
                      isActive 
                        ? 'bg-black text-white rounded-full font-medium' 
-                       : 'bg-transparent text-neutral-500 hover:text-black font-normal'
+                       : 'bg-[#ECECE7] text-neutral-700 rounded-full font-medium'
                    }`}
                  >
                    {v.label}
@@ -189,7 +189,7 @@ export function CreateEventPage() {
         {/* 4. Date & Time */}
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-2">
-            <label className="block text-[12px] font-normal text-neutral-500">
+            <label className="block text-[13px] font-semibold text-neutral-500 uppercase tracking-wide">
               Date
             </label>
             <input 
@@ -200,7 +200,7 @@ export function CreateEventPage() {
             />
           </div>
           <div className="space-y-2">
-            <label className="block text-[12px] font-normal text-neutral-500">
+            <label className="block text-[13px] font-semibold text-neutral-500 uppercase tracking-wide">
               Time
             </label>
             <input 
@@ -214,7 +214,7 @@ export function CreateEventPage() {
 
         {/* 5. Location */}
         <div className="space-y-2">
-          <label className="block text-[12px] font-normal text-neutral-500">
+          <label className="block text-[13px] font-semibold text-neutral-500 uppercase tracking-wide">
             Location
           </label>
           <input 
@@ -229,8 +229,8 @@ export function CreateEventPage() {
 
         {/* 6. Description */}
         <div className="space-y-2">
-          <label className="block text-[12px] font-normal text-neutral-500">
-            Description <span className="text-neutral-400">(optional)</span>
+          <label className="block text-[13px] font-semibold text-neutral-500 uppercase tracking-wide">
+            Description <span className="text-neutral-400 normal-case font-normal">(optional)</span>
           </label>
           <textarea 
             placeholder="Tell people what to expect..."

@@ -4,7 +4,7 @@ import { Link } from "react-router";
 export function SectionHeader({ title, count, actionText, onAction }: { title: string, count?: number, actionText?: string, onAction?: () => void }) {
   return (
     <div className="flex items-center justify-between mt-6 mb-2">
-      <h2 className="text-[13px] font-semibold text-neutral-700">
+      <h2 className="text-[15px] font-semibold text-[#1A1A1A]">
         {title} {count !== undefined && <span className="text-neutral-400 font-normal">({count} results)</span>}
       </h2>
       {actionText && onAction && (
@@ -20,7 +20,7 @@ export function VibeCard({ vibe, color, icon: Icon, onClick }: { vibe: string, c
   return (
     <button 
       onClick={onClick}
-      className={`w-[100px] h-[80px] shrink-0 rounded-xl flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform`}
+      className={`w-[100px] h-[100px] shrink-0 rounded-2xl flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform`}
       style={{ backgroundColor: color }}
     >
       <Icon className="h-5 w-5 text-neutral-700" strokeWidth={2} />

@@ -138,10 +138,10 @@ export function EventFeedPage() {
     }
 
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         {events.map((event) => (
           <Link key={event.id} to={`/event/${event.id}`} className="group block active:scale-[0.98] transition-transform duration-100">
-            <div className="flex flex-col rounded-xl overflow-hidden bg-white/50 transition-all duration-200 hover:-translate-y-0.5">
+            <div className="flex flex-col rounded-2xl overflow-hidden bg-white/50 transition-all duration-200 hover:-translate-y-0.5">
               {event.cover_image_url ? (
                 <div className="aspect-[16/9] w-full overflow-hidden bg-neutral-100 shrink-0 rounded-xl">
                   <img 
@@ -206,11 +206,11 @@ export function EventFeedPage() {
 
       <div className="flex flex-col">
         <div className="px-1 mb-[8px]">
-          <p className="flex items-center text-[12px] text-neutral-500 font-normal tracking-wide mb-[2px] line-clamp-1">
+          <p className="flex items-center text-[13px] text-neutral-500 font-normal tracking-wide mb-[2px] line-clamp-1">
             <MapPin className="h-3 w-3 text-neutral-400 mr-[4px]" />
             Siliguri, India
           </p>
-          <h1 className="text-[28px] font-black tracking-tight leading-none text-neutral-900">Upcoming</h1>
+          <h1 className="text-[34px] font-bold tracking-tight leading-none text-neutral-900">Upcoming</h1>
         </div>
         
         {/* Category Pills container with fade mask */}
@@ -221,7 +221,7 @@ export function EventFeedPage() {
               <button
                 key={v}
                 onClick={() => setVibeFilter(v)}
-                className={`flex-shrink-0 px-3 py-[7px] text-[14px] font-medium rounded-full active:opacity-70 transition-colors ${
+                className={`flex-shrink-0 px-4 h-[32px] text-[16px] font-medium rounded-full active:opacity-70 transition-colors ${
                   vibeFilter === v 
                     ? 'bg-[#1A1A1A] text-white' 
                     : 'bg-[#ECECE7] text-neutral-700'

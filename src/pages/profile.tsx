@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import { supabase } from "@/lib/supabase";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEventRatingSummary } from "@/hooks/useRatings";
+import { useEventRatingSummary, useProfileRatings } from "@/hooks/useRatings";
 import { StarDisplay } from "@/components/rating-section";
 
 interface EmptyStateProps {
@@ -98,6 +98,7 @@ export function ProfilePage() {
 
   const { data: userEvents, isLoading: isEventsLoading } = useUserEvents();
   const { data: profile, isLoading: isProfileLoading } = useProfile();
+  const { data: profileRatings } = useProfileRatings(user?.id);
 
   const updateAvatarMutation = useMutation({
     mutationFn: async (url: string) => {
@@ -186,11 +187,11 @@ export function ProfilePage() {
       ) : (
         <>
           {/* Avatar / Stats Card */}
-          <div className="bg-white rounded-xl p-6">
+          <div className="bg-white rounded-2xl p-6">
             <div className="flex items-center">
               {/* Avatar */}
-              <div className="relative w-20 h-20 shrink-0">
-                <div className="w-full h-full rounded-full overflow-hidden bg-primary text-white flex items-center justify-center relative cursor-pointer shadow-sm">
+              <div className="relative w-[72px] h-[72px] shrink-0">
+                <div className="w-full h-full rounded-full overflow-hidden bg-primary text-white flex items-center justify-center relative cursor-pointer">
                   {!profile?.avatar_url && (
                     <span className="text-[32px] font-semibold pointer-events-none absolute z-0 text-white">
                       {(profile?.display_name || user?.email || '?').charAt(0).toUpperCase()}
@@ -233,19 +234,30 @@ export function ProfilePage() {
             </div>
 
             {/* Stats Row */}
-            <div className="mt-5 pt-4 border-t border-[#E5E5E0] grid grid-cols-3 divide-x divide-transparent">
-              <div className="flex flex-col items-center">
-                <span className="text-[11px] uppercase tracking-wide text-neutral-500 mb-0.5">Hosted</span>
-                <span className="text-[24px] font-bold text-[#1A1A1A] leading-none">{userEvents?.hosted?.length || 0}</span>
+            <div className="mt-5 pt-4 border-t border-[#E5E5E0] grid grid-cols-2">
+              <div className="flex flex-col items-center border-r border-[#E5E5E0]">
+                <span className="text-[11px] uppercase tracking-wider text-neutral-400 font-semibold mb-0.5">Hosted</span>
+                <span className="text-[20px] font-bold text-[#1A1A1A] leading-none">{userEvents?.hosted?.length || 0}</span>
               </div>
               <div className="flex flex-col items-center">
-                <span className="text-[11px] uppercase tracking-wide text-neutral-500 mb-0.5">Joined</span>
-                <span className="text-[24px] font-bold text-[#1A1A1A] leading-none">{userEvents?.joined?.length || 0}</span>
+                <span className="text-[11px] uppercase tracking-wider text-neutral-400 font-semibold mb-0.5">Joined</span>
+                <span className="text-[20px] font-bold text-[#1A1A1A] leading-none">{userEvents?.joined?.length || 0}</span>
               </div>
-              <div className="flex flex-col items-center">
-                <span className="text-[11px] uppercase tracking-wide text-neutral-500 mb-0.5">Vibe Score</span>
-                <span className="text-[24px] font-bold text-[#1A1A1A] leading-none">—</span>
-              </div>
+            </div>
+
+            {/* Ratings Summary */}
+            <div className="mt-4 flex flex-col items-center">
+              {profileRatings ? (
+                <>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[24px] font-bold text-[#1A1A1A] leading-none">{profileRatings.averageRating.toFixed(1)}</span>
+                    <StarDisplay avg={profileRatings.averageRating} count={0} />
+                  </div>
+                  <p className="text-[13px] text-neutral-400 mt-1">{profileRatings.totalRatings} {profileRatings.totalRatings === 1 ? 'rating' : 'ratings'}</p>
+                </>
+              ) : (
+                <p className="text-[13px] text-neutral-400 mt-2">No ratings yet</p>
+              )}
             </div>
           </div>
 
@@ -253,16 +265,16 @@ export function ProfilePage() {
           <div className="mt-6 flex relative">
             <button
               onClick={() => switchTab("hosting")}
-              className={`flex-1 pb-3 text-[15px] transition-colors relative ${
-                activeTab === "hosting" ? "text-[#1A1A1A] font-semibold" : "text-neutral-500 font-normal hover:text-neutral-900"
+              className={`flex-1 pb-3 text-[16px] transition-colors relative ${
+                activeTab === "hosting" ? "text-[#1A1A1A] font-semibold" : "text-neutral-400 font-normal hover:text-neutral-900"
               }`}
             >
               Hosting
             </button>
             <button
               onClick={() => switchTab("joined")}
-              className={`flex-1 pb-3 text-[15px] transition-colors relative ${
-                activeTab === "joined" ? "text-[#1A1A1A] font-semibold" : "text-neutral-500 font-normal hover:text-neutral-900"
+              className={`flex-1 pb-3 text-[16px] transition-colors relative ${
+                activeTab === "joined" ? "text-[#1A1A1A] font-semibold" : "text-neutral-400 font-normal hover:text-neutral-900"
               }`}
             >
               Joined

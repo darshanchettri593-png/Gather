@@ -122,7 +122,7 @@ export function SettingsPage() {
   };
 
   const SectionHeader = ({ children }: { children: React.ReactNode }) => (
-    <h2 className="pl-5 mb-2 text-[11px] font-normal tracking-[0.08em] text-neutral-500 uppercase">
+    <h2 className="pl-5 mb-2 text-[12px] font-semibold tracking-wider text-neutral-500 uppercase">
       {children}
     </h2>
   );
@@ -145,7 +145,7 @@ export function SettingsPage() {
     subLabel?: string;
   }) => (
     <div 
-      className={`flex items-center justify-between min-h-[52px] bg-white px-4 ${onClick ? 'cursor-pointer active:bg-neutral-50' : ''}`}
+      className={`flex items-center justify-between min-h-[44px] bg-white px-4 ${onClick ? 'cursor-pointer active:bg-neutral-50' : ''}`}
       onClick={onClick}
     >
       <div className="flex-1 py-1">
@@ -154,15 +154,15 @@ export function SettingsPage() {
         {children}
       </div>
       <div className="flex items-center gap-2">
-        {value && <span className="text-[17px] text-neutral-500">{value}</span>}
-        {hasChevron && <ChevronRight className="h-5 w-5 text-neutral-300" />}
+        {value && <span className="text-[17px] text-neutral-400">{value}</span>}
+        {hasChevron && <ChevronRight className="h-5 w-5 text-neutral-400" />}
       </div>
     </div>
   );
 
   const Separator = () => (
-    <div className="pl-5 bg-white">
-      <div className="h-[0.5px] bg-[#E5E5E0] w-full" />
+    <div className="pl-4 bg-white">
+      <div className="h-[1px] bg-[#E5E5E0] w-full" />
     </div>
   );
 

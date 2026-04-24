@@ -13,11 +13,11 @@ const PLACEHOLDERS = [
 ];
 
 const VIBES = [
-  { name: "Move", color: "#FFE4DD", icon: Activity },
-  { name: "Create", color: "#E8E0FF", icon: Palette },
-  { name: "Hang", color: "#FFE8CC", icon: Users },
-  { name: "Learn", color: "#D4F4E2", icon: BookOpen },
-  { name: "Explore", color: "#D9EAFE", icon: Compass },
+  { name: "Move", color: "#FFE4E1", icon: Activity },
+  { name: "Create", color: "#E8E4FF", icon: Palette },
+  { name: "Hang", color: "#FFF3E0", icon: Users },
+  { name: "Learn", color: "#E4F4FF", icon: BookOpen },
+  { name: "Explore", color: "#E4FFE8", icon: Compass },
 ];
 
 export function SearchPage() {
