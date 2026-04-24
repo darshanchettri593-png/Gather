@@ -109,3 +109,27 @@ CREATE POLICY "Users can join events."
 
 CREATE POLICY "Users can leave events."
   ON public.attendees FOR DELETE USING (auth.uid() = user_id);
+
+
+-- Create event_ratings table
+CREATE TABLE public.event_ratings (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  event_id UUID REFERENCES public.events(id) ON DELETE CASCADE NOT NULL,
+  rater_id UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
+  rater_type TEXT NOT NULL CHECK (rater_type IN ('attendee', 'host')),
+  rating_value INTEGER NOT NULL CHECK (rating_value >= 1 AND rating_value <= 5),
+  comment TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(event_id, rater_id)
+);
+
+ALTER TABLE public.event_ratings ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Ratings are viewable by everyone."
+  ON public.event_ratings FOR SELECT USING (true);
+
+CREATE POLICY "Authenticated users can submit ratings."
+  ON public.event_ratings FOR INSERT WITH CHECK (auth.uid() = rater_id);
+
+CREATE POLICY "Users can update their own ratings."
+  ON public.event_ratings FOR UPDATE USING (auth.uid() = rater_id);
