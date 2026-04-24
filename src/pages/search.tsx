@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import { Search, X, Clock, SearchX, Activity, Palette, Users, BookOpen, Compass } from "lucide-react";
 import { getRecentSearches, saveRecentSearch, removeRecentSearch, clearRecentSearches } from "@/lib/searchHistory";
 import { useTrendingEvents, useLiveEventsSearch, useLiveHostsSearch } from "@/lib/queries";
-import { SectionHeader, SearchResultRow, VibeCard } from "@/components/ui/search-components";
+import { SectionHeader, SearchResultRow } from "@/components/ui/search-components";
 
 const PLACEHOLDERS = [
   "Search Gather",
@@ -13,11 +13,11 @@ const PLACEHOLDERS = [
 ];
 
 const VIBES = [
-  { name: "Move", color: "#FFE4E1", icon: Activity },
-  { name: "Create", color: "#E8E4FF", icon: Palette },
-  { name: "Hang", color: "#FFF3E0", icon: Users },
-  { name: "Learn", color: "#E4F4FF", icon: BookOpen },
-  { name: "Explore", color: "#E4FFE8", icon: Compass },
+  { name: "Move", bg: "#FFF0EE", iconColor: "#FF6B35", icon: Activity },
+  { name: "Create", bg: "#EEF0FF", iconColor: "#7B7FFF", icon: Palette },
+  { name: "Hang", bg: "#FFF8EE", iconColor: "#FFB347", icon: Users },
+  { name: "Learn", bg: "#EEFBFF", iconColor: "#47C1D3", icon: BookOpen },
+  { name: "Explore", bg: "#EEFFEE", iconColor: "#4CAF50", icon: Compass },
 ];
 
 export function SearchPage() {
@@ -108,7 +108,7 @@ export function SearchPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto min-h-screen bg-[#F2F2EF] pb-[100px] flex flex-col pt-4">
+    <div className="page-transition max-w-md mx-auto min-h-screen bg-[#F2F2EF] pb-[100px] flex flex-col pt-4">
       {/* Header */}
       <div className="pb-3 pt-0 px-5">
         <h1 className="text-[28px] font-bold tracking-tight text-[#1A1A1A]">Search</h1>
@@ -125,7 +125,7 @@ export function SearchPage() {
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={PLACEHOLDERS[placeholderIdx]}
-            className="w-full pl-11 pr-10 h-11 rounded-full bg-white text-[16px] text-neutral-900 placeholder:text-neutral-400 focus:outline-none border border-transparent focus:border-neutral-300 transition-colors shadow-sm"
+            className="w-full pl-11 pr-10 h-[44px] rounded-full bg-white text-[16px] text-neutral-900 placeholder:text-neutral-300 focus:outline-none border border-[#E5E5E0] focus:border-neutral-400 transition-colors"
           />
           {isTyping && (
             <button 
@@ -200,15 +200,17 @@ export function SearchPage() {
             {/* Empty State C: Browse by Vibe */}
             <div className="mt-2 mb-4">
               <SectionHeader title="Browse" />
-              <div className="flex gap-3 overflow-x-auto hide-scrollbar pb-2 -mx-5 px-5">
+              <div className="flex gap-[10px] overflow-x-auto hide-scrollbar pb-2 -mx-5 px-5">
                 {VIBES.map(v => (
-                  <VibeCard 
+                  <button
                     key={v.name}
-                    vibe={v.name}
-                    color={v.color}
-                    icon={v.icon}
                     onClick={() => handleVibeClick(v.name)}
-                  />
+                    className="w-[110px] h-[110px] shrink-0 rounded-[18px] flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform"
+                    style={{ backgroundColor: v.bg }}
+                  >
+                    <v.icon className="h-7 w-7" strokeWidth={2} style={{ color: v.iconColor }} />
+                    <span className="text-[13px] font-semibold text-neutral-900">{v.name}</span>
+                  </button>
                 ))}
               </div>
             </div>

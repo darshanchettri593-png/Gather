@@ -30,24 +30,29 @@ export function BottomNav() {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-[#E5E5E0]"
-      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      className="fixed bottom-0 left-0 right-0 z-50 border-t border-[#E5E5E0]"
+      style={{ 
+        paddingBottom: "env(safe-area-inset-bottom, 8px)",
+        backgroundColor: "rgba(255,255,255,0.92)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+      }}
     >
-      <div className="flex items-center justify-around h-[60px] max-w-md mx-auto px-4">
+      <div className="flex items-center justify-around h-[72px] max-w-md mx-auto">
 
         <Link
           to="/"
           className={cn(
-            "flex flex-col items-center justify-center w-16 h-full gap-1 transition-colors",
-            isActive("/") ? "text-[#1A1A1A]" : "text-neutral-500 hover:text-neutral-700"
+            "flex flex-col items-center justify-center flex-1 min-w-0 h-full gap-1 transition-colors",
+            isActive("/") ? "text-[#1A1A1A]" : "text-[#ADADAD]"
           )}
         >
           <Home
             className="h-6 w-6"
-            strokeWidth={2}
+            strokeWidth={1.5}
             fill={isActive("/") ? "currentColor" : "none"}
           />
-          <span className={cn("text-[11px]", isActive("/") ? "font-semibold" : "font-normal")}>
+          <span className={cn("text-[10px] whitespace-nowrap", isActive("/") ? "font-semibold text-[#1A1A1A]" : "font-normal text-[#ADADAD]")}>
             Home
           </span>
         </Link>
@@ -55,54 +60,47 @@ export function BottomNav() {
         <Link
           to="/search"
           className={cn(
-            "flex flex-col items-center justify-center w-16 h-full gap-1 transition-colors",
-            isActive("/search") ? "text-[#1A1A1A]" : "text-neutral-500 hover:text-neutral-700"
+            "flex flex-col items-center justify-center flex-1 min-w-0 h-full gap-1 transition-colors",
+            isActive("/search") ? "text-[#1A1A1A]" : "text-[#ADADAD]"
           )}
         >
           <Search
             className="h-6 w-6"
-            strokeWidth={isActive("/search") ? 2.5 : 2}
+            strokeWidth={1.5}
           />
-          <span className={cn("text-[11px]", isActive("/search") ? "font-semibold" : "font-normal")}>
+          <span className={cn("text-[10px] whitespace-nowrap", isActive("/search") ? "font-semibold text-[#1A1A1A]" : "font-normal text-[#ADADAD]")}>
             Search
           </span>
         </Link>
 
         <button
           onClick={handleHostTap}
-          className="flex flex-col items-center justify-center w-16 h-full gap-1 transition-opacity active:opacity-70"
+          className="flex flex-col items-center justify-center flex-1 min-w-0 h-full transition-opacity active:opacity-70"
         >
           <div
-            className={cn(
-              "flex items-center justify-center rounded-full w-11 h-11 transition-colors",
-              isActive("/host") ? "bg-[#E55A25]" : "bg-[#FF6B35]"
-            )}
+            className="flex items-center justify-center rounded-full w-[52px] h-[52px] -mt-3"
+            style={{ 
+              backgroundColor: "#FF6B35",
+              boxShadow: "0 4px 12px rgba(255,107,53,0.3)",
+            }}
           >
-            <Plus className="h-5 w-5 text-white" strokeWidth={2.5} />
+            <Plus className="h-[22px] w-[22px] text-white" strokeWidth={2} />
           </div>
-          <span
-            className={cn(
-              "text-[11px]",
-              isActive("/host") ? "font-semibold text-[#1A1A1A]" : "font-normal text-neutral-500"
-            )}
-          >
-            Host
-          </span>
         </button>
 
         <Link
           to="/profile"
           className={cn(
-            "flex flex-col items-center justify-center w-16 h-full gap-1 transition-colors",
-            isActive("/profile") ? "text-[#1A1A1A]" : "text-neutral-500 hover:text-neutral-700"
+            "flex flex-col items-center justify-center flex-1 min-w-0 h-full gap-1 transition-colors",
+            isActive("/profile") ? "text-[#1A1A1A]" : "text-[#ADADAD]"
           )}
         >
           <User
             className="h-6 w-6"
-            strokeWidth={2}
+            strokeWidth={1.5}
             fill={isActive("/profile") ? "currentColor" : "none"}
           />
-          <span className={cn("text-[11px]", isActive("/profile") ? "font-semibold" : "font-normal")}>
+          <span className={cn("text-[10px] whitespace-nowrap", isActive("/profile") ? "font-semibold text-[#1A1A1A]" : "font-normal text-[#ADADAD]")}>
             Profile
           </span>
         </Link>

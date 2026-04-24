@@ -22,13 +22,13 @@ interface EmptyStateProps {
 export function EmptyState({ icon: Icon, heading, subtext, buttonText, onAction }: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center text-center mt-[80px]">
-      <Icon className="h-10 w-10 text-neutral-300 mb-3" strokeWidth={1.5} />
-      <h3 className="text-[17px] font-semibold text-[#1A1A1A] mb-1.5">{heading}</h3>
-      <p className="text-[13px] text-neutral-500 max-w-[260px]">{subtext}</p>
+      <Icon className="h-12 w-12 text-neutral-300 mb-4" strokeWidth={1.5} />
+      <h3 className="text-[18px] font-semibold text-[#1A1A1A] mb-1.5">{heading}</h3>
+      <p className="text-[14px] text-neutral-500 max-w-[260px]">{subtext}</p>
       {buttonText && onAction && (
         <button 
           onClick={onAction}
-          className="mt-4 h-11 px-8 rounded-full bg-[#FF6B35] text-white text-[16px] font-semibold active:scale-[0.98] transition-transform shadow-none"
+          className="mt-6 h-[52px] px-8 rounded-full bg-[#FF6B35] text-white text-[16px] font-semibold active:scale-[0.98] transition-transform"
         >
           {buttonText}
         </button>
@@ -44,9 +44,9 @@ function EventCard({ event, isPast }: { event: any; isPast: boolean }) {
   return (
     <Link
       to={`/event/${event.id}`}
-      className={`block relative group ${isPast ? "opacity-60" : ""}`}
+      className={`block relative group ${isPast ? "opacity-[0.65]" : ""}`}
     >
-      <div className="flex flex-col bg-white rounded-xl overflow-hidden active:scale-[0.99] transition-transform">
+      <div className="flex flex-col bg-white rounded-2xl overflow-hidden active:scale-[0.99] transition-transform">
         <div className="h-[140px] w-full bg-[#F5F5F2] shrink-0 relative">
           {event.cover_image_url ? (
             <img src={event.cover_image_url} alt="" className="h-full w-full object-cover" />
@@ -56,7 +56,7 @@ function EventCard({ event, isPast }: { event: any; isPast: boolean }) {
             </div>
           )}
           {isPast && (
-            <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">
+            <div className="absolute top-3 right-3 border border-[#FF6B35] text-[#FF6B35] px-2 py-[2px] rounded-full text-[10px] font-semibold uppercase tracking-wider bg-white/90 backdrop-blur-sm">
               Past
             </div>
           )}
@@ -138,11 +138,11 @@ export function ProfilePage() {
 
   if (!user) {
     return (
-      <div className="max-w-md mx-auto min-h-screen bg-[#F2F2EF] pb-[100px] flex flex-col pt-4">
+      <div className="page-transition max-w-md mx-auto min-h-screen bg-[#F2F2EF] pb-[100px] flex flex-col pt-4">
         {/* Header */}
-        <div className="flex items-center justify-between py-3 px-5">
-          <h1 className="text-[28px] font-bold tracking-tight text-[#1A1A1A]">Profile</h1>
-          <button onClick={() => navigate('/settings')} className="text-neutral-700 active:opacity-70">
+        <div className="flex items-center justify-between py-4 px-5">
+          <h1 className="text-[32px] font-extrabold text-[#1A1A1A]" style={{ letterSpacing: '-0.5px' }}>Profile</h1>
+          <button onClick={() => navigate('/settings')} className="text-neutral-400 active:opacity-70">
             <SettingsIcon className="h-[22px] w-[22px]" strokeWidth={1.75} />
           </button>
         </div>
@@ -171,26 +171,26 @@ export function ProfilePage() {
   }
 
   return (
-    <div className="max-w-md mx-auto min-h-screen bg-[#F2F2EF] pb-[100px] flex flex-col pt-4 px-5">
+    <div className="page-transition max-w-md mx-auto min-h-screen bg-[#F2F2EF] pb-[100px] flex flex-col pt-4">
       {/* Header */}
-      <div className="flex items-center justify-between pb-3 pt-0">
-        <h1 className="text-[28px] font-bold tracking-tight text-[#1A1A1A]">Profile</h1>
-        <button onClick={() => navigate('/settings')} className="text-neutral-700 active:opacity-70">
+      <div className="flex items-center justify-between py-4 px-5">
+        <h1 className="text-[32px] font-extrabold text-[#1A1A1A]" style={{ letterSpacing: '-0.5px' }}>Profile</h1>
+        <button onClick={() => navigate('/settings')} className="text-neutral-400 active:opacity-70">
           <SettingsIcon className="h-[22px] w-[22px]" strokeWidth={1.75} />
         </button>
       </div>
 
       {isLoading ? (
-        <div className="space-y-6 mt-4">
-          <Skeleton className="h-[200px] w-full rounded-xl bg-white" />
+        <div className="space-y-6 mt-4 px-4">
+          <Skeleton className="h-[200px] w-full rounded-3xl bg-white" />
         </div>
       ) : (
         <>
           {/* Avatar / Stats Card */}
-          <div className="bg-white rounded-2xl p-6">
+          <div className="bg-white rounded-3xl mx-4 p-5">
             <div className="flex items-center">
               {/* Avatar */}
-              <div className="relative w-[72px] h-[72px] shrink-0">
+              <div className="relative w-[76px] h-[76px] shrink-0">
                 <div className="w-full h-full rounded-full overflow-hidden bg-primary text-white flex items-center justify-center relative cursor-pointer">
                   {!profile?.avatar_url && (
                     <span className="text-[32px] font-semibold pointer-events-none absolute z-0 text-white">
@@ -208,9 +208,9 @@ export function ProfilePage() {
                     />
                   </div>
                 </div>
-                {/* Camera Badge grid bottom-right */}
-                <div className="absolute right-0 bottom-0 w-6 h-6 bg-white rounded-full shadow-sm border border-neutral-100 flex items-center justify-center pointer-events-none z-20">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-neutral-700"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                {/* Camera Badge */}
+                <div className="absolute right-0 bottom-0 w-[22px] h-[22px] bg-white rounded-full border border-[#E5E5E0] flex items-center justify-center pointer-events-none z-20">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-neutral-700"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
                 </div>
               </div>
 
@@ -220,13 +220,13 @@ export function ProfilePage() {
                   {profile?.display_name || user?.email?.split('@')[0]}
                 </h2>
                 {profile?.location && (
-                  <p className="text-[13px] text-neutral-500 mb-2 flex items-center gap-1">
-                    <MapPin className="w-3 h-3 text-neutral-400" />
+                  <p className="text-[13px] text-neutral-500 mb-1 flex items-center gap-[3px]">
+                    <MapPin className="w-[11px] h-[11px] text-neutral-400" />
                     {profile.location}
                   </p>
                 )}
                 {joinDate && (
-                  <p className="text-[12px] text-neutral-400 leading-none">
+                  <p className="text-[12px] text-neutral-400 leading-none mt-[2px]">
                     Joined {joinDate}
                   </p>
                 )}
@@ -234,47 +234,47 @@ export function ProfilePage() {
             </div>
 
             {/* Stats Row */}
-            <div className="mt-5 pt-4 border-t border-[#E5E5E0] grid grid-cols-2">
+            <div className="mt-4 pt-4 border-t border-[#F0F0ED] grid grid-cols-2">
               <div className="flex flex-col items-center border-r border-[#E5E5E0]">
-                <span className="text-[11px] uppercase tracking-wider text-neutral-400 font-semibold mb-0.5">Hosted</span>
-                <span className="text-[20px] font-bold text-[#1A1A1A] leading-none">{userEvents?.hosted?.length || 0}</span>
+                <span className="text-[24px] font-bold text-[#1A1A1A] leading-none">{userEvents?.hosted?.length || 0}</span>
+                <span className="text-[10px] uppercase tracking-widest text-neutral-400 mt-[2px]">Hosted</span>
               </div>
               <div className="flex flex-col items-center">
-                <span className="text-[11px] uppercase tracking-wider text-neutral-400 font-semibold mb-0.5">Joined</span>
-                <span className="text-[20px] font-bold text-[#1A1A1A] leading-none">{userEvents?.joined?.length || 0}</span>
+                <span className="text-[24px] font-bold text-[#1A1A1A] leading-none">{userEvents?.joined?.length || 0}</span>
+                <span className="text-[10px] uppercase tracking-widest text-neutral-400 mt-[2px]">Joined</span>
               </div>
             </div>
 
             {/* Ratings Summary */}
-            <div className="mt-4 flex flex-col items-center">
+            <div className="mt-4 pt-4 border-t border-[#F0F0ED] flex flex-col items-center">
               {profileRatings ? (
                 <>
                   <div className="flex items-center gap-2">
                     <span className="text-[24px] font-bold text-[#1A1A1A] leading-none">{profileRatings.averageRating.toFixed(1)}</span>
                     <StarDisplay avg={profileRatings.averageRating} count={0} />
                   </div>
-                  <p className="text-[13px] text-neutral-400 mt-1">{profileRatings.totalRatings} {profileRatings.totalRatings === 1 ? 'rating' : 'ratings'}</p>
+                  <p className="text-[12px] text-neutral-400 mt-1">{profileRatings.totalRatings} {profileRatings.totalRatings === 1 ? 'rating' : 'ratings'}</p>
                 </>
               ) : (
-                <p className="text-[13px] text-neutral-400 mt-2">No ratings yet</p>
+                <p className="text-[12px] text-neutral-400">No ratings yet</p>
               )}
             </div>
           </div>
 
           {/* Underline Tabs */}
-          <div className="mt-6 flex relative">
+          <div className="mt-2 flex relative mx-4">
             <button
               onClick={() => switchTab("hosting")}
-              className={`flex-1 pb-3 text-[16px] transition-colors relative ${
-                activeTab === "hosting" ? "text-[#1A1A1A] font-semibold" : "text-neutral-400 font-normal hover:text-neutral-900"
+              className={`flex-1 h-[44px] text-[17px] transition-colors relative ${
+                activeTab === "hosting" ? "text-[#1A1A1A] font-semibold" : "text-neutral-400 font-normal"
               }`}
             >
               Hosting
             </button>
             <button
               onClick={() => switchTab("joined")}
-              className={`flex-1 pb-3 text-[16px] transition-colors relative ${
-                activeTab === "joined" ? "text-[#1A1A1A] font-semibold" : "text-neutral-400 font-normal hover:text-neutral-900"
+              className={`flex-1 h-[44px] text-[17px] transition-colors relative ${
+                activeTab === "joined" ? "text-[#1A1A1A] font-semibold" : "text-neutral-400 font-normal"
               }`}
             >
               Joined
@@ -294,7 +294,7 @@ export function ProfilePage() {
           </div>
 
           {/* Event List / Empty States */}
-          <div className="mt-6 space-y-4">
+          <div className="mt-4 space-y-4 px-4">
             {upcomingEvents.length === 0 && pastEvents.length === 0 ? (
               activeTab === "hosting" ? (
                 <EmptyState
@@ -317,7 +317,7 @@ export function ProfilePage() {
               <>
                 {/* Upcoming */}
                 {upcomingEvents.length === 0 ? (
-                  <p className="text-[13px] text-neutral-400 text-center py-4">
+                  <p className="text-[14px] text-neutral-500 text-center py-8">
                     No upcoming events
                   </p>
                 ) : (
@@ -328,13 +328,13 @@ export function ProfilePage() {
 
                 {/* Past events collapsible */}
                 {pastEvents.length > 0 && (
-                  <div className="pt-2">
+                  <div className="border-t border-[#E5E5E0] pt-4">
                     <button
                       onClick={() => setShowPastEvents((v) => !v)}
-                      className="w-full flex items-center justify-between py-3 text-[14px] font-medium text-neutral-500 hover:text-neutral-700 transition-colors"
+                      className="w-full flex items-center justify-between py-3 text-[14px] font-semibold text-[#1A1A1A] transition-colors"
                     >
                       <span>Past events ({pastEvents.length})</span>
-                      <span className="text-[11px] tracking-wide">
+                      <span className="text-[13px] text-neutral-400 font-normal">
                         {showPastEvents ? "Hide ▲" : "Show ▼"}
                       </span>
                     </button>

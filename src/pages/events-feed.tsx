@@ -101,20 +101,18 @@ export function EventFeedPage() {
 
     if (isLoading) {
       return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="flex flex-col gap-3">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="flex flex-col group block">
-              <div className="flex flex-col rounded-xl overflow-hidden bg-white/50">
-                <div className="aspect-[16/9] w-full bg-[#ECECE7] rounded-xl relative overflow-hidden">
+            <div key={i} className="rounded-2xl overflow-hidden bg-white">
+              <div className="aspect-[16/9] w-full bg-[#ECECE7] relative overflow-hidden">
+                 <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+              </div>
+              <div className="p-[14px] flex flex-col gap-2">
+                <div className="h-[18px] w-[70%] bg-[#ECECE7] rounded-md relative overflow-hidden">
                    <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
                 </div>
-                <div className="px-1 pt-[16px] pb-4 flex flex-col gap-2">
-                  <div className="h-[18px] w-[70%] bg-[#ECECE7] rounded-md relative overflow-hidden">
-                     <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
-                  </div>
-                  <div className="h-[12px] w-[40%] bg-[#F0F0EB] rounded-md relative overflow-hidden">
-                     <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
-                  </div>
+                <div className="h-[12px] w-[40%] bg-[#F0F0EB] rounded-md relative overflow-hidden">
+                   <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
                 </div>
               </div>
             </div>
@@ -138,12 +136,12 @@ export function EventFeedPage() {
     }
 
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="flex flex-col gap-3">
         {events.map((event) => (
           <Link key={event.id} to={`/event/${event.id}`} className="group block active:scale-[0.98] transition-transform duration-100">
-            <div className="flex flex-col rounded-2xl overflow-hidden bg-white/50 transition-all duration-200 hover:-translate-y-0.5">
+            <div className="flex flex-col rounded-2xl overflow-hidden bg-white">
               {event.cover_image_url ? (
-                <div className="aspect-[16/9] w-full overflow-hidden bg-neutral-100 shrink-0 rounded-xl">
+                <div className="aspect-[16/9] w-full overflow-hidden bg-neutral-100 shrink-0">
                   <img 
                     src={event.cover_image_url} 
                     alt="" 
@@ -152,29 +150,25 @@ export function EventFeedPage() {
                   />
                 </div>
               ) : (
-                <div className="aspect-[16/9] w-full flex items-center justify-center bg-[#F5F5F2] shrink-0 rounded-xl">
+                <div className="aspect-[16/9] w-full flex items-center justify-center bg-[#F5F5F2] shrink-0">
                    <span className="opacity-30 font-heading text-xl font-bold tracking-tighter text-primary uppercase">Gather</span>
                 </div>
               )}
               
-              <div className="p-4 flex flex-col pt-3 px-1">
-                <div className="mb-0.5">
-                   <span className="text-[10px] uppercase font-bold tracking-wider text-neutral-500">
-                      {getVibeLabel(event.vibe)}
-                   </span>
-                </div>
-                <h3 className="font-semibold text-[17px] leading-snug line-clamp-2 text-neutral-900 mb-1">
+              <div className="px-[14px] pt-3 pb-[14px] flex flex-col">
+                <span className="text-[11px] uppercase font-semibold tracking-wider text-neutral-400 mb-[6px]">
+                   {getVibeLabel(event.vibe)}
+                </span>
+                <h3 className="font-semibold text-[16px] leading-snug line-clamp-2 text-[#1A1A1A] mb-1">
                   {event.title}
                 </h3>
                 
-                <div className="flex justify-between items-end mt-1">
-                  <p className="text-[13px] text-neutral-600">
-                    {format(new Date(event.event_datetime), 'MMM d')} <span className="mx-1 opacity-50">·</span> {event.location_text}
-                  </p>
-                  <p className="text-[12px] font-medium text-neutral-400">
-                    {event._count?.attendees || 0} going
-                  </p>
-                </div>
+                <p className="text-[13px] text-neutral-500">
+                  {format(new Date(event.event_datetime), 'MMM d')} <span className="mx-1 opacity-50">·</span> {event.location_text}
+                </p>
+                <p className="text-[12px] text-neutral-400 mt-2">
+                  {event._count?.attendees || 0} going
+                </p>
               </div>
             </div>
           </Link>
@@ -186,7 +180,7 @@ export function EventFeedPage() {
   return (
     <div 
       ref={containerRef}
-      className="space-y-6 sm:space-y-8 pb-6 pt-[12px]"
+      className="page-transition pb-6 pt-[24px] px-5"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -205,33 +199,29 @@ export function EventFeedPage() {
       </div>
 
       <div className="flex flex-col">
-        <div className="px-1 mb-[8px]">
-          <p className="flex items-center text-[13px] text-neutral-500 font-normal tracking-wide mb-[2px] line-clamp-1">
+        <div className="mb-[4px]">
+          <p className="flex items-center text-[13px] text-neutral-400 font-normal tracking-wide mb-[4px] line-clamp-1">
             <MapPin className="h-3 w-3 text-neutral-400 mr-[4px]" />
             Siliguri, India
           </p>
-          <h1 className="text-[34px] font-bold tracking-tight leading-none text-neutral-900">Upcoming</h1>
+          <h1 className="text-[32px] font-bold leading-none text-[#1A1A1A]" style={{ letterSpacing: '-0.5px' }}>Upcoming</h1>
         </div>
         
-        {/* Category Pills container with fade mask */}
-        <div className="relative -mx-4 sm:mx-0 mb-[12px]">
-          <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-[#FAFAF7] to-transparent pointer-events-none z-10 sm:hidden" />
-          <div className="px-4 sm:px-1 flex gap-2 overflow-x-auto scrollbar-hide py-1 pr-[24px]">
-            {VIBES.map((v) => (
-              <button
-                key={v}
-                onClick={() => setVibeFilter(v)}
-                className={`flex-shrink-0 px-4 h-[32px] text-[16px] font-medium rounded-full active:opacity-70 transition-colors ${
-                  vibeFilter === v 
-                    ? 'bg-[#1A1A1A] text-white' 
-                    : 'bg-[#ECECE7] text-neutral-700'
-                }`}
-              >
-                {v}
-              </button>
-            ))}
-          </div>
-          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#FAFAF7] to-transparent pointer-events-none z-10 sm:hidden" />
+        {/* Category Pills */}
+        <div className="flex gap-2 overflow-x-auto hide-scrollbar py-4">
+          {VIBES.map((v) => (
+            <button
+              key={v}
+              onClick={() => setVibeFilter(v)}
+              className={`flex-shrink-0 px-[14px] h-[34px] text-[14px] font-medium rounded-full transition-colors ${
+                vibeFilter === v 
+                  ? 'bg-[#1A1A1A] text-white' 
+                  : 'bg-white text-[#1A1A1A] border border-[#E5E5E0]'
+              }`}
+            >
+              {v}
+            </button>
+          ))}
         </div>
       </div>
 

@@ -122,7 +122,7 @@ export function SettingsPage() {
   };
 
   const SectionHeader = ({ children }: { children: React.ReactNode }) => (
-    <h2 className="pl-5 mb-2 text-[12px] font-semibold tracking-wider text-neutral-500 uppercase">
+    <h2 className="px-5 mb-2 text-[12px] font-semibold tracking-widest text-neutral-400 uppercase" style={{ paddingTop: '20px' }}>
       {children}
     </h2>
   );
@@ -145,7 +145,7 @@ export function SettingsPage() {
     subLabel?: string;
   }) => (
     <div 
-      className={`flex items-center justify-between min-h-[44px] bg-white px-4 ${onClick ? 'cursor-pointer active:bg-neutral-50' : ''}`}
+      className={`flex items-center justify-between min-h-[52px] bg-white px-4 ${onClick ? 'cursor-pointer active:bg-neutral-50' : ''}`}
       onClick={onClick}
     >
       <div className="flex-1 py-1">
@@ -162,17 +162,17 @@ export function SettingsPage() {
 
   const Separator = () => (
     <div className="pl-4 bg-white">
-      <div className="h-[1px] bg-[#E5E5E0] w-full" />
+      <div className="h-[1px] bg-[#F0F0ED] w-full" />
     </div>
   );
 
   return (
-    <div className="w-full bg-[#F2F2EF] min-h-screen">
+    <div className="page-transition w-full bg-[#F2F2EF] min-h-screen">
       {/* Header */}
       <header className="sticky top-0 z-50 flex items-center justify-between bg-white border-b border-[#E5E5E0] h-[56px] px-2">
         <button 
           onClick={() => navigate(-1)} 
-          className="flex items-center justify-center w-10 h-10 bg-transparent border-0 text-neutral-900 active:opacity-70 transition-opacity"
+          className="flex items-center justify-center w-10 h-10 bg-transparent border-0 text-neutral-600 active:opacity-70 transition-opacity"
         >
           <ChevronLeft className="h-6 w-6" strokeWidth={2} />
         </button>
@@ -184,14 +184,14 @@ export function SettingsPage() {
       </header>
 
       {/* Main Content */}
-      <div className="pt-4 pb-[100px] px-5 max-w-md mx-auto space-y-8">
+      <div className="pt-4 pb-[100px] max-w-md mx-auto space-y-2">
         
         {/* ACCOUNT */}
         <section>
           <SectionHeader>Account</SectionHeader>
           
           {!user ? (
-            <div className="bg-white rounded-xl overflow-hidden p-6 flex flex-col items-center text-center">
+            <div className="bg-white rounded-2xl overflow-hidden mx-4 p-6 flex flex-col items-center text-center">
               <div className="w-10 h-10 bg-neutral-200 rounded-full flex items-center justify-center mb-3">
                 <User className="h-5 w-5 text-neutral-500" />
               </div>
@@ -206,7 +206,7 @@ export function SettingsPage() {
               </button>
             </div>
           ) : (
-            <div className="bg-white rounded-xl overflow-hidden">
+            <div className="bg-white rounded-2xl overflow-hidden mx-4">
               <div className="flex items-center justify-between min-h-[52px] bg-white px-4">
                 <span className="text-[17px] text-[#1A1A1A]">Name</span>
                 <input
@@ -240,7 +240,7 @@ export function SettingsPage() {
         {/* PREFERENCES */}
         <section>
           <SectionHeader>Preferences</SectionHeader>
-          <div className="bg-white rounded-xl overflow-hidden">
+          <div className="bg-white rounded-2xl overflow-hidden mx-4">
             <CardRow 
               label="Location" 
               value={profile?.location || "Select location"} 
@@ -266,7 +266,7 @@ export function SettingsPage() {
         {/* ABOUT */}
         <section>
           <SectionHeader>About</SectionHeader>
-          <div className="bg-white rounded-xl overflow-hidden">
+          <div className="bg-white rounded-2xl overflow-hidden mx-4">
             <CardRow label="Community guidelines" hasChevron onClick={() => navigate('/settings/community-guidelines')} />
             <Separator />
             <CardRow label="Privacy policy" hasChevron />
@@ -280,7 +280,7 @@ export function SettingsPage() {
         {/* DANGER ZONE */}
         {user && (
           <section className="mb-4">
-            <div className="bg-white rounded-xl overflow-hidden">
+            <div className="bg-white rounded-2xl overflow-hidden mx-4">
               <button
                 onClick={handleLogout}
                 className="w-full min-h-[52px] flex items-center justify-center text-[17px] font-semibold text-[#FF3B30] bg-white active:bg-neutral-50 transition-colors"

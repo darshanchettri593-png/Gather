@@ -82,14 +82,14 @@ export function CreateEventPage() {
   const selectedVibeObj = VIBES.find(v => v.id === vibe);
 
   return (
-    <div className="max-w-md mx-auto pb-[100px] bg-white min-h-screen">
+    <div className="page-transition max-w-md mx-auto pb-[100px] bg-white min-h-screen">
       {/* Header */}
       <header className="sticky top-0 z-50 flex items-center justify-between bg-white border-b border-[#E5E5E0] h-[56px] px-2">
         <button 
           onClick={() => navigate("/")} 
-          className="flex items-center justify-center w-10 h-10 bg-transparent border-0 text-black active:opacity-70 transition-opacity"
+          className="flex items-center justify-center w-10 h-10 bg-transparent border-0 text-neutral-600 active:opacity-70 transition-opacity"
         >
-          <ChevronLeft className="h-6 w-6" strokeWidth={2} />
+          <ChevronLeft className="h-5 w-5" strokeWidth={2} />
         </button>
         
         <h1 className="text-[17px] font-semibold text-black absolute left-1/2 -translate-x-1/2">
@@ -138,9 +138,10 @@ export function CreateEventPage() {
         <div>
           <input 
             type="text" 
-            placeholder="Event Name"
+            placeholder="What's the vibe?"
             maxLength={60}
-            className="w-full text-[28px] font-semibold text-black bg-transparent border-none placeholder:text-neutral-300 focus:outline-none focus:ring-0 px-4 py-3"
+            className="w-full text-[26px] font-semibold text-[#1A1A1A] bg-transparent border-none placeholder:text-[#C0C0BB] focus:outline-none focus:ring-0 py-3"
+            style={{ marginTop: '20px', marginBottom: '24px' }}
             value={title}
             onChange={e => setTitle(e.target.value)}
           />
@@ -155,20 +156,20 @@ export function CreateEventPage() {
 
         {/* 3. Vibe */}
         <div className="space-y-2">
-          <label className="block text-[13px] font-semibold text-neutral-500 uppercase tracking-wide">
+          <label className="block text-[12px] font-semibold text-neutral-400 uppercase tracking-wider">
             Vibe
           </label>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex gap-2 overflow-x-auto hide-scrollbar flex-nowrap">
             {VIBES.map(v => {
                const isActive = vibe === v.id;
                return (
                  <button
                    key={v.id}
                    onClick={() => setVibe(v.id)}
-                   className={`px-4 h-[32px] text-[16px] transition-colors ${
+                   className={`flex-shrink-0 px-[14px] h-[34px] text-[14px] font-medium rounded-full transition-colors ${
                      isActive 
-                       ? 'bg-black text-white rounded-full font-medium' 
-                       : 'bg-[#ECECE7] text-neutral-700 rounded-full font-medium'
+                       ? 'bg-[#1A1A1A] text-white' 
+                       : 'bg-white text-[#1A1A1A] border border-[#E5E5E0]'
                    }`}
                  >
                    {v.label}
@@ -189,32 +190,32 @@ export function CreateEventPage() {
         {/* 4. Date & Time */}
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-2">
-            <label className="block text-[13px] font-semibold text-neutral-500 uppercase tracking-wide">
+            <label className="block text-[12px] font-semibold text-neutral-400 uppercase tracking-wider">
               Date
             </label>
             <input 
               type="date" 
               value={date}
               onChange={e => setDate(e.target.value)}
-              className={`w-full bg-transparent border-0 border-b border-[#E5E5E0] focus:ring-0 focus:border-black px-0 py-2 outline-none transition-colors text-[16px] ${date ? 'text-black font-medium' : 'text-neutral-400 font-normal'}`} 
+              className={`w-full bg-transparent border-0 border-b border-[#E5E5E0] focus:ring-0 focus:border-black px-0 py-2 outline-none transition-colors text-[16px] min-h-[44px] ${date ? 'text-black font-medium' : 'text-neutral-400 font-normal'}`} 
             />
           </div>
           <div className="space-y-2">
-            <label className="block text-[13px] font-semibold text-neutral-500 uppercase tracking-wide">
+            <label className="block text-[12px] font-semibold text-neutral-400 uppercase tracking-wider">
               Time
             </label>
             <input 
               type="time" 
               value={time}
               onChange={e => setTime(e.target.value)}
-              className={`w-full bg-transparent border-0 border-b border-[#E5E5E0] focus:ring-0 focus:border-black px-0 py-2 outline-none transition-colors text-[16px] ${time ? 'text-black font-medium' : 'text-neutral-400 font-normal'}`} 
+              className={`w-full bg-transparent border-0 border-b border-[#E5E5E0] focus:ring-0 focus:border-black px-0 py-2 outline-none transition-colors text-[16px] min-h-[44px] ${time ? 'text-black font-medium' : 'text-neutral-400 font-normal'}`} 
             />
           </div>
         </div>
 
         {/* 5. Location */}
         <div className="space-y-2">
-          <label className="block text-[13px] font-semibold text-neutral-500 uppercase tracking-wide">
+          <label className="block text-[12px] font-semibold text-neutral-400 uppercase tracking-wider">
             Location
           </label>
           <input 
@@ -229,7 +230,7 @@ export function CreateEventPage() {
 
         {/* 6. Description */}
         <div className="space-y-2">
-          <label className="block text-[13px] font-semibold text-neutral-500 uppercase tracking-wide">
+          <label className="block text-[12px] font-semibold text-neutral-400 uppercase tracking-wider">
             Description <span className="text-neutral-400 normal-case font-normal">(optional)</span>
           </label>
           <textarea 
