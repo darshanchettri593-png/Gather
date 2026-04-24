@@ -20,14 +20,24 @@ export function MainLayout() {
   return (
     <div className={`flex min-h-screen flex-col bg-background ${isEventDetail ? 'pb-0' : 'pb-[80px]'}`}>
       {!hideHeader && (
-        <header className="sticky top-0 z-40 w-full bg-background/80 backdrop-blur-md">
-          <div className="container mx-auto flex h-14 max-w-5xl items-center justify-between px-4 sm:px-6">
+        <header 
+          className="sticky top-0 z-50 w-full"
+          style={{
+            backgroundColor: "rgba(242, 242, 239, 0.75)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            borderBottom: "1px solid rgba(255, 255, 255, 0.6)",
+            boxShadow: "0 1px 0 rgba(0, 0, 0, 0.06)",
+            height: "56px"
+          }}
+        >
+          <div className="container mx-auto flex h-full max-w-5xl items-center justify-between" style={{ padding: "0 20px" }}>
             <div className="flex items-center gap-[20px]">
               <Link to="/" className="flex items-center gap-2">
-                <div className="flex h-6 w-6 items-center justify-center rounded-[8px] bg-primary text-primary-foreground">
+                <div className="flex h-6 w-6 items-center justify-center rounded-[8px] bg-[#FF6B35] text-white">
                   <Sparkles className="h-3.5 w-3.5" />
                 </div>
-                <span className="font-heading text-[17px] font-bold tracking-tight">Gather</span>
+                <span className="font-heading text-[17px] font-bold tracking-tight text-[#1A1A1A]">Gather</span>
               </Link>
             </div>
             
@@ -55,7 +65,7 @@ export function MainLayout() {
               ) : (
                 <button 
                   onClick={() => navigate('/profile')}
-                  className="w-7 h-7 rounded-full overflow-hidden bg-neutral-200 flex items-center justify-center text-[12px] font-medium text-neutral-600 active:opacity-70 transition-opacity"
+                  className="w-[36px] h-[36px] rounded-full overflow-hidden bg-neutral-200 flex items-center justify-center text-[14px] font-medium text-neutral-600 active:opacity-70 transition-opacity border-none"
                 >
                   {profile?.avatar_url ? (
                     <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
@@ -70,7 +80,7 @@ export function MainLayout() {
       )}
 
       {/* Main layout wrapper, remove default padding on settings and profile */}
-      <main className={`flex-1 w-full max-w-5xl mx-auto ${hideHeader ? '' : 'p-4 sm:p-6'}`}>
+      <main className="flex-1 w-full max-w-5xl mx-auto">
         <Outlet />
       </main>
 

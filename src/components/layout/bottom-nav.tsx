@@ -32,13 +32,13 @@ export function BottomNav() {
     <div
       className="fixed bottom-0 left-0 right-0 z-50 border-t border-[#E5E5E0]"
       style={{ 
-        paddingBottom: "env(safe-area-inset-bottom, 8px)",
+        paddingBottom: "env(safe-area-inset-bottom, 12px)",
         backgroundColor: "rgba(255,255,255,0.92)",
         backdropFilter: "blur(20px)",
         WebkitBackdropFilter: "blur(20px)",
       }}
     >
-      <div className="flex items-center justify-around h-[72px] max-w-md mx-auto">
+      <div className="flex items-center justify-around min-h-[60px] py-2 max-w-md mx-auto">
 
         <Link
           to="/"
@@ -78,14 +78,18 @@ export function BottomNav() {
           className="flex flex-col items-center justify-center flex-1 min-w-0 h-full transition-opacity active:opacity-70"
         >
           <div
-            className="flex items-center justify-center rounded-full w-[52px] h-[52px] -mt-3"
+            className="flex items-center justify-center w-[56px] h-[28px] rounded-full"
             style={{ 
               backgroundColor: "#FF6B35",
-              boxShadow: "0 4px 12px rgba(255,107,53,0.3)",
+              border: "1px solid rgba(255,255,255,0.2)",
+              boxShadow: "0 2px 8px rgba(255,107,53,0.35)",
             }}
           >
-            <Plus className="h-[22px] w-[22px] text-white" strokeWidth={2} />
+            <Plus className="h-4 w-4 text-white" strokeWidth={2} />
           </div>
+          <span className="text-[10px] text-[#FF6B35] font-semibold mt-[4px]">
+            Host
+          </span>
         </button>
 
         <Link

@@ -180,7 +180,7 @@ export function EventFeedPage() {
   return (
     <div 
       ref={containerRef}
-      className="page-transition pb-6 pt-[24px] px-5"
+      className="page-transition pb-6 pt-[16px] px-[20px]"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -199,16 +199,16 @@ export function EventFeedPage() {
       </div>
 
       <div className="flex flex-col">
-        <div className="mb-[4px]">
-          <p className="flex items-center text-[13px] text-neutral-400 font-normal tracking-wide mb-[4px] line-clamp-1">
-            <MapPin className="h-3 w-3 text-neutral-400 mr-[4px]" />
+        <div className="mb-[14px]">
+          <p className="flex items-center text-[13px] text-neutral-400 font-normal tracking-wide mb-[2px] line-clamp-1">
+            <MapPin className="h-[12px] w-[12px] text-neutral-400 mr-[3px]" />
             Siliguri, India
           </p>
-          <h1 className="text-[32px] font-bold leading-none text-[#1A1A1A]" style={{ letterSpacing: '-0.5px' }}>Upcoming</h1>
+          <h1 className="text-[28px] font-[800] leading-none text-[#1A1A1A] mt-0" style={{ letterSpacing: '-0.5px' }}>Upcoming</h1>
         </div>
         
         {/* Category Pills */}
-        <div className="flex gap-2 overflow-x-auto hide-scrollbar py-4">
+        <div className="flex gap-2 overflow-x-auto hide-scrollbar mt-0 mb-[16px]">
           {VIBES.map((v) => (
             <button
               key={v}
