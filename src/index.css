@@ -9,6 +9,17 @@
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --animate-shimmer: shimmer 1.5s infinite linear;
 
+  /* Gather design tokens */
+  --color-gather-bg: #131312;
+  --color-gather-surface: #1C1C1A;
+  --color-gather-card: #242422;
+  --color-gather-card-high: #2A2A28;
+  --color-gather-orange: #FF6B35;
+  --color-gather-text: #E5E2DE;
+  --color-gather-text-secondary: #9A9A8E;
+  --color-gather-text-muted: #5A5A52;
+  --color-gather-border-strong: #2E2E2C;
+
   --color-bg-primary: var(--bg-primary);
   --color-bg-surface: var(--bg-surface);
   --color-bg-surface-2: var(--bg-surface-2);
@@ -60,14 +71,14 @@
 }
 
 :root {
-  --bg-primary: #1C1C1A;
-  --bg-surface: #242422;
-  --bg-surface-2: #2C2C2A;
-  --bg-surface-3: #343432;
+  --bg-primary: #131312;
+  --bg-surface: #1C1C1A;
+  --bg-surface-2: #242422;
+  --bg-surface-3: #2A2A28;
   --orange: #FF6B35;
   --orange-dim: rgba(255, 107, 53, 0.12);
   --orange-border: rgba(255, 107, 53, 0.25);
-  --text-primary: #F0F0EA;
+  --text-primary: #E5E2DE;
   --text-secondary: #9A9A8E;
   --text-muted: #5A5A52;
   --border-default: #2E2E2C;
@@ -109,9 +120,7 @@
   --sidebar-ring: var(--orange);
 }
 
-.dark {
-  /* Using same dark variables as root to enforce dark theme globally */
-}
+
 
 @layer base {
   * {
@@ -123,8 +132,8 @@
   body {
     touch-action: pan-x pan-y;
     -webkit-text-size-adjust: 100%;
-    background-color: #1C1C1A;
-    color: #F0F0EA;
+    background-color: #131312;
+    color: #E5E2DE;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -238,6 +247,27 @@
 }
 
 @layer utilities {
+  .glass-card {
+    background: rgba(36, 36, 34, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .profile-mesh {
+    background:
+      radial-gradient(circle at 20% 30%, rgba(255, 107, 53, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(255, 181, 157, 0.05) 0%, transparent 50%);
+  }
+
   @keyframes shimmer {
     0% {
       transform: translateX(-100%);

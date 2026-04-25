@@ -30,7 +30,6 @@ export function EventDetailPage() {
 
   const isHost = !!user && !!event && user.id === event.host_id;
 
-  // Handle pending RSVP intent after login
   useEffect(() => {
     if (user && id) {
       const pendingEventId = localStorage.getItem("pending_rsvp_event_id");
@@ -113,39 +112,48 @@ export function EventDetailPage() {
   };
 
   // ─── Loading skeleton ────────────────────────────────────────────────────────
-
   if (isLoading) {
     return (
-      <div className="relative min-h-screen bg-[#1C1C1A] pb-[100px]">
-        <div className="w-full h-[280px] bg-[#2C2C2A] animate-pulse" />
-        <div className="bg-[#242422] rounded-t-3xl -mt-6 p-6 space-y-6">
-          <div className="h-4 w-16 bg-[#2C2C2A] rounded animate-pulse" />
-          <div className="h-[26px] w-[80%] bg-[#2C2C2A] rounded animate-pulse" />
+      <div className="relative min-h-screen bg-[#131312] pb-[100px]">
+        <div className="w-full bg-[#2A2A28] animate-pulse" style={{ height: "530px" }} />
+        <div
+          className="bg-[#242422] rounded-xl -mt-12 mx-6 p-8 space-y-6 relative z-20"
+          style={{ border: "1px solid #2E2E2C", boxShadow: "0 20px 50px rgba(0,0,0,0.5)" }}
+        >
+          <div className="h-4 w-16 bg-[#2A2A28] rounded animate-pulse" />
+          <div className="h-[36px] w-[80%] bg-[#2A2A28] rounded animate-pulse" />
           <div className="space-y-4">
-            <div className="h-[44px] w-full bg-[#2C2C2A] rounded-lg animate-pulse" />
-            <div className="h-[44px] w-full bg-[#2C2C2A] rounded-lg animate-pulse" />
-            <div className="h-[44px] w-full bg-[#2C2C2A] rounded-lg animate-pulse" />
+            <div className="h-[64px] w-full bg-[#2A2A28] rounded-lg animate-pulse" />
+            <div className="h-[64px] w-full bg-[#2A2A28] rounded-lg animate-pulse" />
+            <div className="h-[64px] w-full bg-[#2A2A28] rounded-lg animate-pulse" />
           </div>
         </div>
-        <div className="fixed bottom-0 left-0 right-0 h-[80px] bg-[#242422]/90 backdrop-blur-xl border-t border-[#2E2E2C] px-4 py-[14px]">
-          <div className="h-[52px] w-full bg-[#2C2C2A] rounded-full animate-pulse" />
+        <div
+          className="fixed bottom-0 left-0 right-0 px-4 py-[14px]"
+          style={{
+            height: "96px",
+            backgroundColor: "#1C1C1A",
+            borderTop: "1px solid #2E2E2C",
+          }}
+        >
+          <div className="h-[54px] w-full bg-[#2A2A28] rounded-xl animate-pulse" />
         </div>
       </div>
     );
   }
 
   // ─── Error / not found ───────────────────────────────────────────────────────
-
   if (error || !event) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-[#1C1C1A] px-4 text-center">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-[#131312] px-4 text-center">
         <AlertCircle className="h-12 w-12 text-[#5A5A52] mb-4" strokeWidth={1.5} />
-        <h3 className="text-[20px] font-semibold text-[#F0F0EA] mb-2">Event not found</h3>
+        <h3 className="text-[20px] font-semibold text-[#E5E2DE] mb-2">Event not found</h3>
         <p className="text-[14px] text-[#9A9A8E] mb-6 max-w-[280px]">
           This event might have been deleted or the link is broken.
         </p>
         <button
-          className="px-8 h-[48px] rounded-full bg-[#242422] border border-[#2E2E2C] text-[#F0F0EA] font-semibold active:bg-[#2C2C2A] transition-colors"
+          className="px-8 h-[48px] rounded-full bg-[#242422] text-[#E5E2DE] font-semibold active:bg-[#2A2A28] transition-colors"
+          style={{ border: "1px solid #2E2E2C" }}
           onClick={() => navigate("/")}
         >
           Back to feed
@@ -155,7 +163,6 @@ export function EventDetailPage() {
   }
 
   // ─── Derived values ──────────────────────────────────────────────────────────
-
   const isPastEvent = new Date(event.event_datetime) < new Date();
   const attendeesList = event.attendees || [];
   const displayAttendees = attendeesList.slice(0, 5);
@@ -164,12 +171,11 @@ export function EventDetailPage() {
   const hasAttended = !!user && attendeesList.some((att: any) => att.user?.id === user.id);
 
   // ─── Page ────────────────────────────────────────────────────────────────────
-
   return (
-    <div className="relative min-h-screen bg-[#1C1C1A] pb-[100px]">
+    <div className="relative min-h-screen bg-[#131312] pb-[100px]">
 
-      {/* ── Cover Image ──────────────────────────────────────────────────────── */}
-      <div className="relative w-full h-[280px]">
+      {/* ── Hero image ──────────────────────────────────────────────────────── */}
+      <div className="relative w-full" style={{ height: "530px" }}>
         {event.cover_image_url ? (
           <img
             src={event.cover_image_url}
@@ -177,52 +183,116 @@ export function EventDetailPage() {
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full bg-[#2C2C2A] flex items-center justify-center text-[24px] font-bold text-[#FF6B35]/20 uppercase tracking-widest">
-            Gather
+          <div
+            className="w-full h-full flex items-center justify-center"
+            style={{ backgroundColor: "#242422" }}
+          >
+            <span className="text-[28px] font-bold uppercase tracking-widest" style={{ color: "rgba(255,107,53,0.15)" }}>
+              Gather
+            </span>
           </div>
         )}
+
+        {/* Cinematic gradient overlay */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(to bottom, rgba(19,19,18,0) 0%, rgba(19,19,18,0.4) 40%, rgba(19,19,18,1) 100%)",
+          }}
+        />
 
         {/* Back button */}
         <button
           onClick={() => navigate(-1)}
-          className="absolute top-4 left-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-md border border-white/10 active:scale-90 transition-transform"
+          className="absolute top-4 left-4 z-10 flex items-center justify-center rounded-full active:scale-90 transition-transform"
+          style={{
+            width: "40px",
+            height: "40px",
+            backgroundColor: "rgba(0,0,0,0.40)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+            border: "1px solid rgba(255,255,255,0.10)",
+          }}
         >
           <ArrowLeft className="h-5 w-5 text-white" />
         </button>
 
-        {/* Top-right button group */}
+        {/* Top-right buttons */}
         <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
           {isHost && (
             <button
               onClick={() => setIsMenuOpen((v) => !v)}
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-md border border-white/10 active:scale-90 transition-transform"
+              className="flex items-center justify-center rounded-full active:scale-90 transition-transform"
+              style={{
+                width: "40px",
+                height: "40px",
+                backgroundColor: "rgba(0,0,0,0.40)",
+                backdropFilter: "blur(8px)",
+                WebkitBackdropFilter: "blur(8px)",
+                border: "1px solid rgba(255,255,255,0.10)",
+              }}
               aria-label="More options"
             >
               <MoreVertical className="h-5 w-5 text-white" />
             </button>
           )}
-
           <button
             onClick={handleShare}
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-md border border-white/10 active:scale-90 transition-transform"
+            className="flex items-center justify-center rounded-full active:scale-90 transition-transform"
+            style={{
+              width: "40px",
+              height: "40px",
+              backgroundColor: "rgba(0,0,0,0.40)",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
+              border: "1px solid rgba(255,255,255,0.10)",
+            }}
             aria-label="Share"
           >
             <Share2 className="h-5 w-5 text-white" />
           </button>
         </div>
+
+        {/* Hero bottom content */}
+        <div className="absolute bottom-0 left-0 w-full p-6">
+          <div className="flex items-center gap-2 mb-3">
+            <span
+              className="rounded-full px-3 py-1 font-semibold"
+              style={{
+                fontSize: "12px",
+                backgroundColor: "rgba(255,107,53,0.2)",
+                border: "1px solid rgba(255,107,53,0.3)",
+                color: "#FF6B35",
+              }}
+            >
+              {getVibeLabel(event.vibe)}
+            </span>
+          </div>
+          <h1
+            className="font-bold text-white leading-[1.05]"
+            style={{ fontSize: "48px", letterSpacing: "-0.04em" }}
+          >
+            {event.title}
+          </h1>
+        </div>
       </div>
 
-      {/* ── Dropdown menu ────── */}
+      {/* ── Dropdown menu ────────────────────────────────────────────────────── */}
       {isMenuOpen && (
         <>
           <div className="fixed inset-0 z-[90]" onClick={() => setIsMenuOpen(false)} />
-          <div className="absolute top-[60px] right-4 z-[100] bg-[#2C2C2A] rounded-xl border border-[#383836] shadow-xl overflow-hidden min-w-[160px] animate-in fade-in zoom-in-95 duration-100">
+          <div
+            className="absolute top-[60px] right-4 z-[100] rounded-xl border shadow-xl overflow-hidden min-w-[160px] animate-in fade-in zoom-in-95 duration-100"
+            style={{ backgroundColor: "#2A2A28", borderColor: "#383836" }}
+          >
             <button
               onClick={() => {
                 setIsMenuOpen(false);
                 setIsDeleteModalOpen(true);
               }}
-              className="w-full flex items-center px-4 py-3 text-[15px] font-medium text-[#FF3B30] active:bg-[#343432] transition-colors text-left"
+              className="w-full flex items-center px-4 py-3 text-[15px] font-medium active:bg-[#343432] transition-colors text-left"
+              style={{ color: "#FF3B30" }}
             >
               Delete event
             </button>
@@ -230,103 +300,202 @@ export function EventDetailPage() {
         </>
       )}
 
-      {/* ── Content ──────────────────────────────────────────────────────────── */}
-      <div className="relative bg-[#242422] rounded-t-[24px] border-t border-[#2E2E2C] -mt-[24px] px-6 pt-6 pb-[100px] min-h-[70vh] z-20 shadow-[0_-12px_40px_rgba(0,0,0,0.4)]">
+      {/* ── Content card ──────────────────────────────────────────────────────── */}
+      <div
+        className="relative -mt-12 z-20 mx-0 px-6 pt-8 pb-[100px] min-h-[60vh] rounded-xl"
+        style={{
+          backgroundColor: "#242422",
+          border: "1px solid #2E2E2C",
+          boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
+        }}
+      >
 
-        {/* Vibe tag */}
-        <div className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#FF6B35] mb-2">
-          {getVibeLabel(event.vibe)}
-        </div>
-
-        {/* Title */}
-        <h1 className="text-[28px] font-bold tracking-tight text-[#F0F0EA] leading-tight mb-4 line-clamp-3">
-          {event.title}
-        </h1>
-
-        {/* Host */}
-        <div className="flex items-center gap-[12px] mb-8 bg-[#2C2C2A] p-3 rounded-2xl border border-[#383836]">
-          <div className="h-10 w-10 rounded-full bg-[#FF6B35] overflow-hidden flex items-center justify-center text-white font-bold shrink-0 border-2 border-[#242422]">
-            {event.host?.avatar_url ? (
-              <img src={event.host.avatar_url} alt="" className="h-full w-full object-cover" />
-            ) : (
-              <span className="text-[14px]">{event.host?.display_name?.charAt(0) || "?"}</span>
-            )}
+        {/* Info grid — 3 columns */}
+        <div className="grid grid-cols-3 gap-4 mb-8">
+          {/* Date */}
+          <div className="flex flex-col items-center text-center">
+            <div
+              className="flex items-center justify-center rounded-lg mb-3"
+              style={{
+                width: "48px",
+                height: "48px",
+                backgroundColor: "#2A2A28",
+                border: "1px solid rgba(255,255,255,0.05)",
+              }}
+            >
+              <CalendarRange className="h-5 w-5" style={{ color: "#FF6B35" }} />
+            </div>
+            <span
+              className="uppercase tracking-widest mb-1 block"
+              style={{ fontSize: "12px", color: "#5A5A52" }}
+            >
+              Date
+            </span>
+            <span className="font-semibold block" style={{ fontSize: "15px", color: "#E5E2DE", lineHeight: 1.2 }}>
+              {format(new Date(event.event_datetime), "MMM d")}
+            </span>
+            <span style={{ fontSize: "13px", color: "#9A9A8E" }}>
+              {format(new Date(event.event_datetime), "EEEE")}
+            </span>
           </div>
-          <div>
-            <span className="text-[11px] text-[#5A5A52] block font-medium uppercase tracking-wider">Hosted by</span>
-            <span className="text-[15px] font-semibold text-[#F0F0EA] leading-tight">
-              {event.host?.display_name}
+
+          {/* Time */}
+          <div className="flex flex-col items-center text-center">
+            <div
+              className="flex items-center justify-center rounded-lg mb-3"
+              style={{
+                width: "48px",
+                height: "48px",
+                backgroundColor: "#2A2A28",
+                border: "1px solid rgba(255,255,255,0.05)",
+              }}
+            >
+              <Clock className="h-5 w-5" style={{ color: "#FF6B35" }} />
+            </div>
+            <span
+              className="uppercase tracking-widest mb-1 block"
+              style={{ fontSize: "12px", color: "#5A5A52" }}
+            >
+              Time
+            </span>
+            <span className="font-semibold block" style={{ fontSize: "15px", color: "#E5E2DE", lineHeight: 1.2 }}>
+              {format(new Date(event.event_datetime), "h:mm")}
+            </span>
+            <span style={{ fontSize: "13px", color: "#9A9A8E" }}>
+              {format(new Date(event.event_datetime), "a")}
+            </span>
+          </div>
+
+          {/* Entry */}
+          <div className="flex flex-col items-center text-center">
+            <div
+              className="flex items-center justify-center rounded-lg mb-3"
+              style={{
+                width: "48px",
+                height: "48px",
+                backgroundColor: "#2A2A28",
+                border: "1px solid rgba(255,255,255,0.05)",
+              }}
+            >
+              <MapPin className="h-5 w-5" style={{ color: "#FF6B35" }} />
+            </div>
+            <span
+              className="uppercase tracking-widest mb-1 block"
+              style={{ fontSize: "12px", color: "#5A5A52" }}
+            >
+              Entry
+            </span>
+            <span className="font-semibold block" style={{ fontSize: "15px", color: "#E5E2DE", lineHeight: 1.2 }}>
+              Free
             </span>
           </div>
         </div>
 
-        {/* Info rows */}
-        <div className="space-y-1 mb-8">
-          <div className="flex items-center h-[48px]">
-            <div className="w-9 h-9 rounded-full bg-[#2C2C2A] flex items-center justify-center shrink-0">
-              <CalendarRange className="h-[18px] w-[18px] text-[#9A9A8E]" strokeWidth={2} />
-            </div>
-            <span className="ml-[12px] text-[15px] text-[#F0F0EA] font-medium">
-              {format(new Date(event.event_datetime), "EEEE, MMMM d")}
+        {/* Location row */}
+        <div
+          className="flex items-start gap-3 mb-8 p-4 rounded-xl"
+          style={{ backgroundColor: "#2A2A28", border: "1px solid rgba(255,255,255,0.05)" }}
+        >
+          <MapPin className="h-4 w-4 mt-0.5 shrink-0" style={{ color: "#FF6B35" }} />
+          <div className="flex flex-col">
+            <span className="font-medium" style={{ fontSize: "15px", color: "#E5E2DE" }}>
+              {event.location_text}
             </span>
-          </div>
-
-          <div className="flex items-center h-[48px]">
-            <div className="w-9 h-9 rounded-full bg-[#2C2C2A] flex items-center justify-center shrink-0">
-              <Clock className="h-[18px] w-[18px] text-[#9A9A8E]" strokeWidth={2} />
-            </div>
-            <span className="ml-[12px] text-[15px] text-[#F0F0EA] font-medium">
-              {format(new Date(event.event_datetime), "h:mm a")}
-            </span>
-          </div>
-
-          <div className="flex items-start py-[6px] min-h-[48px]">
-            <div className="w-9 h-9 rounded-full bg-[#2C2C2A] flex items-center justify-center shrink-0 mt-[2px]">
-              <MapPin className="h-[18px] w-[18px] text-[#9A9A8E]" strokeWidth={2} />
-            </div>
-            <div className="ml-[12px] flex flex-col pt-[4px]">
-              <span className="text-[15px] text-[#F0F0EA] font-medium leading-snug">{event.location_text}</span>
-              <a
-                href={`https://www.google.com/maps/search/?api=1&query=${encodedLocation}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[13px] text-[#FF6B35] font-semibold hover:underline mt-1.5 inline-block w-fit"
-              >
-                Open in Maps
-              </a>
-            </div>
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${encodedLocation}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold hover:underline mt-1 inline-block"
+              style={{ fontSize: "13px", color: "#FF6B35" }}
+            >
+              Open in Maps
+            </a>
           </div>
         </div>
 
-        {/* Description */}
+        {/* Divider */}
+        <div className="h-[1px] bg-[#2E2E2C] mb-8" />
+
+        {/* About section */}
         {event.description && (
-          <div className="mb-8 pt-6 border-t border-[#2E2E2C]">
-            <h2 className="text-[12px] font-bold uppercase tracking-[0.1em] text-[#5A5A52] mb-3">
-              Description
+          <div className="mb-8">
+            <h2 className="font-semibold mb-4" style={{ fontSize: "24px", color: "#E5E2DE" }}>
+              About the Gathering
             </h2>
-            <p className="text-[15px] text-[#9A9A8E] leading-[1.6] whitespace-pre-wrap">
+            <p
+              className="leading-relaxed whitespace-pre-wrap"
+              style={{ fontSize: "18px", color: "#a8a29e", lineHeight: 1.6 }}
+            >
               {event.description}
             </p>
           </div>
         )}
 
-        {/* Attendees */}
+        {/* Host row */}
+        <div
+          className="flex items-center gap-4 mb-8 p-4 rounded-xl"
+          style={{ backgroundColor: "#2A2A28", border: "1px solid rgba(255,255,255,0.05)" }}
+        >
+          <div
+            className="shrink-0 rounded-full overflow-hidden flex items-center justify-center text-white font-bold"
+            style={{
+              width: "48px",
+              height: "48px",
+              border: "2px solid rgba(255,107,53,0.30)",
+              backgroundColor: "#FF6B35",
+            }}
+          >
+            {event.host?.avatar_url ? (
+              <img src={event.host.avatar_url} alt="" className="h-full w-full object-cover" />
+            ) : (
+              <span style={{ fontSize: "16px" }}>
+                {event.host?.display_name?.charAt(0) || "?"}
+              </span>
+            )}
+          </div>
+          <div>
+            <span
+              className="block uppercase tracking-widest"
+              style={{ fontSize: "10px", color: "#5A5A52" }}
+            >
+              Hosted by
+            </span>
+            <span className="font-semibold" style={{ fontSize: "14px", color: "#E5E2DE" }}>
+              {event.host?.display_name}
+            </span>
+          </div>
+        </div>
+
+        {/* Attendees row */}
         <div className="mb-8 pt-6 border-t border-[#2E2E2C]">
-          <h2 className="text-[12px] font-bold uppercase tracking-[0.1em] text-[#5A5A52] mb-4">
+          <h2
+            className="font-bold uppercase tracking-[0.1em] mb-4"
+            style={{ fontSize: "12px", color: "#5A5A52" }}
+          >
             People Going
           </h2>
           {attendeesList.length === 0 ? (
-            <div className="bg-[#2C2C2A] rounded-2xl p-4 text-center border border-dashed border-[#383836]">
+            <div
+              className="rounded-2xl p-4 text-center border border-dashed"
+              style={{ backgroundColor: "#2A2A28", borderColor: "#383836" }}
+            >
               <p className="text-[14px] text-[#5A5A52]">No one yet. Be the trendsetter.</p>
             </div>
           ) : (
-            <div className="flex flex-col gap-3 bg-[#2C2C2A] p-4 rounded-2xl border border-[#383836]">
-              <div className="flex items-center -space-x-[10px]">
+            <div className="flex items-center gap-3">
+              <div className="flex -space-x-2.5">
                 {displayAttendees.map((att: any, i: number) => (
                   <div
                     key={att.id}
-                    className="h-9 w-9 rounded-full border-2 border-[#2C2C2A] bg-[#343432] overflow-hidden flex items-center justify-center text-[12px] font-bold text-[#9A9A8E] shrink-0"
-                    style={{ zIndex: 10 - i }}
+                    className="rounded-full overflow-hidden flex items-center justify-center text-[12px] font-bold shrink-0"
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      border: "2px solid #242422",
+                      backgroundColor: "#2A2A28",
+                      color: "#9A9A8E",
+                      zIndex: 10 - i,
+                    }}
                   >
                     {att.user?.avatar_url ? (
                       <img src={att.user.avatar_url} alt="" className="h-full w-full object-cover" />
@@ -336,19 +505,28 @@ export function EventDetailPage() {
                   </div>
                 ))}
                 {overflowCount > 0 && (
-                  <div className="h-9 rounded-full bg-[#343432] flex items-center px-3 border-2 border-[#2C2C2A] text-[13px] font-bold text-[#F0F0EA] z-0 ml-1">
+                  <div
+                    className="rounded-full flex items-center px-3 font-bold z-0 ml-1"
+                    style={{
+                      height: "40px",
+                      border: "2px solid #242422",
+                      backgroundColor: "#2A2A28",
+                      fontSize: "13px",
+                      color: "#E5E2DE",
+                    }}
+                  >
                     +{overflowCount}
                   </div>
                 )}
               </div>
-              <p className="text-[14px] font-medium text-[#F0F0EA]">
-                {attendeesList.length} {attendeesList.length === 1 ? "is" : "are"} joining
-              </p>
+              <span style={{ fontSize: "14px", color: "#9A9A8E" }}>
+                {attendeesList.length} going
+              </span>
             </div>
           )}
         </div>
 
-        {/* ── Ratings (past events only) ────────────────────────────────────── */}
+        {/* Ratings (past events only) */}
         {isPastEvent && (
           <div className="pt-6 border-t border-[#2E2E2C]">
             <RatingSection
@@ -362,48 +540,83 @@ export function EventDetailPage() {
       </div>
 
       {/* ── Sticky bottom CTA ─────────────────────────────────────────────────── */}
-      <div className="fixed bottom-0 left-0 right-0 bg-[#242422]/80 backdrop-blur-xl border-t border-[#2E2E2C] px-5 pt-[14px] pb-[calc(14px+env(safe-area-inset-bottom,20px))] z-40 sm:max-w-md sm:mx-auto">
-        {isPastEvent ? (
-          <button
-            disabled
-            className="w-full h-[54px] rounded-2xl bg-[#2C2C2A] text-[#5A5A52] text-[16px] font-bold cursor-not-allowed border border-[#383836]"
-          >
-            Event Ended
-          </button>
-        ) : hasRSVPd ? (
-          <div className="flex flex-col gap-2">
+      <div
+        className="fixed bottom-0 left-0 right-0 z-40 px-5 flex items-center sm:max-w-md sm:mx-auto"
+        style={{
+          height: "96px",
+          backgroundColor: "#1C1C1A",
+          borderTop: "1px solid #2E2E2C",
+          boxShadow: "0 -8px 30px rgba(15,15,14,0.6)",
+          paddingBottom: "env(safe-area-inset-bottom, 12px)",
+        }}
+      >
+        <div className="flex items-center justify-between w-full gap-4">
+          {/* Left: price */}
+          <div className="flex flex-col">
+            <span style={{ fontSize: "12px", color: "#5A5A52", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              Entry
+            </span>
+            <span className="font-bold" style={{ fontSize: "20px", color: "#E5E2DE" }}>
+              Free
+            </span>
+          </div>
+
+          {/* Right: CTA button */}
+          {isPastEvent ? (
+            <button
+              disabled
+              className="flex-1 rounded-xl font-bold cursor-not-allowed"
+              style={{
+                height: "54px",
+                backgroundColor: "#2A2A28",
+                color: "#5A5A52",
+                fontSize: "16px",
+                border: "1px solid #383836",
+              }}
+            >
+              Event Ended
+            </button>
+          ) : hasRSVPd ? (
             <button
               disabled={isRSVPPending}
               onClick={handleRSVPClick}
-              className="w-full h-[54px] rounded-2xl bg-transparent border-2 border-[#FF6B35] text-[#FF6B35] text-[16px] font-bold flex items-center justify-center active:scale-[0.98] transition-all"
+              className="flex-1 rounded-xl font-bold flex items-center justify-center active:scale-[0.98] transition-all"
+              style={{
+                height: "54px",
+                backgroundColor: "transparent",
+                border: "2px solid #FF6B35",
+                color: "#FF6B35",
+                fontSize: "16px",
+              }}
             >
               <Check className="h-5 w-5 mr-2" strokeWidth={3} />
               You're Going
             </button>
-            <p className="text-center text-[12px] text-[#5A5A52] font-medium">
-              See you there! Tap to change RSVP.
-            </p>
-          </div>
-        ) : (
-          <div className="flex flex-col gap-2">
+          ) : (
             <button
               disabled={isRSVPPending}
               onClick={handleRSVPClick}
-              className="w-full h-[54px] rounded-2xl bg-[#FF6B35] text-white text-[16px] font-bold active:scale-[0.98] transition-all shadow-[0_8px_24px_rgba(255,107,53,0.3)]"
+              className="flex-1 rounded-xl text-white font-bold active:scale-[0.98] transition-all"
+              style={{
+                height: "54px",
+                backgroundColor: "#FF6B35",
+                fontSize: "24px",
+                boxShadow: "0 4px 15px rgba(255,107,53,0.3)",
+              }}
             >
               I'm Going
             </button>
-            <p className="text-center text-[12px] text-[#5A5A52] font-medium">
-              Confirm your spot in 1-tap
-            </p>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* ── Cancel RSVP modal ─────────────────────────────────────────────────── */}
       <Dialog open={isCancelModalOpen} onOpenChange={setIsCancelModalOpen}>
-        <DialogContent className="sm:max-w-[360px] rounded-2xl w-[90%] p-6 bg-[#2C2C2A] border-[#383836] shadow-2xl">
-          <DialogTitle className="text-[20px] font-bold text-[#F0F0EA] mb-2">
+        <DialogContent
+          className="sm:max-w-[360px] rounded-2xl w-[90%] p-6 shadow-2xl"
+          style={{ backgroundColor: "#2A2A28", border: "1px solid #383836" }}
+        >
+          <DialogTitle className="text-[20px] font-bold text-[#E5E2DE] mb-2">
             Change your mind?
           </DialogTitle>
           <DialogDescription className="text-[15px] text-[#9A9A8E] mb-6 leading-relaxed">
@@ -412,13 +625,15 @@ export function EventDetailPage() {
           <div className="flex flex-col gap-3">
             <button
               onClick={confirmCancelRSVP}
-              className="w-full h-[50px] rounded-xl bg-[#FF3B30] text-white font-bold active:scale-[0.98] transition-all"
+              className="w-full h-[50px] rounded-xl text-white font-bold active:scale-[0.98] transition-all"
+              style={{ backgroundColor: "#FF3B30" }}
             >
               Cancel RSVP
             </button>
             <button
               onClick={() => setIsCancelModalOpen(false)}
-              className="w-full h-[50px] rounded-xl border border-[#383836] font-bold text-[#F0F0EA] active:bg-[#343432] transition-all"
+              className="w-full h-[50px] rounded-xl font-bold text-[#E5E2DE] active:bg-[#343432] transition-all"
+              style={{ border: "1px solid #383836" }}
             >
               Nevermind, I'm going
             </button>
@@ -427,9 +642,15 @@ export function EventDetailPage() {
       </Dialog>
 
       {/* ── Delete event modal ────────────────────────────────────────────────── */}
-      <Dialog open={isDeleteModalOpen} onOpenChange={(open) => !isDeleting && setIsDeleteModalOpen(open)}>
-        <DialogContent className="sm:max-w-[360px] rounded-2xl w-[90%] p-6 bg-[#2C2C2A] border-[#383836] shadow-2xl">
-          <DialogTitle className="text-[20px] font-bold text-[#F0F0EA] mb-2">
+      <Dialog
+        open={isDeleteModalOpen}
+        onOpenChange={(open) => !isDeleting && setIsDeleteModalOpen(open)}
+      >
+        <DialogContent
+          className="sm:max-w-[360px] rounded-2xl w-[90%] p-6 shadow-2xl"
+          style={{ backgroundColor: "#2A2A28", border: "1px solid #383836" }}
+        >
+          <DialogTitle className="text-[20px] font-bold text-[#E5E2DE] mb-2">
             Delete this event?
           </DialogTitle>
           <DialogDescription className="text-[15px] text-[#9A9A8E] mb-6 leading-relaxed">
@@ -439,14 +660,16 @@ export function EventDetailPage() {
             <button
               onClick={handleDeleteConfirm}
               disabled={isDeleting}
-              className="w-full h-[50px] rounded-xl bg-[#FF3B30] text-white font-bold active:scale-[0.98] transition-all disabled:opacity-40"
+              className="w-full h-[50px] rounded-xl text-white font-bold active:scale-[0.98] transition-all disabled:opacity-40"
+              style={{ backgroundColor: "#FF3B30" }}
             >
               {isDeleting ? "Deleting..." : "Yes, Delete Event"}
             </button>
             <button
               onClick={() => setIsDeleteModalOpen(false)}
               disabled={isDeleting}
-              className="w-full h-[50px] rounded-xl border border-[#383836] font-bold text-[#F0F0EA] active:bg-[#343432] transition-all"
+              className="w-full h-[50px] rounded-xl font-bold text-[#E5E2DE] active:bg-[#343432] transition-all"
+              style={{ border: "1px solid #383836" }}
             >
               Go Back
             </button>

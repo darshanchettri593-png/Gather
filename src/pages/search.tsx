@@ -13,11 +13,11 @@ const PLACEHOLDERS = [
 ];
 
 const VIBES = [
-  { name: "Move", icon: Activity },
-  { name: "Create", icon: Palette },
-  { name: "Hang", icon: Users },
-  { name: "Learn", icon: BookOpen },
-  { name: "Explore", icon: Compass },
+  { name: "Move", icon: Activity, tint: "rgba(255,107,53,0.10)" },
+  { name: "Create", icon: Palette, tint: "rgba(167,139,250,0.10)" },
+  { name: "Hang", icon: Users, tint: "rgba(251,191,36,0.10)" },
+  { name: "Learn", icon: BookOpen, tint: "rgba(96,165,250,0.10)" },
+  { name: "Explore", icon: Compass, tint: "rgba(52,211,153,0.10)" },
 ];
 
 export function SearchPage() {
@@ -108,24 +108,24 @@ export function SearchPage() {
   };
 
   return (
-    <div className="page-transition max-w-md mx-auto min-h-screen bg-[#1C1C1A] pb-[100px] flex flex-col pt-4">
+    <div className="page-transition max-w-md mx-auto min-h-screen bg-[#131312] pb-[100px] flex flex-col pt-4">
       {/* Header */}
       <div className="pb-3 pt-0 px-5">
-        <h1 className="text-[28px] font-bold tracking-tight text-[#F0F0EA]">Search</h1>
+        <h1 className="text-[28px] font-bold tracking-tight text-[#E5E2DE]">Search</h1>
       </div>
 
       {/* Search Input (Sticky) */}
-      <div className="sticky top-0 z-20 px-5 py-2 bg-[#1C1C1A]/80 backdrop-blur-xl">
+      <div className="sticky top-0 z-20 px-5 py-2 bg-[#131312]/80 backdrop-blur-xl">
         <div className="relative group">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-[#5A5A52] stroke-[2.5]" />
-          <input 
+          <input
             ref={inputRef}
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={PLACEHOLDERS[placeholderIdx]}
-            className="w-full pl-11 pr-10 h-[48px] rounded-2xl bg-[#242422] text-[16px] text-[#F0F0EA] placeholder:text-[#5A5A52] focus:outline-none border border-[#2E2E2C] focus:border-[#FF6B35]/50 transition-all"
+            className="w-full pl-11 pr-10 h-[48px] rounded-full bg-[#242422] text-[16px] text-[#E5E2DE] placeholder:text-[#5A5A52] focus:outline-none border border-[#2E2E2C] focus:border-[#FF6B35]/50 transition-all"
           />
           {isTyping && (
             <button 
@@ -205,10 +205,14 @@ export function SearchPage() {
                   <button
                     key={v.name}
                     onClick={() => handleVibeClick(v.name)}
-                    className="w-[110px] h-[110px] shrink-0 rounded-2xl flex flex-col items-center justify-center gap-2 active:scale-95 transition-all bg-[#242422] border border-[#2E2E2C]"
+                    className="w-[110px] h-[110px] shrink-0 rounded-2xl flex flex-col items-center justify-center gap-2 active:scale-95 transition-all"
+                    style={{
+                      backgroundColor: v.tint,
+                      border: "1px solid #2E2E2C",
+                    }}
                   >
                     <v.icon className="h-6 w-6 text-[#FF6B35]" strokeWidth={2} />
-                    <span className="text-[13px] font-semibold text-[#F0F0EA]">{v.name}</span>
+                    <span className="text-[13px] font-semibold text-[#E5E2DE]">{v.name}</span>
                   </button>
                 ))}
               </div>
@@ -221,8 +225,8 @@ export function SearchPage() {
             {(searchEvents?.length === 0 && searchHosts?.length === 0) ? (
               <div className="flex flex-col items-center justify-center text-center mt-[64px]">
                 <SearchX className="h-10 w-10 text-[#5A5A52] mb-3" strokeWidth={1.5} />
-                <h3 className="text-[15px] font-semibold text-[#F0F0EA] mb-1">No matches for '{debouncedQuery}'</h3>
-                <p className="text-[13px] text-[#9A9A8E]">Try a different search or browse by vibe instead.</p>
+                <h3 className="text-[15px] font-semibold text-[#E5E2DE] mb-1">We looked everywhere.</h3>
+                <p className="text-[13px] text-[#9A9A8E]">Try a different vibe or location.</p>
               </div>
             ) : (
               <div className="flex flex-col gap-4">

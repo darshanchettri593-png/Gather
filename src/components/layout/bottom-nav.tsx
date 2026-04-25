@@ -1,4 +1,4 @@
-import { Home, Search, Plus, User } from "lucide-react";
+import { Compass, Search, Plus, User } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth-context";
@@ -30,12 +30,12 @@ export function BottomNav() {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-50 border-t border-[#2E2E2C]"
-      style={{ 
+      className="fixed bottom-0 left-0 right-0 z-50"
+      style={{
+        backgroundColor: "#1C1C1A",
+        borderTop: "1px solid #2E2E2C",
+        boxShadow: "0 -8px 30px rgba(15,15,14,0.6)",
         paddingBottom: "env(safe-area-inset-bottom, 12px)",
-        backgroundColor: "rgba(36, 36, 34, 0.92)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
       }}
     >
       <div className="flex items-center justify-around min-h-[60px] py-2 max-w-md mx-auto">
@@ -47,13 +47,18 @@ export function BottomNav() {
             isActive("/") ? "text-[#FF6B35]" : "text-[#5A5A52]"
           )}
         >
-          <Home
+          <Compass
             className="h-6 w-6"
             strokeWidth={1.5}
             fill={isActive("/") ? "currentColor" : "none"}
           />
-          <span className={cn("text-[10px] whitespace-nowrap", isActive("/") ? "font-semibold" : "font-normal")}>
-            Home
+          <span
+            className={cn(
+              "text-[11px] font-medium whitespace-nowrap",
+              isActive("/") && "text-[#FF6B35]"
+            )}
+          >
+            Explore
           </span>
         </Link>
 
@@ -64,11 +69,13 @@ export function BottomNav() {
             isActive("/search") ? "text-[#FF6B35]" : "text-[#5A5A52]"
           )}
         >
-          <Search
-            className="h-6 w-6"
-            strokeWidth={1.5}
-          />
-          <span className={cn("text-[10px] whitespace-nowrap", isActive("/search") ? "font-semibold" : "font-normal")}>
+          <Search className="h-6 w-6" strokeWidth={1.5} />
+          <span
+            className={cn(
+              "text-[11px] font-medium whitespace-nowrap",
+              isActive("/search") && "text-[#FF6B35]"
+            )}
+          >
             Search
           </span>
         </Link>
@@ -79,7 +86,7 @@ export function BottomNav() {
         >
           <div
             className="flex items-center justify-center w-[56px] h-[28px] rounded-full"
-            style={{ 
+            style={{
               backgroundColor: "#FF6B35",
               border: "1px solid rgba(255,255,255,0.2)",
               boxShadow: "0 2px 8px rgba(255,107,53,0.35)",
@@ -87,7 +94,7 @@ export function BottomNav() {
           >
             <Plus className="h-4 w-4 text-white" strokeWidth={2} />
           </div>
-          <span className="text-[10px] text-[#FF6B35] font-semibold mt-[4px]">
+          <span className="text-[11px] text-[#FF6B35] font-semibold mt-[4px]">
             Host
           </span>
         </button>
@@ -104,7 +111,12 @@ export function BottomNav() {
             strokeWidth={1.5}
             fill={isActive("/profile") ? "currentColor" : "none"}
           />
-          <span className={cn("text-[10px] whitespace-nowrap", isActive("/profile") ? "font-semibold" : "font-normal")}>
+          <span
+            className={cn(
+              "text-[11px] font-medium whitespace-nowrap",
+              isActive("/profile") && "text-[#FF6B35]"
+            )}
+          >
             Profile
           </span>
         </Link>

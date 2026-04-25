@@ -95,17 +95,17 @@ export function CreateEventPage() {
   const selectedVibeObj = VIBES.find(v => v.id === vibe);
 
   return (
-    <div className="page-transition max-w-md mx-auto pb-[100px] bg-[#1C1C1A] min-h-screen">
+    <div className="page-transition max-w-md mx-auto pb-[100px] bg-[#131312] min-h-screen">
       {/* Header */}
-      <header className="sticky top-0 z-50 flex items-center justify-between bg-[#242422]/80 backdrop-blur-xl border-b border-[#2E2E2C] h-[56px] px-2">
+      <header className="sticky top-0 z-50 flex items-center justify-between bg-[#131312]/90 backdrop-blur-xl border-b border-[#2E2E2C] h-[56px] px-2">
         <button 
           onClick={() => navigate("/")} 
-          className="flex items-center justify-center w-10 h-10 bg-transparent border-0 text-[#F0F0EA] active:opacity-70 transition-opacity"
+          className="flex items-center justify-center w-10 h-10 bg-transparent border-0 text-[#E5E2DE] active:opacity-70 transition-opacity"
         >
           <ChevronLeft className="h-6 w-6" strokeWidth={2.5} />
         </button>
         
-        <h1 className="text-[17px] font-bold text-[#F0F0EA] absolute left-1/2 -translate-x-1/2">
+        <h1 className="text-[17px] font-bold text-[#E5E2DE] absolute left-1/2 -translate-x-1/2">
           Host
         </h1>
         
@@ -134,8 +134,14 @@ export function CreateEventPage() {
         )}
 
         {/* 1. Cover Image */}
-        <div className="w-full">
-          <ImageUploader 
+        <div
+          className="w-full rounded-2xl overflow-hidden"
+          style={{
+            backgroundColor: "#242422",
+            border: "1.5px dashed #383836",
+          }}
+        >
+          <ImageUploader
             bucket="event-covers"
             folder={user?.id}
             onUploadStart={() => setIsUploadingImage(true)}
@@ -153,7 +159,7 @@ export function CreateEventPage() {
             type="text" 
             placeholder="Give it a catchy name"
             maxLength={60}
-            className="w-full text-[28px] font-bold text-[#F0F0EA] bg-transparent border-none placeholder:text-[#2C2C2A] focus:outline-none focus:ring-0 py-2"
+            className="w-full text-[28px] font-bold text-[#E5E2DE] bg-transparent border-none placeholder:text-[#5A5A52] focus:outline-none focus:ring-0 py-2"
             value={title}
             onChange={e => setTitle(e.target.value)}
           />
@@ -199,12 +205,12 @@ export function CreateEventPage() {
             <label className="block text-[11px] font-bold uppercase tracking-[0.1em] text-[#5A5A52] px-1">
               Date
             </label>
-            <div className="bg-[#242422] rounded-xl border border-[#2E2E2C] px-3 py-2">
+            <div className="bg-[#242422] rounded-xl border border-[#2E2E2C] focus-within:border-[#FF6B35]/50 px-3 py-2">
               <input 
                 type="date" 
                 value={date}
                 onChange={e => setDate(e.target.value)}
-                className="w-full bg-transparent border-none focus:ring-0 text-[15px] text-[#F0F0EA] outline-none" 
+                className="w-full bg-transparent border-none focus:ring-0 text-[15px] text-[#E5E2DE] outline-none" 
               />
             </div>
           </div>
@@ -212,12 +218,12 @@ export function CreateEventPage() {
             <label className="block text-[11px] font-bold uppercase tracking-[0.1em] text-[#5A5A52] px-1">
               Time
             </label>
-            <div className="bg-[#242422] rounded-xl border border-[#2E2E2C] px-3 py-2">
+            <div className="bg-[#242422] rounded-xl border border-[#2E2E2C] focus-within:border-[#FF6B35]/50 px-3 py-2">
               <input 
                 type="time" 
                 value={time}
                 onChange={e => setTime(e.target.value)}
-                className="w-full bg-transparent border-none focus:ring-0 text-[15px] text-[#F0F0EA] outline-none" 
+                className="w-full bg-transparent border-none focus:ring-0 text-[15px] text-[#E5E2DE] outline-none" 
               />
             </div>
           </div>
@@ -232,7 +238,8 @@ export function CreateEventPage() {
             <select
               value={district}
               onChange={(e) => setDistrict(e.target.value)}
-              className="w-full h-[48px] bg-[#242422] border border-[#2E2E2C] rounded-xl px-4 text-[15px] text-[#F0F0EA] appearance-none focus:outline-none focus:border-[#FF6B35] transition-all"
+              className="w-full h-[48px] bg-[#242422] border border-[#2E2E2C] rounded-xl px-4 text-[15px] text-[#E5E2DE] appearance-none focus:outline-none focus:border-[#FF6B35]/50 transition-all"
+              style={{ colorScheme: "dark" }}
             >
               {DISTRICTS.map(d => (
                 <option key={d} value={d}>{d}</option>
@@ -247,12 +254,12 @@ export function CreateEventPage() {
           <label className="block text-[11px] font-bold uppercase tracking-[0.1em] text-[#5A5A52] px-1">
             Exact Location
           </label>
-          <div className="bg-[#242422] rounded-xl border border-[#2E2E2C] px-4 py-3">
+          <div className="bg-[#242422] rounded-xl border border-[#2E2E2C] focus-within:border-[#FF6B35]/50 px-4 py-3">
             <input 
               type="text" 
               placeholder="Building, cafe, or park name"
               maxLength={120}
-              className="w-full bg-transparent border-none focus:ring-0 text-[15px] text-[#F0F0EA] placeholder:text-[#2C2C2A] outline-none"
+              className="w-full bg-transparent border-none focus:ring-0 text-[15px] text-[#E5E2DE] placeholder:text-[#5A5A52] outline-none"
               value={locationStr}
               onChange={e => setLocationStr(e.target.value)}
             />
@@ -264,12 +271,12 @@ export function CreateEventPage() {
           <label className="block text-[11px] font-bold uppercase tracking-[0.1em] text-[#5A5A52] px-1">
             About the event
           </label>
-          <div className="bg-[#242422] rounded-xl border border-[#2E2E2C] px-4 py-3">
+          <div className="bg-[#242422] rounded-xl border border-[#2E2E2C] focus-within:border-[#FF6B35]/50 px-4 py-3">
             <textarea 
               placeholder="What should people know? Any dress code or things to bring?"
               rows={4}
               maxLength={500}
-              className="w-full bg-transparent border-none focus:ring-0 text-[15px] text-[#F0F0EA] placeholder:text-[#2C2C2A] resize-none outline-none leading-relaxed"
+              className="w-full bg-transparent border-none focus:ring-0 text-[15px] text-[#E5E2DE] placeholder:text-[#5A5A52] resize-none outline-none leading-relaxed"
               value={description}
               onChange={e => setDescription(e.target.value)}
             />

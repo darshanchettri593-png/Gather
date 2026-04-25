@@ -10,7 +10,7 @@ import { useToast } from "@/components/ui/toast";
 type AuthTab = "signup" | "signin";
 
 const INPUT_CLASS =
-  "w-full h-[48px] border-b border-[#2E2E2C] bg-transparent px-0 text-[16px] text-[#F0F0EA] placeholder:text-[#5A5A52] outline-none focus:border-[#FF6B35] transition-all rounded-none disabled:opacity-50";
+  "w-full h-[48px] border-b border-[#2E2E2C] bg-transparent px-0 text-[16px] text-[#E5E2DE] placeholder:text-[#5A5A52] outline-none focus:border-[#FF6B35] transition-all rounded-none disabled:opacity-50";
 
 const SUBMIT_CLASS =
   "w-full h-[54px] mt-4 rounded-2xl bg-[#FF6B35] text-white text-[16px] font-bold disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] transition-all shadow-[0_8px_24px_rgba(255,107,53,0.3)]";
@@ -147,7 +147,7 @@ export function AuthModal() {
             type="button"
             onClick={() => switchTab(t)}
             className={`flex-1 pb-4 text-[15px] font-bold transition-all relative ${
-              tab === t ? "text-[#F0F0EA]" : "text-[#5A5A52] hover:text-[#9A9A8E]"
+              tab === t ? "text-[#E5E2DE]" : "text-[#5A5A52] hover:text-[#9A9A8E]"
             }`}
           >
             {t === "signup" ? "Sign up" : "Sign in"}
@@ -160,7 +160,7 @@ export function AuthModal() {
 
       {/* Context message */}
       {authModalMessage && authModalMessage !== "Sign in to continue" && (
-        <p className="text-[14px] text-[#9A9A8E] mb-6 leading-relaxed font-medium">
+        <p className="text-[14px] text-[#9A9A8E] mb-6 leading-relaxed font-medium" style={{ color: "#9A9A8E" }}>
           {authModalMessage}
         </p>
       )}
@@ -308,7 +308,7 @@ export function AuthModal() {
     <Drawer open={isAuthModalOpen} onOpenChange={(open) => !open && closeAuthModal()}>
       <DrawerContent className="rounded-t-3xl border-t border-[#2E2E2C] bg-[#242422] px-0">
         <DrawerTitle className="sr-only">Authentication</DrawerTitle>
-        <div className="mx-auto mt-4 mb-2 h-1.5 w-[40px] rounded-full bg-[#2E2E2C]" />
+        <div className="mx-auto mt-4 mb-2 h-1.5 w-[40px] rounded-full" style={{ backgroundColor: "#383836" }} />
         {modalJsx}
       </DrawerContent>
     </Drawer>
