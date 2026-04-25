@@ -1,4 +1,5 @@
 import { MainLayout } from "@/components/layout/main-layout";
+import { InstallPrompt } from "@/components/InstallPrompt";
 import { AuthProvider } from "@/lib/auth-context";
 import { EventFeedPage } from "@/pages/events-feed";
 import { EventDetailPage } from "@/pages/event-detail";
@@ -19,6 +20,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
         <AuthProvider>
+          <InstallPrompt />
           <BrowserRouter>
             <Routes>
               {/* Reset Password flow */}
