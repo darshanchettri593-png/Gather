@@ -89,11 +89,11 @@ export function useSubmitRating() {
     },
     onSuccess: (_data, variables) => {
       // Force refetch all rating-related queries for this event
-      queryClient.invalidateQueries({ queryKey: ['ratings', variables.eventId], refetchType: 'active' });
-      queryClient.invalidateQueries({ queryKey: ['myRating', variables.eventId, variables.raterId], refetchType: 'active' });
-      queryClient.invalidateQueries({ queryKey: ['ratingSummary', variables.eventId], refetchType: 'active' });
+      queryClient.invalidateQueries({ queryKey: ['ratings', variables.eventId], exact: false });
+      queryClient.invalidateQueries({ queryKey: ['myRating'], exact: false });
+      queryClient.invalidateQueries({ queryKey: ['ratingSummary'], exact: false });
       // Also refresh the event detail so attendee data stays in sync
-      queryClient.invalidateQueries({ queryKey: ['event', variables.eventId], refetchType: 'active' });
+      queryClient.invalidateQueries({ queryKey: ['event', variables.eventId], exact: false });
     },
   });
 }

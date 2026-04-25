@@ -21,9 +21,9 @@ export function MainLayout() {
     <div className={`flex min-h-screen flex-col bg-background ${isEventDetail ? 'pb-0' : 'pb-[80px]'}`}>
       {!hideHeader && (
         <header 
-          className="fixed top-0 z-50 w-full"
+          className="sticky top-0 z-50 w-full"
           style={{
-            backgroundColor: "rgba(242, 242, 239, 0.75)",
+            backgroundColor: "rgba(242, 242, 239, 0.92)",
             backdropFilter: "blur(20px)",
             WebkitBackdropFilter: "blur(20px)",
             borderBottom: "1px solid rgba(255, 255, 255, 0.6)",

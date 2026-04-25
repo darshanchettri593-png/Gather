@@ -12,6 +12,87 @@ function getVibeLabel(vibe: string) {
   return vibe;
 }
 
+function FeaturedEventCard({ event }: { event: any }) {
+  return (
+    <Link to={`/event/${event.id}`} className="group block active:scale-[0.98] transition-transform duration-100">
+      <div className="flex flex-col rounded-2xl overflow-hidden bg-white">
+        {event.cover_image_url ? (
+          <div className="aspect-[16/9] w-full overflow-hidden bg-neutral-100 shrink-0">
+            <img 
+              src={event.cover_image_url} 
+              alt="" 
+              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              referrerPolicy="no-referrer"
+            />
+          </div>
+        ) : (
+          <div className="aspect-[16/9] w-full flex items-center justify-center bg-[#F5F5F2] shrink-0">
+             <span className="opacity-30 font-heading text-xl font-bold tracking-tighter text-primary uppercase">Gather</span>
+          </div>
+        )}
+        
+        <div className="px-[14px] pt-3 pb-[14px] flex flex-col">
+          <span className="text-[11px] uppercase font-semibold tracking-wider text-neutral-400 mb-[6px]">
+             {getVibeLabel(event.vibe)}
+          </span>
+          <h3 className="font-semibold text-[16px] leading-snug line-clamp-2 text-[#1A1A1A] mb-1">
+            {event.title}
+          </h3>
+          
+          <p className="text-[13px] text-neutral-500">
+            {format(new Date(event.event_datetime), 'MMM d')} <span className="mx-1 opacity-50">·</span> {event.location_text}
+          </p>
+          <p className="text-[12px] text-neutral-400 mt-2">
+            {event._count?.attendees || 0} going
+          </p>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function CompactEventCard({ event }: { event: any }) {
+  return (
+    <Link to={`/event/${event.id}`} className="group block active:scale-[0.98] transition-transform duration-100">
+      <div className="flex flex-row p-[12px] rounded-xl bg-white w-full gap-3">
+        {event.cover_image_url ? (
+          <div className="w-[80px] h-[80px] shrink-0 rounded-xl overflow-hidden bg-neutral-100">
+            <img 
+              src={event.cover_image_url} 
+              alt="" 
+              className="w-full h-full object-cover"
+              referrerPolicy="no-referrer"
+            />
+          </div>
+        ) : (
+          <div className="w-[80px] h-[80px] shrink-0 flex items-center justify-center bg-[#F5F5F2] rounded-xl">
+            <span className="opacity-30 font-heading text-[12px] font-bold tracking-tighter text-primary uppercase">Gather</span>
+          </div>
+        )}
+        
+        <div className="flex flex-col flex-1 min-w-0 justify-between">
+          <div>
+            <span className="text-[10px] uppercase font-semibold tracking-wider text-neutral-400 block mb-0.5">
+              {getVibeLabel(event.vibe)}
+            </span>
+            <h3 className="font-semibold text-[15px] leading-tight line-clamp-2 text-[#1A1A1A]">
+              {event.title}
+            </h3>
+          </div>
+          <div className="flex flex-col gap-0.5 mt-1">
+            <span className="text-[12px] text-neutral-500 truncate">
+              {format(new Date(event.event_datetime), 'MMM d')} <span className="opacity-50">·</span> {event.location_text}
+            </span>
+            <span className="text-[12px] text-neutral-400">
+              {event._count?.attendees || 0} going
+            </span>
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
 export function EventFeedPage() {
   const navigate = useNavigate();
   const [vibeFilter, setVibeFilter] = useState<string>("All");
@@ -137,42 +218,12 @@ export function EventFeedPage() {
 
     return (
       <div className="flex flex-col gap-3">
-        {events.map((event) => (
-          <Link key={event.id} to={`/event/${event.id}`} className="group block active:scale-[0.98] transition-transform duration-100">
-            <div className="flex flex-col rounded-2xl overflow-hidden bg-white">
-              {event.cover_image_url ? (
-                <div className="aspect-[16/9] w-full overflow-hidden bg-neutral-100 shrink-0">
-                  <img 
-                    src={event.cover_image_url} 
-                    alt="" 
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    referrerPolicy="no-referrer"
-                  />
-                </div>
-              ) : (
-                <div className="aspect-[16/9] w-full flex items-center justify-center bg-[#F5F5F2] shrink-0">
-                   <span className="opacity-30 font-heading text-xl font-bold tracking-tighter text-primary uppercase">Gather</span>
-                </div>
-              )}
-              
-              <div className="px-[14px] pt-3 pb-[14px] flex flex-col">
-                <span className="text-[11px] uppercase font-semibold tracking-wider text-neutral-400 mb-[6px]">
-                   {getVibeLabel(event.vibe)}
-                </span>
-                <h3 className="font-semibold text-[16px] leading-snug line-clamp-2 text-[#1A1A1A] mb-1">
-                  {event.title}
-                </h3>
-                
-                <p className="text-[13px] text-neutral-500">
-                  {format(new Date(event.event_datetime), 'MMM d')} <span className="mx-1 opacity-50">·</span> {event.location_text}
-                </p>
-                <p className="text-[12px] text-neutral-400 mt-2">
-                  {event._count?.attendees || 0} going
-                </p>
-              </div>
-            </div>
-          </Link>
-        ))}
+        {events.map((event, index) => {
+          if (index === 0) {
+            return <FeaturedEventCard key={event.id} event={event} />;
+          }
+          return <CompactEventCard key={event.id} event={event} />;
+        })}
       </div>
     );
   };

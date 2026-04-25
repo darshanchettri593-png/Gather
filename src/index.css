@@ -122,10 +122,11 @@
   body {
     touch-action: pan-x pan-y;
     -webkit-text-size-adjust: 100%;
+    background-color: #F2F2EF;
   }
 
   body {
-    background-color: var(--background);
+    background-color: #F2F2EF;
     color: var(--foreground);
     letter-spacing: 0em;
     font-family: var(--font-sans);
