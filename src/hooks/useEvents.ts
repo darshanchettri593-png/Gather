@@ -2,9 +2,9 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Event } from '@/types';
 
-export function useEvents(vibeFilter: string, locationFilter?: string) {
+export function useEvents(vibeFilter: string, city: string, districtFilter: string) {
   return useQuery({
-    queryKey: ['events', vibeFilter, locationFilter],
+    queryKey: ['events', vibeFilter, city, districtFilter],
     queryFn: async () => {
       let query = supabase
         .from('events')
@@ -20,11 +20,12 @@ export function useEvents(vibeFilter: string, locationFilter?: string) {
         query = query.eq('vibe', vibeFilter.toLowerCase());
       }
 
-      if (locationFilter && locationFilter !== "India" && locationFilter !== "All Locations") {
-        // Simple client-side or ilike filter
-        // Since we are creating custom strings, we can use ilike for partial matches like "Kolkata" matching "Kolkata, West Bengal"
-        const primaryCity = locationFilter.split(',')[0].trim();
-        query = query.ilike('location_text', `%${primaryCity}%`);
+      if (districtFilter !== 'All') {
+        query = query.eq('district', districtFilter);
+      }
+
+      if (city && city !== "All Locations") {
+        query = query.eq('city', city);
       }
 
       const { data, error } = await query;
@@ -33,7 +34,6 @@ export function useEvents(vibeFilter: string, locationFilter?: string) {
         throw new Error(error.message);
       }
 
-      // Map Supabase attendee count array length syntax
       return (data || []).map((d: any) => ({
         ...d,
         _count: {

@@ -30,10 +30,10 @@ export function BottomNav() {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-50 border-t border-[#E5E5E0]"
+      className="fixed bottom-0 left-0 right-0 z-50 border-t border-[#2E2E2C]"
       style={{ 
         paddingBottom: "env(safe-area-inset-bottom, 12px)",
-        backgroundColor: "rgba(255,255,255,0.92)",
+        backgroundColor: "rgba(36, 36, 34, 0.92)",
         backdropFilter: "blur(20px)",
         WebkitBackdropFilter: "blur(20px)",
       }}
@@ -43,8 +43,8 @@ export function BottomNav() {
         <Link
           to="/"
           className={cn(
-            "flex flex-col items-center justify-center flex-1 min-w-0 h-full gap-1 transition-colors",
-            isActive("/") ? "text-[#1A1A1A]" : "text-[#ADADAD]"
+            "flex flex-col items-center justify-center flex-1 min-w-0 h-full gap-1 transition-all active:scale-95",
+            isActive("/") ? "text-[#FF6B35]" : "text-[#5A5A52]"
           )}
         >
           <Home
@@ -52,7 +52,7 @@ export function BottomNav() {
             strokeWidth={1.5}
             fill={isActive("/") ? "currentColor" : "none"}
           />
-          <span className={cn("text-[10px] whitespace-nowrap", isActive("/") ? "font-semibold text-[#1A1A1A]" : "font-normal text-[#ADADAD]")}>
+          <span className={cn("text-[10px] whitespace-nowrap", isActive("/") ? "font-semibold" : "font-normal")}>
             Home
           </span>
         </Link>
@@ -60,22 +60,22 @@ export function BottomNav() {
         <Link
           to="/search"
           className={cn(
-            "flex flex-col items-center justify-center flex-1 min-w-0 h-full gap-1 transition-colors",
-            isActive("/search") ? "text-[#1A1A1A]" : "text-[#ADADAD]"
+            "flex flex-col items-center justify-center flex-1 min-w-0 h-full gap-1 transition-all active:scale-95",
+            isActive("/search") ? "text-[#FF6B35]" : "text-[#5A5A52]"
           )}
         >
           <Search
             className="h-6 w-6"
             strokeWidth={1.5}
           />
-          <span className={cn("text-[10px] whitespace-nowrap", isActive("/search") ? "font-semibold text-[#1A1A1A]" : "font-normal text-[#ADADAD]")}>
+          <span className={cn("text-[10px] whitespace-nowrap", isActive("/search") ? "font-semibold" : "font-normal")}>
             Search
           </span>
         </Link>
 
         <button
           onClick={handleHostTap}
-          className="flex flex-col items-center justify-center flex-1 min-w-0 h-full transition-opacity active:opacity-70"
+          className="flex flex-col items-center justify-center flex-1 min-w-0 h-full transition-all active:scale-95 active:opacity-70"
         >
           <div
             className="flex items-center justify-center w-[56px] h-[28px] rounded-full"
@@ -95,8 +95,8 @@ export function BottomNav() {
         <Link
           to="/profile"
           className={cn(
-            "flex flex-col items-center justify-center flex-1 min-w-0 h-full gap-1 transition-colors",
-            isActive("/profile") ? "text-[#1A1A1A]" : "text-[#ADADAD]"
+            "flex flex-col items-center justify-center flex-1 min-w-0 h-full gap-1 transition-all active:scale-95",
+            isActive("/profile") ? "text-[#FF6B35]" : "text-[#5A5A52]"
           )}
         >
           <User
@@ -104,7 +104,7 @@ export function BottomNav() {
             strokeWidth={1.5}
             fill={isActive("/profile") ? "currentColor" : "none"}
           />
-          <span className={cn("text-[10px] whitespace-nowrap", isActive("/profile") ? "font-semibold text-[#1A1A1A]" : "font-normal text-[#ADADAD]")}>
+          <span className={cn("text-[10px] whitespace-nowrap", isActive("/profile") ? "font-semibold" : "font-normal")}>
             Profile
           </span>
         </Link>

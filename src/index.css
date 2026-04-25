@@ -9,6 +9,16 @@
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --animate-shimmer: shimmer 1.5s infinite linear;
 
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-surface-2: var(--bg-surface-2);
+  --color-bg-surface-3: var(--bg-surface-3);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-border-default: var(--border-default);
+  --color-orange: var(--orange);
+
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -50,66 +60,57 @@
 }
 
 :root {
-  --background: #FAFAF7;
-  --foreground: #1A1A1A;
-  --card: #FFFFFF;
-  --card-foreground: #1A1A1A;
-  --popover: #FFFFFF;
-  --popover-foreground: #1A1A1A;
-  --primary: #FF6B35;
+  --bg-primary: #1C1C1A;
+  --bg-surface: #242422;
+  --bg-surface-2: #2C2C2A;
+  --bg-surface-3: #343432;
+  --orange: #FF6B35;
+  --orange-dim: rgba(255, 107, 53, 0.12);
+  --orange-border: rgba(255, 107, 53, 0.25);
+  --text-primary: #F0F0EA;
+  --text-secondary: #9A9A8E;
+  --text-muted: #5A5A52;
+  --border-default: #2E2E2C;
+  --border-light: #383836;
+  --success: #34C759;
+  --destructive: #FF3B30;
+
+  --background: var(--bg-primary);
+  --foreground: var(--text-primary);
+  --card: var(--bg-surface);
+  --card-foreground: var(--text-primary);
+  --popover: var(--bg-surface);
+  --popover-foreground: var(--text-primary);
+  --primary: var(--orange);
   --primary-foreground: #FFFFFF;
-  --secondary: #FAFAF7;
-  --secondary-foreground: #1A1A1A;
-  --muted: #F2F2ed;
-  --muted-foreground: #666666;
-  --accent: #FF6B35;
+  --secondary: var(--bg-surface-2);
+  --secondary-foreground: var(--text-primary);
+  --muted: var(--bg-surface-2);
+  --muted-foreground: var(--text-muted);
+  --accent: var(--orange);
   --accent-foreground: #FFFFFF;
-  --destructive: #EF4444;
-  --border: #E5E5E0;
-  --input: #E5E5E0;
-  --ring: #FF6B35;
+  --border: var(--border-default);
+  --input: var(--border-light);
+  --ring: var(--orange);
   --chart-1: #FF6B35;
   --chart-2: #2dd4bf;
   --chart-3: #fcd34d;
   --chart-4: #fb7185;
   --chart-5: #818cf8;
   --radius: 0.75rem;
-  /* xl rounded by default but we map to lg in css variables for compat */
-  --sidebar: #FFFFFF;
-  --sidebar-foreground: #1A1A1A;
-  --sidebar-primary: #FF6B35;
+  
+  --sidebar: var(--bg-surface);
+  --sidebar-foreground: var(--text-primary);
+  --sidebar-primary: var(--orange);
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #f5f5f5;
-  --sidebar-accent-foreground: #1a1a1a;
-  --sidebar-border: #E5E5E0;
-  --sidebar-ring: #FF6B35;
+  --sidebar-accent: var(--bg-surface-2);
+  --sidebar-accent-foreground: var(--text-primary);
+  --sidebar-border: var(--border-default);
+  --sidebar-ring: var(--orange);
 }
 
 .dark {
-  /* No dark mode requested per v2 out of scope, but keeping variable defaults */
-  --background: #1A1A1A;
-  --foreground: #FAFAF7;
-  --card: #141414;
-  --card-foreground: #FAFAF7;
-  --popover: #141414;
-  --popover-foreground: #FAFAF7;
-  --primary: #FF6B35;
-  --primary-foreground: #FFFFFF;
-  --secondary: #262626;
-  --secondary-foreground: #FAFAF7;
-  --muted: #262626;
-  --muted-foreground: #A3A3A3;
-  --accent: #FF6B35;
-  --accent-foreground: #FFFFFF;
-  --destructive: #7f1d1d;
-  --border: #333333;
-  --input: #333333;
-  --ring: #FF6B35;
-  --chart-1: #FF6B35;
-  --chart-2: #2dd4bf;
-  --chart-3: #fcd34d;
-  --chart-4: #fb7185;
-  --chart-5: #818cf8;
+  /* Using same dark variables as root to enforce dark theme globally */
 }
 
 @layer base {
@@ -122,12 +123,12 @@
   body {
     touch-action: pan-x pan-y;
     -webkit-text-size-adjust: 100%;
-    background-color: #F2F2EF;
+    background-color: #1C1C1A;
+    color: #F0F0EA;
+    -webkit-font-smoothing: antialiased;
   }
 
   body {
-    background-color: #F2F2EF;
-    color: var(--foreground);
     letter-spacing: 0em;
     font-family: var(--font-sans);
   }

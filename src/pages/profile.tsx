@@ -22,9 +22,9 @@ interface EmptyStateProps {
 export function EmptyState({ icon: Icon, heading, subtext, buttonText, onAction }: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center text-center mt-[80px]">
-      <Icon className="h-12 w-12 text-neutral-300 mb-4" strokeWidth={1.5} />
-      <h3 className="text-[18px] font-semibold text-[#1A1A1A] mb-1.5">{heading}</h3>
-      <p className="text-[14px] text-neutral-500 max-w-[260px]">{subtext}</p>
+      <Icon className="h-12 w-12 text-[#5A5A52] mb-4" strokeWidth={1.5} />
+      <h3 className="text-[18px] font-semibold text-[#F0F0EA] mb-1.5">{heading}</h3>
+      <p className="text-[14px] text-[#9A9A8E] max-w-[260px]">{subtext}</p>
       {buttonText && onAction && (
         <button 
           onClick={onAction}
@@ -46,30 +46,30 @@ function EventCard({ event, isPast }: { event: any; isPast: boolean }) {
       to={`/event/${event.id}`}
       className={`block relative group ${isPast ? "opacity-[0.65]" : ""}`}
     >
-      <div className="flex flex-col bg-white rounded-2xl overflow-hidden active:scale-[0.99] transition-transform">
-        <div className="h-[140px] w-full bg-[#F5F5F2] shrink-0 relative">
+      <div className="flex flex-col bg-[#242422] rounded-[20px] overflow-hidden border border-[#2E2E2C] active:scale-[0.99] transition-transform">
+        <div className="h-[140px] w-full bg-[#2C2C2A] shrink-0 relative">
           {event.cover_image_url ? (
             <img src={event.cover_image_url} alt="" className="h-full w-full object-cover" />
           ) : (
-            <div className="h-full w-full flex items-center justify-center text-[12px] font-bold text-primary/30 uppercase tracking-wide">
+            <div className="h-full w-full flex items-center justify-center text-[12px] font-bold text-[#FF6B35]/30 uppercase tracking-wide">
               Gather
             </div>
           )}
           {isPast && (
-            <div className="absolute top-3 right-3 border border-[#FF6B35] text-[#FF6B35] px-2 py-[2px] rounded-full text-[10px] font-semibold uppercase tracking-wider bg-white/90 backdrop-blur-sm">
+            <div className="absolute top-3 right-3 border border-[#FF6B35] text-[#FF6B35] px-2 py-[2px] rounded-full text-[10px] font-semibold uppercase tracking-wider bg-[#1C1C1A]/90 backdrop-blur-sm">
               Past
             </div>
           )}
         </div>
         <div className="p-4 flex flex-col gap-1.5">
-          <h3 className="text-[17px] font-semibold text-[#1A1A1A] leading-snug line-clamp-1">
+          <h3 className="text-[17px] font-semibold text-[#F0F0EA] leading-snug line-clamp-1">
             {event.title}
           </h3>
           <div className="flex justify-between items-center">
-            <p className="text-[13px] text-neutral-500 font-medium">
+            <p className="text-[13px] text-[#9A9A8E] font-medium">
               {format(new Date(event.event_datetime), "MMM d, h:mm a")}
             </p>
-            <p className="text-[12px] text-neutral-400">
+            <p className="text-[12px] text-[#5A5A52]">
               {event._count?.attendees || 0} attending
             </p>
           </div>
@@ -79,7 +79,7 @@ function EventCard({ event, isPast }: { event: any; isPast: boolean }) {
               {ratingSummary ? (
                 <StarDisplay avg={ratingSummary.avg} count={ratingSummary.count} />
               ) : (
-                <span className="text-[12px] text-neutral-400">Not yet rated</span>
+                <span className="text-[12px] text-[#5A5A52]">Not yet rated</span>
               )}
             </div>
           )}
@@ -138,22 +138,22 @@ export function ProfilePage() {
 
   if (!user) {
     return (
-      <div className="page-transition max-w-md mx-auto min-h-screen bg-[#F2F2EF] pb-[100px] flex flex-col pt-4">
+      <div className="page-transition max-w-md mx-auto min-h-screen bg-[#1C1C1A] pb-[100px] flex flex-col pt-4">
         {/* Header */}
         <div className="flex items-center justify-between py-4 px-5">
-          <h1 className="text-[32px] font-extrabold text-[#1A1A1A]" style={{ letterSpacing: '-0.5px' }}>Profile</h1>
-          <button onClick={() => navigate('/settings')} className="text-neutral-400 active:opacity-70">
+          <h1 className="text-[32px] font-extrabold text-[#F0F0EA]" style={{ letterSpacing: '-0.5px' }}>Profile</h1>
+          <button onClick={() => navigate('/settings')} className="text-[#9A9A8E] active:opacity-70">
             <SettingsIcon className="h-[22px] w-[22px]" strokeWidth={1.75} />
           </button>
         </div>
         
         {/* Guest State */}
         <div className="flex flex-col items-center text-center px-4 pt-[15vh]">
-          <div className="w-16 h-16 bg-[#E5E5E0] rounded-full flex flex-col items-center justify-center text-neutral-400 mb-2">
+          <div className="w-16 h-16 bg-[#242422] rounded-full flex flex-col items-center justify-center text-[#5A5A52] mb-2 border border-[#2E2E2C]">
             <UserIcon className="h-8 w-8" strokeWidth={1.5} />
           </div>
-          <h2 className="text-[20px] font-semibold text-[#1A1A1A] mt-4">Your profile lives here</h2>
-          <p className="text-[14px] text-neutral-500 mt-2 max-w-[280px]">
+          <h2 className="text-[20px] font-semibold text-[#F0F0EA] mt-4">Your profile lives here</h2>
+          <p className="text-[14px] text-[#9A9A8E] mt-2 max-w-[280px]">
             Sign in to host events, track who's coming, and see what you've joined.
           </p>
           <button 
@@ -162,7 +162,7 @@ export function ProfilePage() {
           >
             Sign in
           </button>
-          <Link to="/" className="text-[13px] text-neutral-500 mt-4 active:text-neutral-700">
+          <Link to="/" className="text-[13px] text-[#5A5A52] mt-4 hover:text-[#9A9A8E] transition-colors">
             Just browsing? Keep exploring.
           </Link>
         </div>
@@ -171,27 +171,27 @@ export function ProfilePage() {
   }
 
   return (
-    <div className="page-transition max-w-md mx-auto min-h-screen bg-[#F2F2EF] pb-[100px] flex flex-col pt-4">
+    <div className="page-transition max-w-md mx-auto min-h-screen bg-[#1C1C1A] pb-[100px] flex flex-col pt-4">
       {/* Header */}
       <div className="flex items-center justify-between py-4 px-5">
-        <h1 className="text-[32px] font-extrabold text-[#1A1A1A]" style={{ letterSpacing: '-0.5px' }}>Profile</h1>
-        <button onClick={() => navigate('/settings')} className="text-neutral-400 active:opacity-70">
+        <h1 className="text-[32px] font-extrabold text-[#F0F0EA]" style={{ letterSpacing: '-0.5px' }}>Profile</h1>
+        <button onClick={() => navigate('/settings')} className="text-[#9A9A8E] active:opacity-70">
           <SettingsIcon className="h-[22px] w-[22px]" strokeWidth={1.75} />
         </button>
       </div>
 
       {isLoading ? (
         <div className="space-y-6 mt-4 px-4">
-          <Skeleton className="h-[200px] w-full rounded-3xl bg-white" />
+          <Skeleton className="h-[200px] w-full rounded-3xl bg-[#242422]" />
         </div>
       ) : (
         <>
           {/* Avatar / Stats Card */}
-          <div className="bg-white rounded-3xl mx-4 p-5">
+          <div className="bg-[#242422] rounded-[24px] border border-[#2E2E2C] mx-4 p-5">
             <div className="flex items-center">
               {/* Avatar */}
               <div className="relative w-[76px] h-[76px] shrink-0">
-                <div className="w-full h-full rounded-full overflow-hidden bg-primary text-white flex items-center justify-center relative cursor-pointer">
+                <div className="w-full h-full rounded-full overflow-hidden bg-[#FF6B35] text-white flex items-center justify-center relative cursor-pointer border-2 border-[#242422]">
                   {!profile?.avatar_url && (
                     <span className="text-[32px] font-semibold pointer-events-none absolute z-0 text-white">
                       {(profile?.display_name || user?.email || '?').charAt(0).toUpperCase()}
@@ -209,24 +209,24 @@ export function ProfilePage() {
                   </div>
                 </div>
                 {/* Camera Badge */}
-                <div className="absolute right-0 bottom-0 w-[22px] h-[22px] bg-white rounded-full border border-[#E5E5E0] flex items-center justify-center pointer-events-none z-20">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-neutral-700"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                <div className="absolute right-0 bottom-0 w-[22px] h-[22px] bg-[#2C2C2A] rounded-full border border-[#383836] flex items-center justify-center pointer-events-none z-20">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#F0F0EA]"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
                 </div>
               </div>
 
               {/* Info */}
               <div className="ml-4 flex flex-col justify-center">
-                <h2 className="text-[20px] font-semibold text-[#1A1A1A] leading-none mb-1">
+                <h2 className="text-[20px] font-semibold text-[#F0F0EA] leading-none mb-1">
                   {profile?.display_name || user?.email?.split('@')[0]}
                 </h2>
                 {profile?.location && (
-                  <p className="text-[13px] text-neutral-500 mb-1 flex items-center gap-[3px]">
-                    <MapPin className="w-[11px] h-[11px] text-neutral-400" />
+                  <p className="text-[13px] text-[#9A9A8E] mb-1 flex items-center gap-[3px]">
+                    <MapPin className="w-[11px] h-[11px] text-[#5A5A52]" />
                     {profile.location}
                   </p>
                 )}
                 {joinDate && (
-                  <p className="text-[12px] text-neutral-400 leading-none mt-[2px]">
+                  <p className="text-[12px] text-[#5A5A52] leading-none mt-[2px]">
                     Joined {joinDate}
                   </p>
                 )}
@@ -234,39 +234,39 @@ export function ProfilePage() {
             </div>
 
             {/* Stats Row */}
-            <div className="mt-4 pt-4 border-t border-[#F0F0ED] grid grid-cols-2">
-              <div className="flex flex-col items-center border-r border-[#E5E5E0]">
-                <span className="text-[24px] font-bold text-[#1A1A1A] leading-none">{userEvents?.hosted?.length || 0}</span>
-                <span className="text-[10px] uppercase tracking-widest text-neutral-400 mt-[2px]">Hosted</span>
+            <div className="mt-4 pt-4 border-t border-[#2E2E2C] grid grid-cols-2">
+              <div className="flex flex-col items-center border-r border-[#2E2E2C]">
+                <span className="text-[24px] font-bold text-[#F0F0EA] leading-none">{userEvents?.hosted?.length || 0}</span>
+                <span className="text-[10px] uppercase tracking-widest text-[#5A5A52] mt-[2px]">Hosted</span>
               </div>
               <div className="flex flex-col items-center">
-                <span className="text-[24px] font-bold text-[#1A1A1A] leading-none">{userEvents?.joined?.length || 0}</span>
-                <span className="text-[10px] uppercase tracking-widest text-neutral-400 mt-[2px]">Joined</span>
+                <span className="text-[24px] font-bold text-[#F0F0EA] leading-none">{userEvents?.joined?.length || 0}</span>
+                <span className="text-[10px] uppercase tracking-widest text-[#5A5A52] mt-[2px]">Joined</span>
               </div>
             </div>
 
             {/* Ratings Summary */}
-            <div className="mt-4 pt-4 border-t border-[#F0F0ED] flex flex-col items-center">
+            <div className="mt-4 pt-4 border-t border-[#2E2E2C] flex flex-col items-center">
               {profileRatings ? (
                 <>
                   <div className="flex items-center gap-2">
-                    <span className="text-[24px] font-bold text-[#1A1A1A] leading-none">{profileRatings.averageRating.toFixed(1)}</span>
+                    <span className="text-[24px] font-bold text-[#F0F0EA] leading-none">{profileRatings.averageRating.toFixed(1)}</span>
                     <StarDisplay avg={profileRatings.averageRating} count={0} />
                   </div>
-                  <p className="text-[12px] text-neutral-400 mt-1">{profileRatings.totalRatings} {profileRatings.totalRatings === 1 ? 'rating' : 'ratings'}</p>
+                  <p className="text-[12px] text-[#5A5A52] mt-1">{profileRatings.totalRatings} {profileRatings.totalRatings === 1 ? 'rating' : 'ratings'}</p>
                 </>
               ) : (
-                <p className="text-[12px] text-neutral-400">No ratings yet</p>
+                <p className="text-[12px] text-[#5A5A52]">No ratings yet</p>
               )}
             </div>
           </div>
 
           {/* Underline Tabs */}
-          <div className="mt-2 flex relative mx-4">
+          <div className="mt-4 flex relative mx-4">
             <button
               onClick={() => switchTab("hosting")}
               className={`flex-1 h-[44px] text-[17px] transition-colors relative ${
-                activeTab === "hosting" ? "text-[#1A1A1A] font-semibold" : "text-neutral-400 font-normal"
+                activeTab === "hosting" ? "text-[#F0F0EA] font-semibold" : "text-[#9A9A8E] font-normal"
               }`}
             >
               Hosting
@@ -274,18 +274,18 @@ export function ProfilePage() {
             <button
               onClick={() => switchTab("joined")}
               className={`flex-1 h-[44px] text-[17px] transition-colors relative ${
-                activeTab === "joined" ? "text-[#1A1A1A] font-semibold" : "text-neutral-400 font-normal"
+                activeTab === "joined" ? "text-[#F0F0EA] font-semibold" : "text-[#9A9A8E] font-normal"
               }`}
             >
               Joined
             </button>
 
             {/* Inactive line underneath both */}
-            <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-[#E5E5E0] pointer-events-none" />
+            <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-[#2E2E2C] pointer-events-none" />
             
             {/* Active sliding indicator */}
             <div 
-              className="absolute bottom-0 h-[2px] bg-black transition-all duration-200 pointer-events-none" 
+              className="absolute bottom-0 h-[2px] bg-[#FF6B35] transition-all duration-200 pointer-events-none" 
               style={{ 
                 width: '50%', 
                 left: activeTab === 'hosting' ? '0%' : '50%'
@@ -299,17 +299,17 @@ export function ProfilePage() {
               activeTab === "hosting" ? (
                 <EmptyState
                   icon={CalendarRange}
-                  heading="Nothing hosted yet"
-                  subtext="Host your first event and bring people together."
+                  heading="No hosted events"
+                  subtext="It's quiet here. Why not get some friends together and host something?"
                   buttonText="Host a thing"
                   onAction={() => navigate("/host")}
                 />
               ) : (
                 <EmptyState
                   icon={Users}
-                  heading="No events joined yet"
-                  subtext="Find something that sounds fun and tap 'I'm Going'."
-                  buttonText="Browse events"
+                  heading="No joined events"
+                  subtext="You haven't joined anything yet. There's a whole city waiting for you out there."
+                  buttonText="Find events"
                   onAction={() => navigate("/")}
                 />
               )
@@ -317,7 +317,7 @@ export function ProfilePage() {
               <>
                 {/* Upcoming */}
                 {upcomingEvents.length === 0 ? (
-                  <p className="text-[14px] text-neutral-500 text-center py-8">
+                  <p className="text-[14px] text-[#5A5A52] text-center py-8">
                     No upcoming events
                   </p>
                 ) : (
@@ -328,13 +328,13 @@ export function ProfilePage() {
 
                 {/* Past events collapsible */}
                 {pastEvents.length > 0 && (
-                  <div className="border-t border-[#E5E5E0] pt-4">
+                  <div className="border-t border-[#2E2E2C] pt-4 mt-2">
                     <button
                       onClick={() => setShowPastEvents((v) => !v)}
-                      className="w-full flex items-center justify-between py-3 text-[14px] font-semibold text-[#1A1A1A] transition-colors"
+                      className="w-full flex items-center justify-between py-3 text-[14px] font-semibold text-[#F0F0EA] transition-colors"
                     >
                       <span>Past events ({pastEvents.length})</span>
-                      <span className="text-[13px] text-neutral-400 font-normal">
+                      <span className="text-[13px] text-[#5A5A52] font-normal">
                         {showPastEvents ? "Hide ▲" : "Show ▼"}
                       </span>
                     </button>

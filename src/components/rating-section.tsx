@@ -7,7 +7,6 @@ import { useToast } from "@/components/ui/toast";
 import type { EventRating } from "@/types";
 
 // ─── StarRow ─────────────────────────────────────────────────────────────────
-// File-level component — never define inside another component (remount bug).
 
 function StarRow({
   value,
@@ -24,7 +23,7 @@ function StarRow({
   const interactive = !!onChange;
 
   return (
-    <div className="flex items-center gap-[2px]">
+    <div className="flex items-center gap-[4px]">
       {[1, 2, 3, 4, 5].map((n) => (
         <button
           key={n}
@@ -42,7 +41,7 @@ function StarRow({
             className={`${dim} transition-colors ${
               n <= active
                 ? "text-[#FF6B35] fill-[#FF6B35]"
-                : "text-neutral-300 fill-neutral-300"
+                : "text-[#343432] fill-[#343432]"
             }`}
           />
         </button>
@@ -61,13 +60,10 @@ export function StarDisplay({
   count: number;
 }) {
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-2">
       <StarRow value={Math.round(avg)} size="sm" />
-      <span className="text-[12px] text-neutral-500 font-medium leading-none">
-        {avg.toFixed(1)}/5
-        {count > 0 && (
-          <span className="text-neutral-400"> ({count})</span>
-        )}
+      <span className="text-[12px] text-[#9A9A8E] font-bold leading-none">
+        {avg.toFixed(1)} <span className="text-[#5A5A52] font-medium">({count})</span>
       </span>
     </div>
   );
@@ -77,8 +73,8 @@ export function StarDisplay({
 
 function RatingItem({ rating }: { rating: EventRating }) {
   return (
-    <div className="flex gap-3 py-3 border-b border-[#E5E5E0] last:border-0">
-      <div className="w-8 h-8 rounded-full bg-[#F5F5F2] overflow-hidden flex items-center justify-center text-[11px] font-semibold text-neutral-600 shrink-0">
+    <div className="flex gap-3 py-4 border-b border-[#2E2E2C]/50 last:border-0">
+      <div className="w-9 h-9 rounded-full bg-[#FF6B35] overflow-hidden flex items-center justify-center text-[12px] font-bold text-white shrink-0 border-2 border-[#242422]">
         {rating.rater?.avatar_url ? (
           <img src={rating.rater.avatar_url} alt="" className="w-full h-full object-cover" />
         ) : (
@@ -86,17 +82,17 @@ function RatingItem({ rating }: { rating: EventRating }) {
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between mb-1">
-          <span className="text-[13px] font-semibold text-neutral-900 truncate">
-            {rating.rater?.display_name || "Anonymous"}
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="text-[14px] font-bold text-[#F0F0EA] truncate">
+            {rating.rater?.display_name || "Anonymous User"}
           </span>
-          <span className="text-[11px] text-neutral-400 ml-2 shrink-0">
-            {format(new Date(rating.created_at), "MMM d")}
+          <span className="text-[11px] text-[#5A5A52] ml-2 shrink-0 font-medium">
+            {format(new Date(rating.created_at), "MMM d, yyyy")}
           </span>
         </div>
         <StarRow value={rating.rating_value} size="sm" />
         {rating.comment && (
-          <p className="text-[13px] text-neutral-600 mt-1.5 leading-relaxed">
+          <p className="text-[14px] text-[#9A9A8E] mt-2 leading-relaxed">
             {rating.comment}
           </p>
         )}
@@ -125,46 +121,45 @@ function RatingForm({
   const [stars, setStars] = useState(existing?.rating_value ?? 0);
   const [comment, setComment] = useState(existing?.comment ?? "");
 
-  // Pre-fill from existing rating when it becomes available
   useEffect(() => {
     if (existing) {
       setStars(existing.rating_value);
       setComment(existing.comment ?? "");
     }
-  }, [existing?.id]); // only re-sync when a different rating row appears
+  }, [existing?.id]);
 
   const label = isHost
-    ? "Rate how the event went"
-    : `Rate ${hostDisplayName ? `${hostDisplayName}'s` : "this"} event`;
+    ? "How did the event go?"
+    : `How was ${hostDisplayName ? `${hostDisplayName}'s` : "the"} event?`;
 
   return (
-    <div className="space-y-3">
-      <p className="text-[13px] font-medium text-neutral-700">{label}</p>
+    <div className="space-y-4">
+      <p className="text-[14px] font-bold text-[#F0F0EA]">{label}</p>
 
       <StarRow value={stars} onChange={setStars} size="md" />
 
       {stars === 0 && (
-        <p className="text-[11px] text-neutral-400">Tap a star to rate</p>
+        <p className="text-[11px] text-[#5A5A52] font-bold uppercase tracking-wider">Tap to rate</p>
       )}
 
       <textarea
         value={comment}
         onChange={(e) => setComment(e.target.value)}
         maxLength={200}
-        rows={2}
-        placeholder="Leave a comment (optional)"
-        className="w-full text-[14px] bg-white border border-[#E5E5E0] rounded-lg px-3 py-2 resize-none outline-none focus:border-[#1A1A1A] transition-colors placeholder:text-neutral-400 text-[#1A1A1A]"
+        rows={3}
+        placeholder="Share your experience (optional)..."
+        className="w-full text-[14px] bg-[#2C2C2A] border border-[#383836] rounded-xl px-4 py-3 resize-none outline-none focus:border-[#FF6B35] transition-all placeholder:text-[#5A5A52] text-[#F0F0EA]"
       />
       {comment.length >= 160 && (
-        <p className="text-[11px] text-neutral-400 text-right">{comment.length}/200</p>
+        <p className="text-[11px] text-[#5A5A52] text-right">{comment.length}/200</p>
       )}
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between pt-2">
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
-            className="text-[13px] text-neutral-400 hover:text-neutral-600 transition-colors"
+            className="text-[13px] text-[#5A5A52] font-bold hover:text-[#9A9A8E] transition-colors"
           >
             Cancel
           </button>
@@ -173,13 +168,13 @@ function RatingForm({
           type="button"
           onClick={() => onSubmit(stars, comment)}
           disabled={isPending || stars === 0}
-          className="ml-auto h-[40px] px-6 rounded-full bg-[#FF6B35] text-white text-[14px] font-semibold disabled:opacity-50 active:scale-[0.98] transition-transform"
+          className="ml-auto h-[44px] px-8 rounded-full bg-[#FF6B35] text-white text-[14px] font-bold disabled:opacity-50 active:scale-[0.98] transition-all shadow-[0_8px_20px_rgba(255,107,53,0.3)]"
         >
           {isPending
-            ? "Submitting…"
+            ? "Submitting..."
             : existing
-            ? "Update rating"
-            : "Submit rating"}
+            ? "Update Review"
+            : "Post Review"}
         </button>
       </div>
     </div>
@@ -236,28 +231,26 @@ export function RatingSection({
     );
   };
 
-  // Show nothing if there's no content and no form to display
   if (!canRate && totalRatings === 0) return null;
 
   return (
     <div className="mb-8">
-      <h2 className="text-[12px] font-semibold uppercase tracking-wide text-neutral-500 mb-4">
+      <h2 className="text-[12px] font-bold uppercase tracking-[0.1em] text-[#5A5A52] mb-5">
         Reviews{totalRatings > 0 ? ` (${totalRatings})` : ""}
       </h2>
 
       {/* ── Rating form / your existing rating ─────────────────────────────── */}
       {canRate && (
-        <div className="bg-[#F9F9F7] rounded-xl p-4 mb-5">
+        <div className="bg-[#242422] rounded-2xl p-5 mb-8 border border-[#2E2E2C] shadow-sm">
           {hasRated && !isEditing ? (
-            // Summary view — show their rating with an Edit button
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
-                <p className="text-[11px] text-neutral-500 uppercase tracking-wide font-semibold mb-1.5">
-                  Your rating
+                <p className="text-[11px] text-[#5A5A52] uppercase tracking-[0.1em] font-bold mb-3">
+                  Your review
                 </p>
                 <StarRow value={myRating!.rating_value} size="md" />
                 {myRating!.comment && (
-                  <p className="text-[13px] text-neutral-600 mt-2 leading-relaxed">
+                  <p className="text-[15px] text-[#9A9A8E] mt-3 leading-relaxed">
                     {myRating!.comment}
                   </p>
                 )}
@@ -265,7 +258,7 @@ export function RatingSection({
               <button
                 type="button"
                 onClick={() => setIsEditing(true)}
-                className="text-[13px] font-medium text-[#FF6B35] hover:opacity-80 transition-opacity shrink-0 pt-0.5"
+                className="text-[13px] font-bold text-[#FF6B35] active:opacity-70 transition-opacity shrink-0"
               >
                 Edit
               </button>
@@ -285,13 +278,13 @@ export function RatingSection({
 
       {/* ── Attendee ratings ─────────────────────────────────────────────────── */}
       {attendeeRatings.length > 0 && (
-        <div>
+        <div className="space-y-1">
           {isHost && (
-            <p className="text-[11px] text-neutral-400 uppercase tracking-wide font-semibold mb-2">
-              Attendee reviews
+            <p className="text-[11px] text-[#5A5A52] uppercase tracking-[0.1em] font-bold mb-3">
+              Guest reviews
             </p>
           )}
-          <div>
+          <div className="flex flex-col">
             {attendeeRatings.map((r) => (
               <RatingItem key={r.id} rating={r} />
             ))}
@@ -301,13 +294,13 @@ export function RatingSection({
 
       {/* ── Host's note ──────────────────────────────────────────────────────── */}
       {hostRatings.length > 0 && (
-        <div className={attendeeRatings.length > 0 ? "mt-4" : ""}>
+        <div className={attendeeRatings.length > 0 ? "mt-8" : ""}>
           {(attendeeRatings.length > 0 || !isHost) && (
-            <p className="text-[11px] text-neutral-400 uppercase tracking-wide font-semibold mb-2">
+            <p className="text-[11px] text-[#5A5A52] uppercase tracking-[0.1em] font-bold mb-3">
               Host's note
             </p>
           )}
-          <div>
+          <div className="flex flex-col">
             {hostRatings.map((r) => (
               <RatingItem key={r.id} rating={r} />
             ))}
@@ -315,9 +308,11 @@ export function RatingSection({
         </div>
       )}
 
-      {/* Empty state — eligible but no ratings yet */}
+      {/* Empty state */}
       {canRate && totalRatings === 0 && !showForm && (
-        <p className="text-[13px] text-neutral-400">No reviews yet. Be the first!</p>
+        <div className="bg-[#2C2C2A] rounded-2xl p-6 text-center border border-dashed border-[#383836]">
+          <p className="text-[14px] text-[#5A5A52] font-medium">No reviews yet. Be the first to share your experience!</p>
+        </div>
       )}
     </div>
   );

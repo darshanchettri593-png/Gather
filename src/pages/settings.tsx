@@ -67,7 +67,6 @@ export function SettingsPage() {
     try {
       console.log("[DeleteAccount] Starting deletion for:", user.id);
 
-      // 1. Avatar storage cleanup — best effort, do while session is still valid
       if (profile?.avatar_url) {
         const path = profile.avatar_url.split("/avatars/")[1];
         if (path) {
@@ -78,16 +77,11 @@ export function SettingsPage() {
         }
       }
 
-      // 2. Get current session so we can pass the JWT to the edge function
       const {
         data: { session },
       } = await supabase.auth.getSession();
       if (!session) throw new Error("Session expired. Please log in again.");
 
-      // 3. Call the delete-user Edge Function.
-      //    It uses the service_role key to call auth.admin.deleteUser() —
-      //    the only API that permanently removes the auth.users record and
-      //    frees the email for immediate re-registration.
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-user`,
         {
@@ -104,9 +98,6 @@ export function SettingsPage() {
         throw new Error(body.error || `Server error (${response.status})`);
       }
 
-      // 4. Clear local session — auth record is already gone so a normal
-      //    signOut() would get a 403. scope:'local' only clears the JWT from
-      //    localStorage and fires the SIGNED_OUT event so AuthContext resets.
       ["pending_rsvp_event_id", "pending_host_intent", "gather_pending_action"].forEach(
         (k) => localStorage.removeItem(k)
       );
@@ -122,7 +113,7 @@ export function SettingsPage() {
   };
 
   const SectionHeader = ({ children }: { children: React.ReactNode }) => (
-    <h2 className="px-5 mb-2 text-[12px] font-semibold tracking-widest text-neutral-400 uppercase" style={{ paddingTop: '20px' }}>
+    <h2 className="px-5 mb-2 text-[12px] font-semibold tracking-widest text-[#9A9A8E] uppercase" style={{ paddingTop: '20px' }}>
       {children}
     </h2>
   );
@@ -145,39 +136,39 @@ export function SettingsPage() {
     subLabel?: string;
   }) => (
     <div 
-      className={`flex items-center justify-between min-h-[52px] bg-white px-4 ${onClick ? 'cursor-pointer active:bg-neutral-50' : ''}`}
+      className={`flex items-center justify-between min-h-[52px] bg-[#242422] px-4 ${onClick ? 'cursor-pointer active:bg-[#2C2C2A]' : ''}`}
       onClick={onClick}
     >
       <div className="flex-1 py-1">
-        {label && <span className="text-[17px] text-[#1A1A1A]">{label}</span>}
-        {subLabel && <p className="text-[12px] text-neutral-400 leading-tight mt-0.5">{subLabel}</p>}
+        {label && <span className="text-[17px] text-[#F0F0EA]">{label}</span>}
+        {subLabel && <p className="text-[12px] text-[#5A5A52] leading-tight mt-0.5">{subLabel}</p>}
         {children}
       </div>
       <div className="flex items-center gap-2">
-        {value && <span className="text-[17px] text-neutral-400">{value}</span>}
-        {hasChevron && <ChevronRight className="h-5 w-5 text-neutral-400" />}
+        {value && <span className="text-[17px] text-[#9A9A8E]">{value}</span>}
+        {hasChevron && <ChevronRight className="h-5 w-5 text-[#5A5A52]" />}
       </div>
     </div>
   );
 
   const Separator = () => (
-    <div className="pl-4 bg-white">
-      <div className="h-[1px] bg-[#F0F0ED] w-full" />
+    <div className="pl-4 bg-[#242422]">
+      <div className="h-[1px] bg-[#2E2E2C] w-full" />
     </div>
   );
 
   return (
-    <div className="page-transition w-full bg-[#F2F2EF] min-h-screen">
+    <div className="page-transition w-full bg-[#1C1C1A] min-h-screen">
       {/* Header */}
-      <header className="sticky top-0 z-50 flex items-center justify-between bg-white border-b border-[#E5E5E0] h-[56px] px-2">
+      <header className="sticky top-0 z-50 flex items-center justify-between bg-[#242422] border-b border-[#2E2E2C] h-[56px] px-2">
         <button 
           onClick={() => navigate(-1)} 
-          className="flex items-center justify-center w-10 h-10 bg-transparent border-0 text-neutral-600 active:opacity-70 transition-opacity"
+          className="flex items-center justify-center w-10 h-10 bg-transparent border-0 text-[#F0F0EA] active:opacity-70 transition-opacity"
         >
           <ChevronLeft className="h-6 w-6" strokeWidth={2} />
         </button>
         
-        <h1 className="text-[17px] font-semibold text-[#1A1A1A] absolute left-1/2 -translate-x-1/2">
+        <h1 className="text-[17px] font-semibold text-[#F0F0EA] absolute left-1/2 -translate-x-1/2">
           Settings
         </h1>
         <div className="w-10" />
@@ -191,11 +182,11 @@ export function SettingsPage() {
           <SectionHeader>Account</SectionHeader>
           
           {!user ? (
-            <div className="bg-white rounded-2xl overflow-hidden mx-4 p-6 flex flex-col items-center text-center">
-              <div className="w-10 h-10 bg-neutral-200 rounded-full flex items-center justify-center mb-3">
-                <User className="h-5 w-5 text-neutral-500" />
+            <div className="bg-[#242422] rounded-2xl border border-[#2E2E2C] overflow-hidden mx-4 p-6 flex flex-col items-center text-center">
+              <div className="w-10 h-10 bg-[#2C2C2A] rounded-full flex items-center justify-center mb-3">
+                <User className="h-5 w-5 text-[#9A9A8E]" />
               </div>
-              <p className="text-[14px] text-neutral-700 mb-5">
+              <p className="text-[14px] text-[#9A9A8E] mb-5">
                 Sign in to save your events and customize your profile
               </p>
               <button 
@@ -206,24 +197,24 @@ export function SettingsPage() {
               </button>
             </div>
           ) : (
-            <div className="bg-white rounded-2xl overflow-hidden mx-4">
-              <div className="flex items-center justify-between min-h-[52px] bg-white px-4">
-                <span className="text-[17px] text-[#1A1A1A]">Name</span>
+            <div className="bg-[#242422] rounded-2xl border border-[#2E2E2C] overflow-hidden mx-4">
+              <div className="flex items-center justify-between min-h-[52px] px-4">
+                <span className="text-[17px] text-[#F0F0EA]">Name</span>
                 <input
                    type="text"
                    value={displayName}
                    onChange={(e) => setDisplayName(e.target.value)}
                    onBlur={() => updateProfileMutation.mutate({ display_name: displayName })}
-                   className="text-right text-[17px] text-neutral-500 focus:outline-none focus:text-[#1A1A1A] bg-transparent flex-1 ml-4"
+                   className="text-right text-[17px] text-[#9A9A8E] focus:outline-none focus:text-[#F0F0EA] bg-transparent flex-1 ml-4"
                    placeholder="Your name"
                 />
               </div>
               <Separator />
               <CardRow label="Email" value={user.email} />
               <Separator />
-              <div className="flex items-center justify-between min-h-[52px] bg-white px-4 py-2">
-                <span className="text-[17px] text-[#1A1A1A]">Profile photo</span>
-                <div className="w-10 h-10 rounded-full bg-[#F5F5F2] overflow-hidden relative cursor-pointer">
+              <div className="flex items-center justify-between min-h-[52px] bg-[#242422] px-4 py-2">
+                <span className="text-[17px] text-[#F0F0EA]">Profile photo</span>
+                <div className="w-10 h-10 rounded-full bg-[#2C2C2A] overflow-hidden relative cursor-pointer border border-[#2E2E2C]">
                   <ImageUploader 
                     bucket="avatars"
                     folder={user.id}
@@ -240,7 +231,7 @@ export function SettingsPage() {
         {/* PREFERENCES */}
         <section>
           <SectionHeader>Preferences</SectionHeader>
-          <div className="bg-white rounded-2xl overflow-hidden mx-4">
+          <div className="bg-[#242422] rounded-2xl border border-[#2E2E2C] overflow-hidden mx-4">
             <CardRow 
               label="Location" 
               value={profile?.location || "Select location"} 
@@ -248,17 +239,17 @@ export function SettingsPage() {
               onClick={() => setShowLocationModal(true)} 
             />
             <Separator />
-            <div className="flex items-center justify-between min-h-[52px] bg-white px-4">
-              <span className="text-[17px] text-[#1A1A1A]">Notifications</span>
-              <Switch defaultChecked className="data-[state=checked]:bg-[#34C759] data-[state=unchecked]:bg-neutral-200" />
+            <div className="flex items-center justify-between min-h-[52px] bg-[#242422] px-4">
+              <span className="text-[17px] text-[#F0F0EA]">Notifications</span>
+              <Switch defaultChecked className="data-[state=checked]:bg-[#34C759] data-[state=unchecked]:bg-[#2C2C2A]" />
             </div>
             <Separator />
-            <div className="flex items-center justify-between min-h-[52px] bg-white px-4 py-2">
+            <div className="flex items-center justify-between min-h-[52px] bg-[#242422] px-4 py-2">
               <div className="flex flex-col">
-                <span className="text-[17px] text-[#1A1A1A]">Email updates</span>
-                <span className="text-[12px] text-neutral-400 mt-0.5">Weekly digest of events near you</span>
+                <span className="text-[17px] text-[#F0F0EA]">Email updates</span>
+                <span className="text-[12px] text-[#5A5A52] mt-0.5">Weekly digest of events near you</span>
               </div>
-              <Switch className="data-[state=checked]:bg-[#34C759] data-[state=unchecked]:bg-neutral-200" />
+              <Switch className="data-[state=checked]:bg-[#34C759] data-[state=unchecked]:bg-[#2C2C2A]" />
             </div>
           </div>
         </section>
@@ -266,7 +257,7 @@ export function SettingsPage() {
         {/* ABOUT */}
         <section>
           <SectionHeader>About</SectionHeader>
-          <div className="bg-white rounded-2xl overflow-hidden mx-4">
+          <div className="bg-[#242422] rounded-2xl border border-[#2E2E2C] overflow-hidden mx-4">
             <CardRow label="Community guidelines" hasChevron onClick={() => navigate('/settings/community-guidelines')} />
             <Separator />
             <CardRow label="Privacy policy" hasChevron />
@@ -280,23 +271,23 @@ export function SettingsPage() {
         {/* DANGER ZONE */}
         {user && (
           <section className="mb-4">
-            <div className="bg-white rounded-2xl overflow-hidden mx-4">
+            <div className="bg-[#242422] rounded-2xl border border-[#2E2E2C] overflow-hidden mx-4 mt-8">
               <button
                 onClick={handleLogout}
-                className="w-full min-h-[52px] flex items-center justify-center text-[17px] font-semibold text-[#FF3B30] bg-white active:bg-neutral-50 transition-colors"
+                className="w-full min-h-[52px] flex items-center justify-center text-[17px] font-semibold text-[#FF3B30] bg-[#242422] active:bg-[#2C2C2A] transition-colors"
               >
                 Log out
               </button>
             </div>
 
-            <div className="text-center mt-4">
+            <div className="text-center mt-6">
               <button
                 onClick={() => {
                   setDeleteEmailConfirm("");
                   setDeleteError(null);
                   setShowDeleteModal(true);
                 }}
-                className="text-[13px] text-neutral-400 hover:text-neutral-600 transition-colors"
+                className="text-[13px] text-[#5A5A52] hover:text-[#9A9A8E] transition-colors"
               >
                 Delete account permanently
               </button>
@@ -311,11 +302,11 @@ export function SettingsPage() {
         open={showDeleteModal}
         onOpenChange={(open) => !isDeleting && setShowDeleteModal(open)}
       >
-        <DialogContent className="sm:max-w-[380px] rounded-2xl w-[90%] p-6">
-          <DialogTitle className="text-[18px] font-semibold text-[#1A1A1A] mb-1">
+        <DialogContent className="sm:max-w-[380px] rounded-2xl w-[90%] p-6 bg-[#2C2C2A] border-[#383836]">
+          <DialogTitle className="text-[18px] font-semibold text-[#F0F0EA] mb-1">
             Delete account permanently?
           </DialogTitle>
-          <DialogDescription className="text-[14px] text-neutral-600 mb-5 leading-relaxed">
+          <DialogDescription className="text-[14px] text-[#9A9A8E] mb-5 leading-relaxed">
             This will delete your profile and all your hosted events. This cannot be undone.
             Type your email to confirm:
           </DialogDescription>
@@ -327,7 +318,7 @@ export function SettingsPage() {
             value={deleteEmailConfirm}
             onChange={(e) => { setDeleteEmailConfirm(e.target.value); setDeleteError(null); }}
             disabled={isDeleting}
-            className="w-full h-[44px] border border-[#E5E5E0] rounded-lg px-3 text-[15px] text-[#1A1A1A] placeholder:text-neutral-300 outline-none focus:border-[#FF3B30] transition-colors mb-3 bg-transparent"
+            className="w-full h-[44px] border border-[#383836] rounded-lg px-3 text-[15px] text-[#F0F0EA] placeholder:text-[#5A5A52] outline-none focus:border-[#FF3B30] transition-colors mb-3 bg-[#1C1C1A]"
           />
 
           {deleteError && (
@@ -338,7 +329,7 @@ export function SettingsPage() {
             <button
               onClick={() => setShowDeleteModal(false)}
               disabled={isDeleting}
-              className="flex-1 h-[44px] rounded-full border border-[#E5E5E0] font-medium text-neutral-700 active:bg-neutral-50 disabled:opacity-40"
+              className="flex-1 h-[44px] rounded-full border border-[#383836] font-medium text-[#F0F0EA] active:bg-[#343432] disabled:opacity-40"
             >
               Cancel
             </button>
@@ -347,7 +338,7 @@ export function SettingsPage() {
               disabled={isDeleting || !deleteEmailConfirm.trim()}
               className="flex-1 h-[44px] rounded-full bg-[#FF3B30] text-white font-medium active:opacity-90 disabled:opacity-50"
             >
-              {isDeleting ? "Deleting…" : "Delete permanently"}
+              {isDeleting ? "Deleting…" : "Delete"}
             </button>
           </div>
         </DialogContent>
@@ -355,18 +346,18 @@ export function SettingsPage() {
 
       {/* Location Modal */}
       {showLocationModal && (
-        <div className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm flex justify-center items-end sm:items-center">
-          <div className="bg-[#F2F2EF] w-full max-w-md h-[80vh] sm:h-[500px] sm:rounded-2xl rounded-t-2xl flex flex-col">
-            <div className="flex items-center justify-between p-4 bg-white border-b border-[#E5E5E0] sm:rounded-t-2xl rounded-t-2xl">
+        <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex justify-center items-end sm:items-center">
+          <div className="bg-[#242422] w-full max-w-md h-[80vh] sm:h-[500px] sm:rounded-2xl rounded-t-2xl flex flex-col">
+            <div className="flex items-center justify-between p-4 bg-[#242422] border-b border-[#2E2E2C] sm:rounded-t-2xl rounded-t-2xl">
               <button onClick={() => setShowLocationModal(false)} className="text-[#FF6B35] font-medium text-[17px]">Cancel</button>
-              <h3 className="text-[17px] font-semibold text-[#1A1A1A]">Select Location</h3>
+              <h3 className="text-[17px] font-semibold text-[#F0F0EA]">Select Location</h3>
               <div className="w-16" />
             </div>
             <div className="flex-1 overflow-y-auto p-4 space-y-2">
               {LOCATIONS.map((loc) => (
                 <button 
                   key={loc}
-                  className="w-full text-left px-4 py-3 bg-white rounded-xl text-[17px] text-[#1A1A1A] active:bg-neutral-50 hover:bg-neutral-50 transition-colors"
+                  className="w-full text-left px-4 py-3 bg-[#242422] rounded-xl text-[17px] text-[#F0F0EA] active:bg-[#2C2C2A] hover:bg-[#2C2C2A] transition-colors"
                   onClick={() => {
                     updateProfileMutation.mutate({ location: loc });
                     setShowLocationModal(false);

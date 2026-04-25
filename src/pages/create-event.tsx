@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, ChevronDown } from "lucide-react";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import { useAuth } from "@/lib/auth-context";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -16,13 +16,24 @@ const VIBES: { id: EventVibe, label: string, helper: string }[] = [
   { id: "explore", label: "Explore", helper: "Trips, hikes with travel, food tours, visiting new places, adventures" }
 ];
 
+const DISTRICTS = [
+  "Matigara",
+  "Pradhan Nagar",
+  "Sevoke Road",
+  "Panitanki",
+  "Hakimpara",
+  "Khalpara",
+  "Bhakti Nagar",
+  "Other"
+];
+
 export function CreateEventPage() {
   const navigate = useNavigate();
   const { user, isLoading: authLoading, openAuthModal } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Auth guard — open modal and send guest home
+  // Auth guard
   useEffect(() => {
     if (!authLoading && !user) {
       openAuthModal(
@@ -37,12 +48,13 @@ export function CreateEventPage() {
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [title, setTitle] = useState("");
   const [vibe, setVibe] = useState<EventVibe>("move");
+  const [district, setDistrict] = useState(DISTRICTS[0]);
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [locationStr, setLocationStr] = useState("");
   const [description, setDescription] = useState("");
 
-  const isFormValid = coverUrl && title && vibe && locationStr && date && time;
+  const isFormValid = coverUrl && title && vibe && district && locationStr && date && time;
 
   const createMutation = useMutation({
     mutationFn: async () => {
@@ -57,6 +69,8 @@ export function CreateEventPage() {
         host_id: user.id,
         title,
         vibe,
+        district,
+        city: localStorage.getItem('gather_city') || 'Siliguri',
         location_text: locationStr,
         description: description || null,
         event_datetime: eventDateTime.toISOString(),
@@ -69,7 +83,6 @@ export function CreateEventPage() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['events'] });
       toast("Your event is live!", "success");
-      console.log('[CreateEvent] Published event:', data.id);
       navigate(`/event/${data.id}`);
     }
   });
@@ -82,43 +95,40 @@ export function CreateEventPage() {
   const selectedVibeObj = VIBES.find(v => v.id === vibe);
 
   return (
-    <div className="page-transition max-w-md mx-auto pb-[100px] bg-white min-h-screen">
+    <div className="page-transition max-w-md mx-auto pb-[100px] bg-[#1C1C1A] min-h-screen">
       {/* Header */}
-      <header className="sticky top-0 z-50 flex items-center justify-between bg-white border-b border-[#E5E5E0] h-[56px] px-2">
+      <header className="sticky top-0 z-50 flex items-center justify-between bg-[#242422]/80 backdrop-blur-xl border-b border-[#2E2E2C] h-[56px] px-2">
         <button 
           onClick={() => navigate("/")} 
-          className="flex items-center justify-center w-10 h-10 bg-transparent border-0 text-neutral-600 active:opacity-70 transition-opacity"
+          className="flex items-center justify-center w-10 h-10 bg-transparent border-0 text-[#F0F0EA] active:opacity-70 transition-opacity"
         >
-          <ChevronLeft className="h-5 w-5" strokeWidth={2} />
+          <ChevronLeft className="h-6 w-6" strokeWidth={2.5} />
         </button>
         
-        <h1 className="text-[17px] font-semibold text-black absolute left-1/2 -translate-x-1/2">
-          Host a thing
+        <h1 className="text-[17px] font-bold text-[#F0F0EA] absolute left-1/2 -translate-x-1/2">
+          Host
         </h1>
         
         <div className="flex items-center">
-          {isUploadingImage && (
-             <span className="text-[11px] text-[#FF6B35] font-medium mr-2">Uploading...</span>
-          )}
           <button 
             onClick={handleSubmit}
             disabled={!isFormValid || createMutation.isPending || isUploadingImage}
-            className={`px-4 text-[15px] transition-colors ${
+            className={`px-4 h-[36px] rounded-full text-[14px] font-bold transition-all ${
               isFormValid && !createMutation.isPending && !isUploadingImage
-                ? 'text-[#FF6B35] font-bold active:text-[#FF6B35]/70' 
-                : 'text-neutral-300 font-medium'
+                ? 'bg-[#FF6B35] text-white active:scale-95' 
+                : 'bg-[#2C2C2A] text-[#5A5A52]'
             }`}
           >
-            Publish
+            {createMutation.isPending ? "..." : "Publish"}
           </button>
         </div>
       </header>
 
       {/* Form Content */}
-      <div className="px-5 pt-6 space-y-6">
+      <div className="px-5 pt-6 space-y-8">
         
         {createMutation.error && (
-          <div className="text-[13px] font-medium text-destructive text-center mb-2">
+          <div className="text-[13px] font-medium text-red-500 text-center bg-red-500/10 p-3 rounded-xl border border-red-500/20">
             {createMutation.error.message}
           </div>
         )}
@@ -136,40 +146,36 @@ export function CreateEventPage() {
 
         {/* 2. Event Title Input */}
         <div>
+          <label className="block text-[11px] font-bold uppercase tracking-[0.1em] text-[#5A5A52] mb-1 px-1">
+            Title
+          </label>
           <input 
             type="text" 
-            placeholder="What's the vibe?"
+            placeholder="Give it a catchy name"
             maxLength={60}
-            className="w-full text-[26px] font-semibold text-[#1A1A1A] bg-transparent border-none placeholder:text-[#C0C0BB] focus:outline-none focus:ring-0 py-3"
-            style={{ marginTop: '20px', marginBottom: '24px' }}
+            className="w-full text-[28px] font-bold text-[#F0F0EA] bg-transparent border-none placeholder:text-[#2C2C2A] focus:outline-none focus:ring-0 py-2"
             value={title}
             onChange={e => setTitle(e.target.value)}
           />
-          {title.length >= 50 && (
-             <div className="text-right px-4">
-                <span className={`text-[11px] font-medium ${title.length === 60 ? 'text-destructive' : 'text-neutral-400'}`}>
-                  {title.length} / 60
-                </span>
-             </div>
-          )}
+          <div className="h-[1px] w-full bg-[#2E2E2C]" />
         </div>
 
         {/* 3. Vibe */}
-        <div className="space-y-2">
-          <label className="block text-[12px] font-semibold text-neutral-400 uppercase tracking-wider">
-            Vibe
+        <div className="space-y-3">
+          <label className="block text-[11px] font-bold uppercase tracking-[0.1em] text-[#5A5A52] px-1">
+            Category
           </label>
-          <div className="flex gap-2 overflow-x-auto hide-scrollbar flex-nowrap">
+          <div className="flex gap-2 overflow-x-auto hide-scrollbar flex-nowrap -mx-1 px-1">
             {VIBES.map(v => {
                const isActive = vibe === v.id;
                return (
                  <button
                    key={v.id}
                    onClick={() => setVibe(v.id)}
-                   className={`flex-shrink-0 px-[14px] h-[34px] text-[14px] font-medium rounded-full transition-colors ${
+                   className={`flex-shrink-0 px-4 h-[36px] text-[14px] font-semibold rounded-full transition-all border ${
                      isActive 
-                       ? 'bg-[#1A1A1A] text-white' 
-                       : 'bg-white text-[#1A1A1A] border border-[#E5E5E0]'
+                       ? 'bg-[#FF6B35] text-white border-[#FF6B35]' 
+                       : 'bg-[#242422] text-[#9A9A8E] border-[#2E2E2C]'
                    }`}
                  >
                    {v.label}
@@ -179,8 +185,8 @@ export function CreateEventPage() {
           </div>
           
           {selectedVibeObj && (
-            <div className="pt-1 animate-in fade-in duration-300">
-              <p className="text-[11px] text-neutral-400 italic">
+            <div className="bg-[#242422] p-3 rounded-xl border border-[#2E2E2C] animate-in fade-in duration-300">
+              <p className="text-[12px] text-[#9A9A8E] leading-relaxed">
                 {selectedVibeObj.helper}
               </p>
             </div>
@@ -188,65 +194,85 @@ export function CreateEventPage() {
         </div>
 
         {/* 4. Date & Time */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <label className="block text-[12px] font-semibold text-neutral-400 uppercase tracking-wider">
+            <label className="block text-[11px] font-bold uppercase tracking-[0.1em] text-[#5A5A52] px-1">
               Date
             </label>
-            <input 
-              type="date" 
-              value={date}
-              onChange={e => setDate(e.target.value)}
-              className={`w-full bg-transparent border-0 border-b border-[#E5E5E0] focus:ring-0 focus:border-black px-0 py-2 outline-none transition-colors text-[16px] min-h-[44px] ${date ? 'text-black font-medium' : 'text-neutral-400 font-normal'}`} 
-            />
+            <div className="bg-[#242422] rounded-xl border border-[#2E2E2C] px-3 py-2">
+              <input 
+                type="date" 
+                value={date}
+                onChange={e => setDate(e.target.value)}
+                className="w-full bg-transparent border-none focus:ring-0 text-[15px] text-[#F0F0EA] outline-none" 
+              />
+            </div>
           </div>
           <div className="space-y-2">
-            <label className="block text-[12px] font-semibold text-neutral-400 uppercase tracking-wider">
+            <label className="block text-[11px] font-bold uppercase tracking-[0.1em] text-[#5A5A52] px-1">
               Time
             </label>
+            <div className="bg-[#242422] rounded-xl border border-[#2E2E2C] px-3 py-2">
+              <input 
+                type="time" 
+                value={time}
+                onChange={e => setTime(e.target.value)}
+                className="w-full bg-transparent border-none focus:ring-0 text-[15px] text-[#F0F0EA] outline-none" 
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* 5. District Selector (Part 6) */}
+        <div className="space-y-2">
+          <label className="block text-[11px] font-bold uppercase tracking-[0.1em] text-[#5A5A52] px-1">
+            District
+          </label>
+          <div className="relative">
+            <select
+              value={district}
+              onChange={(e) => setDistrict(e.target.value)}
+              className="w-full h-[48px] bg-[#242422] border border-[#2E2E2C] rounded-xl px-4 text-[15px] text-[#F0F0EA] appearance-none focus:outline-none focus:border-[#FF6B35] transition-all"
+            >
+              {DISTRICTS.map(d => (
+                <option key={d} value={d}>{d}</option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-[#5A5A52] pointer-events-none" />
+          </div>
+        </div>
+
+        {/* 6. Location */}
+        <div className="space-y-2">
+          <label className="block text-[11px] font-bold uppercase tracking-[0.1em] text-[#5A5A52] px-1">
+            Exact Location
+          </label>
+          <div className="bg-[#242422] rounded-xl border border-[#2E2E2C] px-4 py-3">
             <input 
-              type="time" 
-              value={time}
-              onChange={e => setTime(e.target.value)}
-              className={`w-full bg-transparent border-0 border-b border-[#E5E5E0] focus:ring-0 focus:border-black px-0 py-2 outline-none transition-colors text-[16px] min-h-[44px] ${time ? 'text-black font-medium' : 'text-neutral-400 font-normal'}`} 
+              type="text" 
+              placeholder="Building, cafe, or park name"
+              maxLength={120}
+              className="w-full bg-transparent border-none focus:ring-0 text-[15px] text-[#F0F0EA] placeholder:text-[#2C2C2A] outline-none"
+              value={locationStr}
+              onChange={e => setLocationStr(e.target.value)}
             />
           </div>
         </div>
 
-        {/* 5. Location */}
-        <div className="space-y-2">
-          <label className="block text-[12px] font-semibold text-neutral-400 uppercase tracking-wider">
-            Location
+        {/* 7. Description */}
+        <div className="space-y-2 pb-8">
+          <label className="block text-[11px] font-bold uppercase tracking-[0.1em] text-[#5A5A52] px-1">
+            About the event
           </label>
-          <input 
-            type="text" 
-            placeholder="Where's it happening?"
-            maxLength={120}
-            className="w-full text-[16px] font-medium bg-transparent border-0 border-b border-[#E5E5E0] placeholder:font-normal placeholder:text-neutral-300 text-black focus:ring-0 focus:border-black px-0 py-2 outline-none transition-colors"
-            value={locationStr}
-            onChange={e => setLocationStr(e.target.value)}
-          />
-        </div>
-
-        {/* 6. Description */}
-        <div className="space-y-2">
-          <label className="block text-[12px] font-semibold text-neutral-400 uppercase tracking-wider">
-            Description <span className="text-neutral-400 normal-case font-normal">(optional)</span>
-          </label>
-          <textarea 
-            placeholder="Tell people what to expect..."
-            rows={4}
-            maxLength={500}
-            className="w-full text-[15px] font-medium leading-relaxed bg-transparent border-0 border-b border-[#E5E5E0] placeholder:font-normal placeholder:text-neutral-400 text-black focus:ring-0 focus:border-black px-0 py-2 resize-none outline-none transition-colors"
-            value={description}
-            onChange={e => setDescription(e.target.value)}
-          />
-          <div className="flex justify-end min-h-[16px]">
-            {description.length >= 400 && (
-              <span className="text-[11px] text-neutral-400 font-normal">
-                {description.length} / 500
-              </span>
-            )}
+          <div className="bg-[#242422] rounded-xl border border-[#2E2E2C] px-4 py-3">
+            <textarea 
+              placeholder="What should people know? Any dress code or things to bring?"
+              rows={4}
+              maxLength={500}
+              className="w-full bg-transparent border-none focus:ring-0 text-[15px] text-[#F0F0EA] placeholder:text-[#2C2C2A] resize-none outline-none leading-relaxed"
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+            />
           </div>
         </div>
 

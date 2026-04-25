@@ -133,13 +133,11 @@ export function ImageUploader({
 
   const handleCropConfirm = async () => {
     if (!imgRef.current || !completedCrop || completedCrop.width === 0 || completedCrop.height === 0) {
-      // Fallback if no crop was drawn
       if (!cropImageUrl) return;
-      // ... we should probably force a crop
     }
 
     try {
-      setCropImageUrl(null); // Close modal
+      setCropImageUrl(null);
       setIsUploading(true);
       if (onUploadStart) onUploadStart();
       setError(null);
@@ -205,63 +203,65 @@ export function ImageUploader({
         
         <div 
           onClick={() => !isUploading && fileInputRef.current?.click()}
-          className={`w-full h-full overflow-hidden flex flex-col items-center justify-center transition-all cursor-pointer group ${aspectRatio === '1/1' ? 'rounded-full aspect-square bg-transparent' : 'rounded-[12px] aspect-[16/9] bg-[#F5F5F2]'} ${error ? 'border border-destructive bg-destructive/5' : ''} ${isUploading ? 'pointer-events-none' : ''}`}
+          className={`w-full h-full overflow-hidden flex flex-col items-center justify-center transition-all cursor-pointer group ${aspectRatio === '1/1' ? 'rounded-full aspect-square bg-transparent' : 'rounded-2xl aspect-[16/9] bg-[#242422] border border-[#2E2E2C]'} ${error ? 'border border-red-500 bg-red-500/5' : ''} ${isUploading ? 'pointer-events-none' : ''}`}
         >
           {previewUrl ? (
             <div className="relative w-full h-full">
               <img 
                 src={previewUrl} 
                 alt="Preview" 
-                className={`w-full h-full object-cover transition-all duration-300 ${isUploading ? 'opacity-70 grayscale-[0.3]' : 'opacity-100'}`} 
+                className={`w-full h-full object-cover transition-all duration-300 ${isUploading ? 'opacity-50 grayscale-[0.5]' : 'opacity-100 group-hover:scale-105'}`} 
               />
               {isUploading && (
-                <div className="absolute inset-0 bg-white/20 animate-pulse mix-blend-overlay" />
+                <div className="absolute inset-0 bg-[#FF6B35]/10 animate-pulse" />
               )}
               
               {isUploading ? (
-                 <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-full backdrop-blur-sm shadow-sm">
-                    <Loader2 className="h-6 w-6 text-white animate-spin" />
+                 <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
+                    <Loader2 className="h-8 w-8 text-[#FF6B35] animate-spin" strokeWidth={3} />
                  </div>
               ) : isSuccess ? (
-                 <div className="absolute inset-0 flex items-center justify-center bg-green-500/80 rounded-full animate-in zoom-in fade-in duration-300">
-                    <Check className="h-8 w-8 text-white" strokeWidth={3} />
+                 <div className="absolute inset-0 flex items-center justify-center bg-green-500/80 animate-in zoom-in fade-in duration-300">
+                    <Check className="h-10 w-10 text-white" strokeWidth={4} />
                  </div>
               ) : (
                 aspectRatio !== '1/1' && (
                   <button
                     onClick={handleClear}
-                    className="absolute top-3 right-3 flex items-center justify-center w-[30px] h-[30px] bg-black/60 text-white rounded-full z-10 transition-colors hover:bg-black/80"
+                    className="absolute top-4 right-4 flex items-center justify-center w-[36px] h-[36px] bg-black/60 backdrop-blur-md text-white rounded-full z-10 transition-all hover:bg-black/80 active:scale-90"
                   >
-                    <X className="h-[18px] w-[18px]" strokeWidth={2} />
+                    <X className="h-5 w-5" strokeWidth={2.5} />
                   </button>
                 )
               )}
             </div>
           ) : (
             aspectRatio !== '1/1' ? (
-              <div className="flex flex-col items-center justify-center text-neutral-400">
-                <Camera className="h-[24px] w-[24px] mb-2 text-neutral-400" strokeWidth={1.5} />
-                <span className="text-[14px] text-neutral-500 font-medium">Add cover photo</span>
+              <div className="flex flex-col items-center justify-center text-[#5A5A52] group-hover:text-[#9A9A8E] transition-colors">
+                <div className="w-12 h-12 rounded-full bg-[#2C2C2A] flex items-center justify-center mb-3 group-hover:scale-110 transition-transform border border-[#383836]">
+                  <Camera className="h-6 w-6" strokeWidth={2} />
+                </div>
+                <span className="text-[14px] font-bold uppercase tracking-widest">Add Cover Image</span>
               </div>
             ) : null
           )}
         </div>
         
         {error && (
-          <div className="mt-2 text-[13px] text-destructive font-medium text-center">
+          <div className="mt-3 text-[13px] text-red-500 font-bold text-center bg-red-500/10 p-2 rounded-lg border border-red-500/20">
             {error}
           </div>
         )}
       </div>
 
       {cropImageUrl && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-2xl p-5 w-full max-w-[380px] flex flex-col items-center shadow-xl">
-            <h3 className="text-[17px] font-semibold text-[#1A1A1A] mb-4 text-center">
-              {aspectRatio === '1/1' ? 'Crop profile photo' : 'Crop cover photo'}
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+          <div className="bg-[#2C2C2A] border border-[#383836] rounded-3xl p-6 w-full max-w-[400px] flex flex-col items-center shadow-2xl animate-in zoom-in fade-in duration-200">
+            <h3 className="text-[18px] font-bold text-[#F0F0EA] mb-5 text-center uppercase tracking-wider">
+              {aspectRatio === '1/1' ? 'Crop Profile Photo' : 'Crop Cover Photo'}
             </h3>
             
-            <div className="w-full max-h-[50vh] overflow-hidden flex justify-center bg-neutral-50 rounded-lg">
+            <div className="w-full max-h-[50vh] overflow-hidden flex justify-center bg-[#1C1C1A] rounded-2xl border border-[#383836]">
               <ReactCrop
                 crop={crop}
                 onChange={(_, percentCrop) => setCrop(percentCrop)}
@@ -269,9 +269,6 @@ export function ImageUploader({
                 aspect={aspect}
                 circularCrop={aspectRatio === '1/1'}
                 className="max-h-[50vh]"
-                renderSelectionAddon={() => (
-                  <div className="absolute inset-0 border-2 border-[#FF6B35] pointer-events-none" />
-                )}
               >
                 <img
                   ref={imgRef}
@@ -283,16 +280,16 @@ export function ImageUploader({
               </ReactCrop>
             </div>
 
-            <div className="flex w-full gap-3 mt-6">
+            <div className="flex w-full gap-4 mt-8">
               <button
                 onClick={handleCropCancel}
-                className="flex-1 py-3 px-4 rounded-full border border-neutral-300 text-[#1A1A1A] font-medium active:bg-neutral-50"
+                className="flex-1 h-[52px] rounded-2xl border border-[#383836] text-[#F0F0EA] font-bold active:bg-[#343432] transition-all"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCropConfirm}
-                className="flex-1 py-3 px-4 rounded-full bg-[#FF6B35] text-white font-medium active:opacity-80"
+                className="flex-1 h-[52px] rounded-2xl bg-[#FF6B35] text-white font-bold active:scale-[0.98] transition-all shadow-[0_8px_20px_rgba(255,107,53,0.3)]"
               >
                 Use photo
               </button>
