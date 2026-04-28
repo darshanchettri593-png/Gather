@@ -52,8 +52,11 @@ export function MainLayout() {
             className="relative flex h-full w-full items-center justify-between"
             style={{ padding: "0 20px" }}
           >
-            {/* LEFT: location */}
-            <div className="flex items-center gap-1.5">
+            {/* LEFT: location — tapping opens city picker in events-feed */}
+            <button
+              className="flex items-center gap-1.5 active:opacity-70 transition-opacity"
+              onClick={() => window.dispatchEvent(new CustomEvent("gather:open-city-picker"))}
+            >
               <MapPin className="h-5 w-5 shrink-0" style={{ color: "#FF6B35" }} />
               <span
                 className="font-semibold tracking-tight"
@@ -65,7 +68,7 @@ export function MainLayout() {
                 className="h-3.5 w-3.5 shrink-0"
                 style={{ color: "#5A5A52" }}
               />
-            </div>
+            </button>
 
             {/* CENTER: Gather wordmark */}
             <span

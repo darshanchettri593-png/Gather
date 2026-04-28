@@ -49,8 +49,7 @@ export function BottomNav() {
         >
           <Compass
             className="h-6 w-6"
-            strokeWidth={1.5}
-            fill={isActive("/") ? "currentColor" : "none"}
+            strokeWidth={isActive("/") ? 2 : 1.5}
           />
           <span
             className={cn(

@@ -12,12 +12,13 @@ const PLACEHOLDERS = [
   "Try 'hiking'"
 ];
 
+// Fix 7: solid tinted backgrounds — visible on dark bg
 const VIBES = [
-  { name: "Move", icon: Activity, tint: "rgba(255,107,53,0.10)" },
-  { name: "Create", icon: Palette, tint: "rgba(167,139,250,0.10)" },
-  { name: "Hang", icon: Users, tint: "rgba(251,191,36,0.10)" },
-  { name: "Learn", icon: BookOpen, tint: "rgba(96,165,250,0.10)" },
-  { name: "Explore", icon: Compass, tint: "rgba(52,211,153,0.10)" },
+  { name: "Move",    icon: Activity,  bg: "#3D1F1A", iconColor: "#FF6B35" },
+  { name: "Create",  icon: Palette,   bg: "#1A1A3D", iconColor: "#7B7FFF" },
+  { name: "Hang",    icon: Users,     bg: "#3D2E1A", iconColor: "#FFB347" },
+  { name: "Learn",   icon: BookOpen,  bg: "#1A2E3D", iconColor: "#47C1D3" },
+  { name: "Explore", icon: Compass,   bg: "#1A3D1A", iconColor: "#4CAF50" },
 ];
 
 export function SearchPage() {
@@ -205,13 +206,14 @@ export function SearchPage() {
                   <button
                     key={v.name}
                     onClick={() => handleVibeClick(v.name)}
-                    className="w-[110px] h-[110px] shrink-0 rounded-2xl flex flex-col items-center justify-center gap-2 active:scale-95 transition-all"
+                    className="w-[110px] h-[110px] shrink-0 flex flex-col items-center justify-center gap-2 active:scale-95 transition-all"
                     style={{
-                      backgroundColor: v.tint,
-                      border: "1px solid #2E2E2C",
+                      backgroundColor: v.bg,
+                      border: "1px solid rgba(255,255,255,0.08)",
+                      borderRadius: "18px",
                     }}
                   >
-                    <v.icon className="h-6 w-6 text-[#FF6B35]" strokeWidth={2} />
+                    <v.icon className="h-6 w-6" strokeWidth={2} style={{ color: v.iconColor }} />
                     <span className="text-[13px] font-semibold text-[#E5E2DE]">{v.name}</span>
                   </button>
                 ))}

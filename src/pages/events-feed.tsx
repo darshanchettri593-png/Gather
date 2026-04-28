@@ -1,14 +1,16 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router";
 import { format } from "date-fns";
-import { CalendarRange, AlertCircle, MapPin, Loader2, ChevronDown, Plus } from "lucide-react";
+import { CalendarRange, AlertCircle, MapPin, Loader2, Plus } from "lucide-react";
 import { useEvents } from "@/hooks/useEvents";
 import { EmptyState } from "@/pages/profile";
 
 const VIBES = ["All", "Move", "Create", "Hang", "Learn", "Explore"];
+
+// Fix 2: proper district/area names for the North Bengal region
 const DISTRICTS = [
-  "Matigara", "Pradhan Nagar", "Sevoke Road", "Panitanki",
-  "Hakimpara", "Khalpara", "Bhakti Nagar", "Other"
+  "Siliguri", "Jalpaiguri", "Darjeeling",
+  "Kalimpong", "Kurseong", "Alipurduar", "Cooch Behar"
 ];
 
 const CITIES = [
@@ -88,7 +90,6 @@ function FeaturedEventCard({ event }: { event: any }) {
 
         {/* BOTTOM CONTENT */}
         <div className="absolute bottom-0 left-0 w-full p-8">
-          {/* Date */}
           <p
             className="font-semibold mb-2"
             style={{ fontSize: "14px", color: "#FF6B35" }}
@@ -97,7 +98,6 @@ function FeaturedEventCard({ event }: { event: any }) {
             {format(new Date(event.event_datetime), "h:mm a")}
           </p>
 
-          {/* Title */}
           <h3
             className="font-bold text-white leading-[1.05] mb-4 line-clamp-2"
             style={{ fontSize: "32px", letterSpacing: "-0.03em" }}
@@ -105,7 +105,6 @@ function FeaturedEventCard({ event }: { event: any }) {
             {event.title}
           </h3>
 
-          {/* Bottom row */}
           <div className="flex items-center justify-between">
             {/* Attendee avatars */}
             <div className="flex items-center gap-2">
@@ -114,11 +113,7 @@ function FeaturedEventCard({ event }: { event: any }) {
                   <div
                     key={i}
                     className="w-8 h-8 rounded-full bg-[#2A2A28] flex items-center justify-center text-[10px] font-bold text-[#9A9A8E]"
-                    style={{
-                      border: "2px solid #1C1C1A",
-                      zIndex: 5 - i,
-                      fontSize: "10px",
-                    }}
+                    style={{ border: "2px solid #1C1C1A", zIndex: 5 - i }}
                   >
                     {String.fromCharCode(65 + i)}
                   </div>
@@ -145,10 +140,7 @@ function FeaturedEventCard({ event }: { event: any }) {
                     width: "6px",
                     height: "6px",
                     backgroundColor: i < activeDots ? "#FF6B35" : "#2E2E2C",
-                    boxShadow:
-                      i < activeDots
-                        ? "0 0 8px rgba(255,107,53,0.6)"
-                        : "none",
+                    boxShadow: i < activeDots ? "0 0 8px rgba(255,107,53,0.6)" : "none",
                   }}
                 />
               ))}
@@ -236,7 +228,6 @@ function CompactEventCard({ event }: { event: any }) {
             {event.title}
           </h3>
 
-          {/* Bottom row */}
           <div className="mt-auto flex items-center justify-between">
             <div className="flex items-center gap-1.5 min-w-0">
               <MapPin className="w-3 h-3 shrink-0" style={{ color: "#9A9A8E" }} />
@@ -269,13 +260,39 @@ function CompactEventCard({ event }: { event: any }) {
 export function EventFeedPage() {
   const navigate = useNavigate();
   const [vibeFilter, setVibeFilter] = useState<string>("All");
-  const [city, setCity] = useState<string>(
-    localStorage.getItem("gather_city") || "Siliguri"
-  );
+
+  // Fix 3: Ensure Siliguri is written to localStorage on first load
+  const [city, setCity] = useState<string>(() => {
+    const stored = localStorage.getItem("gather_city");
+    if (!stored) {
+      localStorage.setItem("gather_city", "Siliguri");
+      return "Siliguri";
+    }
+    return stored;
+  });
+
   const [districtFilter, setDistrictFilter] = useState<string>("All");
   const [isCityModalOpen, setIsCityModalOpen] = useState(false);
 
+  // Fix 1: Listen for header city tap event
+  useEffect(() => {
+    const openModal = () => setIsCityModalOpen(true);
+    window.addEventListener("gather:open-city-picker", openModal);
+    return () => window.removeEventListener("gather:open-city-picker", openModal);
+  }, []);
+
   const { data: events, isLoading, error, refetch } = useEvents(vibeFilter, city, districtFilter);
+
+  // Fix 4: 10-second loading timeout — show empty state instead of forever skeleton
+  const [isTimedOut, setIsTimedOut] = useState(false);
+  useEffect(() => {
+    if (isLoading) {
+      const timer = setTimeout(() => setIsTimedOut(true), 10000);
+      return () => clearTimeout(timer);
+    } else {
+      setIsTimedOut(false);
+    }
+  }, [isLoading]);
 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [touchStartY, setTouchStartY] = useState(0);
@@ -283,17 +300,13 @@ export function EventFeedPage() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (window.scrollY === 0) {
-      setTouchStartY(e.touches[0].clientY);
-    } else {
-      setTouchStartY(0);
-    }
+    if (window.scrollY === 0) setTouchStartY(e.touches[0].clientY);
+    else setTouchStartY(0);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (touchStartY === 0) return;
-    const currentY = e.touches[0].clientY;
-    const diff = currentY - touchStartY;
+    const diff = e.touches[0].clientY - touchStartY;
     if (diff > 0 && window.scrollY === 0) {
       e.stopPropagation();
       setPullProgress(Math.min(diff, 100));
@@ -311,15 +324,12 @@ export function EventFeedPage() {
   }, [pullProgress, refetch]);
 
   useEffect(() => {
-    if (isRefreshing) {
-      setPullProgress(60);
-    }
+    if (isRefreshing) setPullProgress(60);
   }, [isRefreshing]);
 
   const handleCitySelect = (selectedCity: string) => {
     setCity(selectedCity);
     localStorage.setItem("gather_city", selectedCity);
-    // Notify header via storage event
     window.dispatchEvent(new Event("storage"));
     setIsCityModalOpen(false);
   };
@@ -345,7 +355,8 @@ export function EventFeedPage() {
       );
     }
 
-    if (isLoading) {
+    // Fix 4: show skeleton only while loading AND not timed out
+    if (isLoading && !isTimedOut) {
       return (
         <div className="flex flex-col gap-[12px] px-[16px]">
           {[...Array(3)].map((_, i) => (
@@ -391,9 +402,7 @@ export function EventFeedPage() {
     return (
       <div className="flex flex-col gap-[14px] px-[16px]">
         {events.map((event, index) => {
-          if (index === 0) {
-            return <FeaturedEventCard key={event.id} event={event} />;
-          }
+          if (index === 0) return <FeaturedEventCard key={event.id} event={event} />;
           return <CompactEventCard key={event.id} event={event} />;
         })}
       </div>
@@ -408,40 +417,18 @@ export function EventFeedPage() {
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      {/* City selector + District pills — sticky below main header (64px) */}
-      <div className="sticky top-[64px] z-40 bg-[#131312] pt-[12px] pb-[8px]">
-        <div className="px-[20px] flex items-center justify-between">
-          <button
-            className="flex items-center gap-1.5 active:opacity-70 transition-opacity"
-            onClick={() => setIsCityModalOpen(true)}
-          >
-            <MapPin className="h-[14px] w-[14px] text-[#FF6B35]" />
-            <span className="text-[16px] font-semibold text-[#E5E2DE]">{city}</span>
-            <ChevronDown className="h-[14px] w-[14px] text-[#9A9A8E]" />
-          </button>
-          <button
-            className="text-[13px] text-[#FF6B35] font-medium active:opacity-70"
-            onClick={() => setIsCityModalOpen(true)}
-          >
-            change
-          </button>
-        </div>
-
-        {/* District pills */}
-        <div className="flex gap-[12px] overflow-x-auto no-scrollbar pt-[12px] pb-[4px] px-[16px]">
+      {/* Fix 1: Only district pills here — city is in the header */}
+      {/* Fix 2: District pills with correct area names */}
+      <div className="sticky top-[64px] z-40 bg-[#131312] pt-[10px] pb-[6px]">
+        <div className="flex gap-[12px] overflow-x-auto no-scrollbar px-[16px] pb-[4px]">
           <button
             onClick={() => setDistrictFilter("All")}
             className={`flex-shrink-0 px-6 py-2 text-[14px] font-semibold rounded-full transition-all active:scale-95 ${
-              districtFilter === "All"
-                ? "bg-[#FF6B35] text-white"
-                : "text-[#9A9A8E]"
+              districtFilter === "All" ? "bg-[#FF6B35] text-white" : "text-[#9A9A8E]"
             }`}
             style={
               districtFilter !== "All"
-                ? {
-                    backgroundColor: "#2A2A28",
-                    border: "1px solid rgba(255,255,255,0.05)",
-                  }
+                ? { backgroundColor: "#2A2A28", border: "1px solid rgba(255,255,255,0.05)" }
                 : {}
             }
           >
@@ -452,16 +439,11 @@ export function EventFeedPage() {
               key={d}
               onClick={() => setDistrictFilter(d)}
               className={`flex-shrink-0 px-6 py-2 text-[14px] font-semibold rounded-full transition-all active:scale-95 ${
-                districtFilter === d
-                  ? "bg-[#FF6B35] text-white"
-                  : "text-[#9A9A8E]"
+                districtFilter === d ? "bg-[#FF6B35] text-white" : "text-[#9A9A8E]"
               }`}
               style={
                 districtFilter !== d
-                  ? {
-                      backgroundColor: "#2A2A28",
-                      border: "1px solid rgba(255,255,255,0.05)",
-                    }
+                  ? { backgroundColor: "#2A2A28", border: "1px solid rgba(255,255,255,0.05)" }
                   : {}
               }
             >
@@ -484,8 +466,8 @@ export function EventFeedPage() {
         </div>
       </div>
 
-      {/* Section header */}
-      <div className="flex items-center justify-between px-[24px] pt-[16px] pb-[16px]">
+      {/* Fix 2: Section header ABOVE vibe pills */}
+      <div className="flex items-center justify-between px-[24px] pt-[16px] pb-[12px]">
         <h2 className="font-semibold text-[#E5E2DE]" style={{ fontSize: "24px" }}>
           Nearby Gatherings
         </h2>
@@ -494,7 +476,7 @@ export function EventFeedPage() {
         </span>
       </div>
 
-      {/* Vibe pills */}
+      {/* Vibe pills — BELOW the section title */}
       <div className="flex gap-[12px] overflow-x-auto no-scrollbar px-[16px] mb-[16px] pb-2">
         {VIBES.map((v) => (
           <button
@@ -505,10 +487,7 @@ export function EventFeedPage() {
             }`}
             style={
               vibeFilter !== v
-                ? {
-                    backgroundColor: "#2A2A28",
-                    border: "1px solid rgba(255,255,255,0.05)",
-                  }
+                ? { backgroundColor: "#2A2A28", border: "1px solid rgba(255,255,255,0.05)" }
                 : {}
             }
           >
@@ -528,15 +507,10 @@ export function EventFeedPage() {
           />
           <div className="fixed inset-x-0 bottom-0 z-[101] bg-[#242422] rounded-t-3xl flex flex-col max-h-[85vh]">
             <div className="flex justify-center pt-[10px] pb-[10px]">
-              <div
-                className="w-[40px] h-[4px] rounded-full"
-                style={{ backgroundColor: "#383836" }}
-              />
+              <div className="w-[40px] h-[4px] rounded-full" style={{ backgroundColor: "#383836" }} />
             </div>
             <div className="px-[20px] pb-[16px]">
-              <h3 className="text-[17px] font-semibold text-[#E5E2DE]">
-                Choose your city
-              </h3>
+              <h3 className="text-[17px] font-semibold text-[#E5E2DE]">Choose your city</h3>
             </div>
             <div className="flex-1 overflow-y-auto px-[20px] pb-[env(safe-area-inset-bottom,20px)]">
               {CITIES.map((c) => (
@@ -545,16 +519,10 @@ export function EventFeedPage() {
                   onClick={() => handleCitySelect(c)}
                   className="w-full flex items-center justify-between h-[52px] border-b border-[#2E2E2C] last:border-0 active:opacity-70 transition-opacity"
                 >
-                  <span
-                    className={`text-[16px] font-medium ${
-                      city === c ? "text-[#FF6B35]" : "text-[#E5E2DE]"
-                    }`}
-                  >
+                  <span className={`text-[16px] font-medium ${city === c ? "text-[#FF6B35]" : "text-[#E5E2DE]"}`}>
                     {c}
                   </span>
-                  {city === c && (
-                    <div className="w-2 h-2 rounded-full bg-[#FF6B35]" />
-                  )}
+                  {city === c && <div className="w-2 h-2 rounded-full bg-[#FF6B35]" />}
                 </button>
               ))}
             </div>

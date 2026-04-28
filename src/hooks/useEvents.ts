@@ -4,7 +4,8 @@ import { Event } from '@/types';
 
 export function useEvents(vibeFilter: string, city: string, districtFilter: string) {
   return useQuery({
-    queryKey: ['events', vibeFilter, city, districtFilter],
+    queryKey: ['events', vibeFilter, districtFilter],
+    staleTime: 30_000,
     queryFn: async () => {
       let query = supabase
         .from('events')
@@ -20,12 +21,10 @@ export function useEvents(vibeFilter: string, city: string, districtFilter: stri
         query = query.eq('vibe', vibeFilter.toLowerCase());
       }
 
+      // Fix 4: Only filter by district when a specific one is selected.
+      // City filter removed — exact-match on city field was blocking all results.
       if (districtFilter !== 'All') {
         query = query.eq('district', districtFilter);
-      }
-
-      if (city && city !== "All Locations") {
-        query = query.eq('city', city);
       }
 
       const { data, error } = await query;

@@ -9,8 +9,9 @@ import { useToast } from "@/components/ui/toast";
 
 type AuthTab = "signup" | "signin";
 
+// 16px font-size prevents iOS auto-zoom which causes the keyboard-slide bug
 const INPUT_CLASS =
-  "w-full h-[48px] border-b border-[#2E2E2C] bg-transparent px-0 text-[16px] text-[#E5E2DE] placeholder:text-[#5A5A52] outline-none focus:border-[#FF6B35] transition-all rounded-none disabled:opacity-50";
+  "w-full h-[48px] border-b border-[#2E2E2C] bg-transparent px-0 placeholder:text-[#5A5A52] outline-none focus:border-[#FF6B35] transition-all rounded-none disabled:opacity-50";
 
 const SUBMIT_CLASS =
   "w-full h-[54px] mt-4 rounded-2xl bg-[#FF6B35] text-white text-[16px] font-bold disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] transition-all shadow-[0_8px_24px_rgba(255,107,53,0.3)]";
@@ -36,7 +37,12 @@ export function AuthModal() {
       setPassword("");
       setError(null);
       setEmailError(null);
+      // Body lock prevents iOS viewport resize when keyboard opens
+      document.body.classList.add("auth-modal-open");
+    } else {
+      document.body.classList.remove("auth-modal-open");
     }
+    return () => document.body.classList.remove("auth-modal-open");
   }, [isAuthModalOpen]);
 
   const passwordStrength =
@@ -137,6 +143,11 @@ export function AuthModal() {
     setEmailError(null);
   };
 
+  const inputStyle: React.CSSProperties = {
+    fontSize: "16px", // Minimum 16px prevents iOS auto-zoom + keyboard slide
+    color: "#E5E2DE",
+  };
+
   const modalJsx = (
     <div className="p-8 pt-6">
       {/* Tab row */}
@@ -179,6 +190,7 @@ export function AuthModal() {
               disabled={loading}
               required
               className={INPUT_CLASS}
+              style={inputStyle}
             />
           </div>
           <div className="space-y-1">
@@ -192,6 +204,7 @@ export function AuthModal() {
               disabled={loading}
               required
               className={INPUT_CLASS}
+              style={inputStyle}
             />
             {emailError && (
               <div className="mt-2 p-3 bg-red-500/10 rounded-xl border border-red-500/20">
@@ -221,6 +234,7 @@ export function AuthModal() {
               required
               minLength={8}
               className={INPUT_CLASS}
+              style={inputStyle}
             />
             {passwordStrength && (
               <p className={`text-[12px] mt-2 font-bold ${passwordStrength.cls}`}>
@@ -253,6 +267,7 @@ export function AuthModal() {
               disabled={loading}
               required
               className={INPUT_CLASS}
+              style={inputStyle}
             />
           </div>
           <div className="space-y-1">
@@ -266,6 +281,7 @@ export function AuthModal() {
               disabled={loading}
               required
               className={INPUT_CLASS}
+              style={inputStyle}
             />
           </div>
 
@@ -306,7 +322,18 @@ export function AuthModal() {
 
   return (
     <Drawer open={isAuthModalOpen} onOpenChange={(open) => !open && closeAuthModal()}>
-      <DrawerContent className="rounded-t-3xl border-t border-[#2E2E2C] bg-[#242422] px-0">
+      <DrawerContent
+        className="rounded-t-3xl border-t border-[#2E2E2C] bg-[#242422] px-0"
+        style={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          maxHeight: "90vh",
+          overflowY: "auto",
+          WebkitOverflowScrolling: "touch" as any,
+        }}
+      >
         <DrawerTitle className="sr-only">Authentication</DrawerTitle>
         <div className="mx-auto mt-4 mb-2 h-1.5 w-[40px] rounded-full" style={{ backgroundColor: "#383836" }} />
         {modalJsx}
