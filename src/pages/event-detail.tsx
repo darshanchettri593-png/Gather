@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router";
 import {
   ArrowLeft, CalendarRange, MapPin, Check,
-  Share2, AlertCircle, Clock, MoreVertical,
+  Share2, AlertCircle, Clock, MoreVertical, Send,
 } from "lucide-react";
 import { useEventDetail, useRSVPStatus, useToggleRSVP } from "@/lib/queries";
 import { useDeleteEvent } from "@/hooks/useEvent";
@@ -12,6 +12,8 @@ import { format } from "date-fns";
 import { getVibeLabel } from "@/lib/utils";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/toast";
+import { useMessages, useSendMessage, subscribeToMessages } from "@/hooks/useMessages";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function EventDetailPage() {
   const { id } = useParams();
@@ -27,6 +29,33 @@ export function EventDetailPage() {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  // ─── Chat ────────────────────────────────────────────────────────────────────
+  const queryClient = useQueryClient();
+  const { data: messages = [] } = useMessages(id || "");
+  const { mutate: sendMessage, isPending: isSending } = useSendMessage();
+  const [chatInput, setChatInput] = useState("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Realtime subscription
+  useEffect(() => {
+    if (!id) return;
+    return subscribeToMessages(id, () => {
+      queryClient.invalidateQueries({ queryKey: ["messages", id] });
+    });
+  }, [id, queryClient]);
+
+  // Scroll to latest message when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  const handleSendMessage = () => {
+    const content = chatInput.trim();
+    if (!content || !user || !id || isSending) return;
+    setChatInput("");
+    sendMessage({ eventId: id, userId: user.id, content });
+  };
 
   const isHost = !!user && !!event && user.id === event.host_id;
 
@@ -523,6 +552,143 @@ export function EventDetailPage() {
                 {attendeesList.length} going
               </span>
             </div>
+          )}
+        </div>
+
+        {/* ── Group Chat ───────────────────────────────────────────────────────── */}
+        <div className="pt-6 border-t border-[#2E2E2C] mb-8">
+          <h2
+            className="font-bold uppercase tracking-[0.1em] mb-4"
+            style={{ fontSize: "12px", color: "#5A5A52" }}
+          >
+            Group Chat
+          </h2>
+
+          {/* Message list */}
+          <div className="flex flex-col gap-4 mb-4" style={{ minHeight: messages.length === 0 ? "48px" : undefined }}>
+            {messages.length === 0 ? (
+              <p style={{ fontSize: "14px", color: "#5A5A52" }}>
+                No messages yet. Be the first to say something.
+              </p>
+            ) : (
+              messages.map((msg) => {
+                const isOwn = msg.user_id === user?.id;
+                const initial = (msg.user?.display_name || "?").charAt(0).toUpperCase();
+                return (
+                  <div key={msg.id} className="flex items-start gap-3">
+                    {/* Avatar */}
+                    <div
+                      className="shrink-0 rounded-full flex items-center justify-center text-white font-bold text-[12px] overflow-hidden"
+                      style={{
+                        width: "32px",
+                        height: "32px",
+                        backgroundColor: isOwn ? "#FF6B35" : "#2A2A28",
+                        border: isOwn ? "none" : "1px solid #383836",
+                        flexShrink: 0,
+                      }}
+                    >
+                      {msg.user?.avatar_url ? (
+                        <img src={msg.user.avatar_url} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        initial
+                      )}
+                    </div>
+
+                    {/* Bubble */}
+                    <div className="flex flex-col gap-[2px] min-w-0 flex-1">
+                      <div className="flex items-baseline gap-2">
+                        <span
+                          style={{
+                            fontSize: "13px",
+                            fontWeight: 600,
+                            color: isOwn ? "#FF6B35" : "#E5E2DE",
+                          }}
+                        >
+                          {isOwn ? "You" : (msg.user?.display_name || "Guest")}
+                        </span>
+                        <span style={{ fontSize: "11px", color: "#5A5A52" }}>
+                          {format(new Date(msg.created_at), "h:mm a")}
+                        </span>
+                      </div>
+                      <p
+                        style={{
+                          fontSize: "15px",
+                          color: "#E5E2DE",
+                          lineHeight: 1.45,
+                          wordBreak: "break-word",
+                        }}
+                      >
+                        {msg.content}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Send input */}
+          {!isPastEvent && (
+            <>
+              {!user ? (
+                <p style={{ fontSize: "13px", color: "#5A5A52" }}>
+                  <button
+                    onClick={() => openAuthModal("Sign in to join the conversation.", `/event/${id}`)}
+                    style={{ color: "#FF6B35", fontWeight: 600 }}
+                    className="active:opacity-70"
+                  >
+                    Sign in
+                  </button>
+                  {" "}to join the conversation.
+                </p>
+              ) : !hasRSVPd ? (
+                <p style={{ fontSize: "13px", color: "#5A5A52" }}>
+                  RSVP to join the conversation.
+                </p>
+              ) : (
+                <div
+                  className="flex items-center gap-3"
+                  style={{
+                    backgroundColor: "#2A2A28",
+                    border: "1px solid #383836",
+                    borderRadius: "14px",
+                    padding: "8px 8px 8px 14px",
+                  }}
+                >
+                  <input
+                    type="text"
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSendMessage();
+                      }
+                    }}
+                    placeholder="Say something..."
+                    maxLength={500}
+                    className="flex-1 bg-transparent outline-none"
+                    style={{
+                      fontSize: "16px",
+                      color: "#E5E2DE",
+                    }}
+                  />
+                  <button
+                    onClick={handleSendMessage}
+                    disabled={!chatInput.trim() || isSending}
+                    className="flex items-center justify-center rounded-xl shrink-0 transition-opacity active:opacity-70 disabled:opacity-30"
+                    style={{
+                      width: "36px",
+                      height: "36px",
+                      backgroundColor: "#FF6B35",
+                    }}
+                  >
+                    <Send className="h-4 w-4 text-white" strokeWidth={2} />
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
 
