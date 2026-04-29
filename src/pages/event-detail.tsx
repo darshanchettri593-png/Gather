@@ -76,15 +76,23 @@ export function EventDetailPage() {
   }, [user, id, hasRSVPd, toggleRSVP, toast]);
 
   const handleShare = async () => {
+    const formattedDate = event?.event_datetime
+      ? format(new Date(event.event_datetime), "EEEE, MMM d 'at' h:mm a")
+      : "";
+    const shareData = {
+      title: event?.title || "Gather Event",
+      text: `Join me at ${event?.title} on ${formattedDate} in ${event?.location_text}`,
+      url: window.location.href,
+    };
     if (navigator.share) {
       try {
-        await navigator.share({ title: event?.title || "Gather Event", url: window.location.href });
-      } catch (err) {
-        console.error("Error sharing:", err);
+        await navigator.share(shareData);
+      } catch {
+        // user cancelled — do nothing
       }
     } else {
-      navigator.clipboard.writeText(window.location.href);
-      toast("Link copied");
+      await navigator.clipboard.writeText(window.location.href);
+      toast("Link copied!");
     }
   };
 
@@ -268,18 +276,16 @@ export function EventDetailPage() {
           )}
           <button
             onClick={handleShare}
-            className="flex items-center justify-center rounded-full active:scale-90 transition-transform"
+            className="flex items-center justify-center rounded-full active:scale-95 transition-transform"
             style={{
               width: "40px",
               height: "40px",
-              backgroundColor: "rgba(0,0,0,0.40)",
-              backdropFilter: "blur(8px)",
-              WebkitBackdropFilter: "blur(8px)",
-              border: "1px solid rgba(255,255,255,0.10)",
+              backgroundColor: "#1C1C1A",
+              border: "1px solid #2A2A28",
             }}
             aria-label="Share"
           >
-            <Share2 className="h-5 w-5 text-white" />
+            <Share2 size={20} color="#F0EEE9" strokeWidth={1.8} />
           </button>
         </div>
 
