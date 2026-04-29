@@ -9,17 +9,17 @@
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --animate-shimmer: shimmer 1.5s infinite linear;
 
-  /* Gather design tokens */
-  --color-gather-bg: #131312;
-  --color-gather-surface: #1C1C1A;
-  --color-gather-card: #242422;
-  --color-gather-card-high: #2A2A28;
-  --color-gather-orange: #FF6B35;
-  --color-gather-text: #E5E2DE;
-  --color-gather-text-secondary: #9A9A8E;
-  --color-gather-text-muted: #5A5A52;
-  --color-gather-border-strong: #2E2E2C;
+  /* Gather v2 design tokens */
+  --color-g-bg: #111110;
+  --color-g-surface: #1C1C1A;
+  --color-g-surface-2: #242422;
+  --color-g-border: #2A2A28;
+  --color-g-orange: #FF6B35;
+  --color-g-text-1: #F0EEE9;
+  --color-g-text-2: #6B6B63;
+  --color-g-text-3: #3D3D38;
 
+  /* Legacy tokens (kept for shadcn compat) */
   --color-bg-primary: var(--bg-primary);
   --color-bg-surface: var(--bg-surface);
   --color-bg-surface-2: var(--bg-surface-2);
@@ -71,18 +71,18 @@
 }
 
 :root {
-  --bg-primary: #131312;
+  --bg-primary: #111110;
   --bg-surface: #1C1C1A;
   --bg-surface-2: #242422;
   --bg-surface-3: #2A2A28;
   --orange: #FF6B35;
   --orange-dim: rgba(255, 107, 53, 0.12);
-  --orange-border: rgba(255, 107, 53, 0.25);
-  --text-primary: #E5E2DE;
-  --text-secondary: #9A9A8E;
-  --text-muted: #5A5A52;
-  --border-default: #2E2E2C;
-  --border-light: #383836;
+  --orange-border: rgba(255, 107, 53, 0.2);
+  --text-primary: #F0EEE9;
+  --text-secondary: #6B6B63;
+  --text-muted: #3D3D38;
+  --border-default: #2A2A28;
+  --border-light: #2A2A28;
   --success: #34C759;
   --destructive: #FF3B30;
 
@@ -101,7 +101,7 @@
   --accent: var(--orange);
   --accent-foreground: #FFFFFF;
   --border: var(--border-default);
-  --input: var(--border-light);
+  --input: var(--border-default);
   --ring: var(--orange);
   --chart-1: #FF6B35;
   --chart-2: #2dd4bf;
@@ -109,7 +109,7 @@
   --chart-4: #fb7185;
   --chart-5: #818cf8;
   --radius: 0.75rem;
-  
+
   --sidebar: var(--bg-surface);
   --sidebar-foreground: var(--text-primary);
   --sidebar-primary: var(--orange);
@@ -120,8 +120,6 @@
   --sidebar-ring: var(--orange);
 }
 
-
-
 @layer base {
   * {
     border-color: var(--border);
@@ -130,11 +128,12 @@
 
   html,
   body {
+    background: #111110;
+    color: #F0EEE9;
     touch-action: pan-x pan-y;
     -webkit-text-size-adjust: 100%;
-    background-color: #131312;
-    color: #E5E2DE;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   body {
@@ -142,98 +141,73 @@
     font-family: var(--font-sans);
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    letter-spacing: -0.025em;
+  h1, h2, h3, h4, h5, h6 {
+    letter-spacing: -0.02em;
     font-weight: 600;
   }
 
   :focus-visible {
-    outline: 2px solid #1A1A1A;
+    outline: 2px solid #FF6B35;
     outline-offset: 2px;
     border-radius: 4px;
   }
 
+  /* Legal page content */
   .legal-content a[href^="mailto:"] {
     color: #FF6B35;
     text-decoration: none;
-    touch-action: manipulation;
   }
-
-  .legal-content a[href^="mailto:"]:hover,
-  .legal-content a[href^="mailto:"]:active {
+  .legal-content a[href^="mailto:"]:hover {
     text-decoration: underline;
   }
-
-  /* Fix 6: Bullet hanging indent fix */
   .legal-content ul {
     list-style-position: outside;
     padding-left: 24px;
   }
-
   .legal-content ul li {
     padding-left: 4px;
     margin-bottom: 12px;
     line-height: 1.6;
   }
-
-  /* Standard lists bullet */
   .legal-content ul:not(.cross-list) {
     list-style: none;
-    /* remove native to use robust custom hanging indent */
   }
-
   .legal-content ul:not(.cross-list) li {
     position: relative;
     padding-left: 12px;
   }
-
   .legal-content ul:not(.cross-list) li::before {
     content: "•";
     position: absolute;
     left: -12px;
-    color: #404040;
+    color: #3D3D38;
   }
-
   .legal-content ul.cross-list {
     list-style: none;
   }
-
   .legal-content ul.cross-list li {
     position: relative;
     padding-left: 8px;
-    /* Extra padding for absolute pseudo element */
   }
-
   .legal-content ul.cross-list li::before {
     content: "×";
     position: absolute;
     left: -16px;
     color: #C44827;
-    /* Muted red matching the icon */
     font-weight: bold;
   }
-
-  /* Fix 7: Numbered List Styling */
   .legal-content ol {
     list-style-position: outside;
     padding-left: 24px;
     counter-reset: legal-counter;
   }
-
   .legal-content ol li {
     position: relative;
     padding-left: 4px;
     margin-bottom: 20px;
     line-height: 1.6;
     list-style-type: none;
-    /* Hide default numbers to styled pseudo ones */
   }
-
   .legal-content ol li::before {
     counter-increment: legal-counter;
     content: counter(legal-counter) ".";
@@ -241,19 +215,11 @@
     left: -20px;
     font-size: 15px;
     font-weight: 600;
-    color: #A3A3A3;
-    /* text-neutral-400 */
+    color: #6B6B63;
   }
 }
 
 @layer utilities {
-  .glass-card {
-    background: rgba(36, 36, 34, 0.6);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-  }
-
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -262,48 +228,31 @@
     display: none;
   }
 
-  .profile-mesh {
-    background:
-      radial-gradient(circle at 20% 30%, rgba(255, 107, 53, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 80% 70%, rgba(255, 181, 157, 0.05) 0%, transparent 50%);
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 
-  /* Prevents iOS viewport from resizing when keyboard opens inside auth modal */
-  .auth-modal-open {
-    position: fixed;
-    width: 100%;
-    overflow: hidden;
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
   }
 
   @keyframes shimmer {
-    0% {
-      transform: translateX(-100%);
-    }
-
-    100% {
-      transform: translateX(100%);
-    }
-  }
-
-  .scrollbar-hide {
-    /* IE and Edge */
-    -ms-overflow-style: none;
-    /* Firefox */
-    scrollbar-width: none;
-  }
-
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
   }
 }
 
 * {
   scrollbar-width: none;
-  /* Firefox globally hide */
   -ms-overflow-style: none;
-  /* IE/Edge globally hide */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -316,26 +265,10 @@ html {
 }
 
 .page-transition {
-  animation: fadeIn 0.15s ease-out;
+  animation: fadeIn 0.12s ease-out;
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.hide-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
+  from { opacity: 0; transform: translateY(3px); }
+  to   { opacity: 1; transform: translateY(0); }
 }

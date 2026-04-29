@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight, User } from "lucide-react";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/lib/auth-context";
 import { useProfile } from "@/hooks/useUser";
@@ -11,8 +11,7 @@ import { ImageUploader } from "@/components/ui/image-uploader";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/toast";
 
-// Sort bringing Siliguri to top
-const LOCATIONS = ["Siliguri, West Bengal", ...FLAT_LOCATIONS.filter(l => l !== "Siliguri, West Bengal")];
+const LOCATIONS = ["Siliguri, West Bengal", ...FLAT_LOCATIONS.filter((l) => l !== "Siliguri, West Bengal")];
 
 export function SettingsPage() {
   const navigate = useNavigate();
@@ -28,23 +27,16 @@ export function SettingsPage() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    if (profile) {
-      if (profile.display_name) setDisplayName(profile.display_name);
-    }
+    if (profile?.display_name) setDisplayName(profile.display_name);
   }, [profile]);
 
   const updateProfileMutation = useMutation({
     mutationFn: async (updates: { display_name?: string; location?: string; avatar_url?: string }) => {
       if (!user) throw new Error("Not logged in");
-      const { error } = await supabase
-        .from('users')
-        .update(updates)
-        .eq('id', user.id);
+      const { error } = await supabase.from("users").update(updates).eq("id", user.id);
       if (error) throw error;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profile', user?.id] });
-    }
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["profile", user?.id] }),
   });
 
   const { toast } = useToast();
@@ -60,28 +52,17 @@ export function SettingsPage() {
       setDeleteError("Email doesn't match your account email");
       return;
     }
-
     setIsDeleting(true);
     setDeleteError(null);
-
     try {
-      console.log("[DeleteAccount] Starting deletion for:", user.id);
-
       if (profile?.avatar_url) {
         const path = profile.avatar_url.split("/avatars/")[1];
         if (path) {
-          await supabase.storage
-            .from("avatars")
-            .remove([path])
-            .catch((e) => console.warn("[DeleteAccount] Avatar cleanup failed:", e));
+          await supabase.storage.from("avatars").remove([path]).catch(() => {});
         }
       }
-
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("Session expired. Please log in again.");
-
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-user`,
         {
@@ -92,225 +73,332 @@ export function SettingsPage() {
           },
         }
       );
-
       if (!response.ok) {
         const body = await response.json().catch(() => ({}));
         throw new Error(body.error || `Server error (${response.status})`);
       }
-
       ["pending_rsvp_event_id", "pending_host_intent", "gather_pending_action"].forEach(
         (k) => localStorage.removeItem(k)
       );
       await supabase.auth.signOut({ scope: "local" });
-
       toast("Account deleted");
       navigate("/");
     } catch (err: any) {
-      console.error("[DeleteAccount] Error:", err);
       setDeleteError(err.message || "Something went wrong. Try again.");
       setIsDeleting(false);
     }
   };
 
-  const SectionHeader = ({ children }: { children: React.ReactNode }) => (
-    <h2 className="px-5 mb-2 text-[12px] font-semibold tracking-widest text-[#9A9A8E] uppercase" style={{ paddingTop: '20px' }}>
+  // ─── Sub-components ──────────────────────────────────────────────────────────
+
+  const SectionLabel = ({ children }: { children: React.ReactNode }) => (
+    <h2
+      style={{
+        fontSize: "11px",
+        fontWeight: 600,
+        color: "#6B6B63",
+        textTransform: "uppercase",
+        letterSpacing: "0.1em",
+        padding: "20px 20px 8px",
+      }}
+    >
       {children}
     </h2>
   );
 
-  const CardRow = ({ 
-    label, 
-    value, 
-    onClick, 
-    hasChevron, 
-    isLast,
-    children, 
-    subLabel
-  }: { 
+  const GroupCard = ({ children }: { children: React.ReactNode }) => (
+    <div
+      style={{
+        backgroundColor: "#1C1C1A",
+        borderRadius: "16px",
+        margin: "0 20px 8px",
+        overflow: "hidden",
+      }}
+    >
+      {children}
+    </div>
+  );
+
+  const Row = ({
+    label,
+    value,
+    onClick,
+    hasChevron,
+    children,
+    subLabel,
+  }: {
     label?: string | React.ReactNode;
-    value?: string | React.ReactNode; 
-    onClick?: () => void; 
-    hasChevron?: boolean; 
-    isLast?: boolean;
+    value?: string | React.ReactNode;
+    onClick?: () => void;
+    hasChevron?: boolean;
     children?: React.ReactNode;
     subLabel?: string;
   }) => (
-    <div 
-      className={`flex items-center justify-between min-h-[52px] bg-[#242422] px-4 ${onClick ? 'cursor-pointer active:bg-[#2A2A28]' : ''}`}
+    <div
+      className={onClick ? "cursor-pointer active:opacity-60 transition-opacity" : ""}
       onClick={onClick}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        minHeight: "52px",
+        padding: "0 16px",
+      }}
     >
-      <div className="flex-1 py-1">
-        {label && <span className="text-[17px] text-[#E5E2DE]">{label}</span>}
-        {subLabel && <p className="text-[12px] text-[#5A5A52] leading-tight mt-0.5">{subLabel}</p>}
+      <div style={{ flex: 1, padding: "4px 0" }}>
+        {label && (
+          <span style={{ fontSize: "16px", color: "#F0EEE9" }}>{label}</span>
+        )}
+        {subLabel && (
+          <p style={{ fontSize: "12px", color: "#3D3D38", marginTop: "2px" }}>{subLabel}</p>
+        )}
         {children}
       </div>
       <div className="flex items-center gap-2">
-        {value && <span className="text-[17px] text-[#9A9A8E]">{value}</span>}
-        {hasChevron && <ChevronRight className="h-5 w-5 text-[#5A5A52]" />}
+        {value && (
+          <span style={{ fontSize: "16px", color: "#6B6B63" }}>{value}</span>
+        )}
+        {hasChevron && (
+          <ChevronRight size={18} color="#6B6B63" strokeWidth={1.8} />
+        )}
       </div>
     </div>
   );
 
   const Separator = () => (
-    <div className="pl-4 bg-[#242422]">
-      <div className="h-[1px] bg-[#2E2E2C] w-full" />
+    <div style={{ paddingLeft: "16px", backgroundColor: "#1C1C1A" }}>
+      <div style={{ height: "1px", backgroundColor: "#2A2A28" }} />
     </div>
   );
 
+  // ─── Render ───────────────────────────────────────────────────────────────────
+
   return (
-    <div className="page-transition w-full bg-[#131312] min-h-screen">
+    <div
+      className="page-transition w-full min-h-screen"
+      style={{ backgroundColor: "#111110" }}
+    >
       {/* Header */}
-      <header className="sticky top-0 z-50 flex items-center justify-between bg-[#1C1C1A] border-b border-[#2E2E2C] h-[56px] px-2">
-        <button 
-          onClick={() => navigate(-1)} 
-          className="flex items-center justify-center w-10 h-10 bg-transparent border-0 text-[#E5E2DE] active:opacity-70 transition-opacity"
+      <header
+        className="sticky top-0 z-50 flex items-center justify-between"
+        style={{
+          height: "56px",
+          backgroundColor: "#111110",
+          borderBottom: "1px solid #2A2A28",
+          padding: "0 4px",
+        }}
+      >
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center justify-center active:opacity-60 transition-opacity"
+          style={{ width: "44px", height: "44px" }}
         >
-          <ChevronLeft className="h-6 w-6" strokeWidth={2} />
+          <ChevronLeft size={22} color="#F0EEE9" strokeWidth={2} />
         </button>
-        
-        <h1 className="text-[17px] font-semibold text-[#E5E2DE] absolute left-1/2 -translate-x-1/2">
+        <span
+          style={{
+            position: "absolute",
+            left: "50%",
+            transform: "translateX(-50%)",
+            fontSize: "17px",
+            fontWeight: 600,
+            color: "#F0EEE9",
+          }}
+        >
           Settings
-        </h1>
-        <div className="w-10" />
+        </span>
+        <div style={{ width: "44px" }} />
       </header>
 
-      {/* Main Content */}
-      <div className="pt-2 pb-[100px] max-w-md mx-auto space-y-2">
-        
+      <div className="max-w-md mx-auto" style={{ paddingBottom: "80px" }}>
+
         {/* ACCOUNT */}
-        <section>
-          <SectionHeader>Account</SectionHeader>
-          
-          {!user ? (
-            <div className="bg-[#242422] rounded-2xl border border-[#2E2E2C] overflow-hidden mx-4 p-6 flex flex-col items-center text-center">
-              <div className="w-10 h-10 bg-[#2A2A28] rounded-full flex items-center justify-center mb-3">
-                <User className="h-5 w-5 text-[#9A9A8E]" />
+        <SectionLabel>Account</SectionLabel>
+        {!user ? (
+          <GroupCard>
+            <div
+              className="flex flex-col items-center text-center"
+              style={{ padding: "24px 20px" }}
+            >
+              <div
+                className="flex items-center justify-center"
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "50%",
+                  backgroundColor: "#242422",
+                  marginBottom: "12px",
+                }}
+              >
+                <User size={20} color="#6B6B63" strokeWidth={1.8} />
               </div>
-              <p className="text-[14px] text-[#9A9A8E] mb-5">
+              <p style={{ fontSize: "14px", color: "#6B6B63", marginBottom: "20px" }}>
                 Sign in to save your events and customize your profile
               </p>
-              <button 
+              <button
                 onClick={() => openAuthModal("Sign in to save your events and customize your profile", "/settings")}
-                className="w-full h-[44px] rounded-full bg-[#FF6B35] text-white text-[16px] font-semibold shadow-none active:scale-[0.98] transition-transform"
+                className="w-full active:opacity-80 transition-opacity"
+                style={{
+                  height: "44px",
+                  borderRadius: "999px",
+                  backgroundColor: "#FF6B35",
+                  color: "white",
+                  fontSize: "15px",
+                  fontWeight: 600,
+                }}
               >
                 Sign in
               </button>
             </div>
-          ) : (
-            <div className="bg-[#242422] rounded-2xl border border-[#2E2E2C] overflow-hidden mx-4">
-              <div className="flex items-center justify-between min-h-[52px] px-4">
-                <span className="text-[17px] text-[#E5E2DE]">Name</span>
-                <input
-                   type="text"
-                   value={displayName}
-                   onChange={(e) => setDisplayName(e.target.value)}
-                   onBlur={() => updateProfileMutation.mutate({ display_name: displayName })}
-                   className="text-right text-[17px] text-[#9A9A8E] focus:outline-none focus:text-[#E5E2DE] bg-transparent flex-1 ml-4"
-                   placeholder="Your name"
+          </GroupCard>
+        ) : (
+          <GroupCard>
+            <div
+              className="flex items-center justify-between"
+              style={{ minHeight: "52px", padding: "0 16px" }}
+            >
+              <span style={{ fontSize: "16px", color: "#F0EEE9" }}>Name</span>
+              <input
+                type="text"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                onBlur={() => updateProfileMutation.mutate({ display_name: displayName })}
+                placeholder="Your name"
+                className="text-right bg-transparent outline-none flex-1 ml-4"
+                style={{ fontSize: "16px", color: "#6B6B63" }}
+              />
+            </div>
+            <Separator />
+            <Row label="Email" value={user.email} />
+            <Separator />
+            <div
+              className="flex items-center justify-between"
+              style={{ minHeight: "52px", padding: "8px 16px" }}
+            >
+              <span style={{ fontSize: "16px", color: "#F0EEE9" }}>Profile photo</span>
+              <div
+                className="rounded-full overflow-hidden relative cursor-pointer"
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  backgroundColor: "#242422",
+                  border: "1px solid #2A2A28",
+                }}
+              >
+                <ImageUploader
+                  bucket="avatars"
+                  folder={user.id}
+                  aspectRatio="1/1"
+                  defaultImage={profile?.avatar_url}
+                  onUploadSuccess={(url) => updateProfileMutation.mutate({ avatar_url: url })}
                 />
               </div>
-              <Separator />
-              <CardRow label="Email" value={user.email} />
-              <Separator />
-              <div className="flex items-center justify-between min-h-[52px] bg-[#242422] px-4 py-2">
-                <span className="text-[17px] text-[#E5E2DE]">Profile photo</span>
-                <div className="w-10 h-10 rounded-full bg-[#2A2A28] overflow-hidden relative cursor-pointer border border-[#2E2E2C]">
-                  <ImageUploader 
-                    bucket="avatars"
-                    folder={user.id}
-                    aspectRatio="1/1"
-                    defaultImage={profile?.avatar_url}
-                    onUploadSuccess={(url) => updateProfileMutation.mutate({ avatar_url: url })}
-                  />
-                </div>
-              </div>
             </div>
-          )}
-        </section>
+          </GroupCard>
+        )}
 
         {/* PREFERENCES */}
-        <section>
-          <SectionHeader>Preferences</SectionHeader>
-          <div className="bg-[#242422] rounded-2xl border border-[#2E2E2C] overflow-hidden mx-4">
-            <CardRow 
-              label="Location" 
-              value={profile?.location || "Select location"} 
-              hasChevron 
-              onClick={() => setShowLocationModal(true)} 
+        <SectionLabel>Preferences</SectionLabel>
+        <GroupCard>
+          <Row
+            label="Location"
+            value={profile?.location || "Select location"}
+            hasChevron
+            onClick={() => setShowLocationModal(true)}
+          />
+          <Separator />
+          <div
+            className="flex items-center justify-between"
+            style={{ minHeight: "52px", padding: "0 16px" }}
+          >
+            <span style={{ fontSize: "16px", color: "#F0EEE9" }}>Notifications</span>
+            <Switch
+              defaultChecked
+              className="data-[state=checked]:bg-[#FF6B35] data-[state=unchecked]:bg-[#2A2A28]"
             />
-            <Separator />
-            <div className="flex items-center justify-between min-h-[52px] bg-[#242422] px-4">
-              <span className="text-[17px] text-[#E5E2DE]">Notifications</span>
-              <Switch defaultChecked className="data-[state=checked]:bg-[#FF6B35] data-[state=unchecked]:bg-[#2A2A28]" />
-            </div>
-            <Separator />
-            <div className="flex items-center justify-between min-h-[52px] bg-[#242422] px-4 py-2">
-              <div className="flex flex-col">
-                <span className="text-[17px] text-[#E5E2DE]">Email updates</span>
-                <span className="text-[12px] text-[#5A5A52] mt-0.5">Weekly digest of events near you</span>
-              </div>
-              <Switch className="data-[state=checked]:bg-[#FF6B35] data-[state=unchecked]:bg-[#2A2A28]" />
-            </div>
           </div>
-        </section>
+          <Separator />
+          <div
+            className="flex items-center justify-between"
+            style={{ minHeight: "52px", padding: "8px 16px" }}
+          >
+            <div className="flex flex-col">
+              <span style={{ fontSize: "16px", color: "#F0EEE9" }}>Email updates</span>
+              <span style={{ fontSize: "12px", color: "#3D3D38", marginTop: "2px" }}>
+                Weekly digest of events near you
+              </span>
+            </div>
+            <Switch className="data-[state=checked]:bg-[#FF6B35] data-[state=unchecked]:bg-[#2A2A28]" />
+          </div>
+        </GroupCard>
 
         {/* ABOUT */}
-        <section>
-          <SectionHeader>About</SectionHeader>
-          <div className="bg-[#242422] rounded-2xl border border-[#2E2E2C] overflow-hidden mx-4">
-            <CardRow label="Community guidelines" hasChevron onClick={() => navigate('/settings/community-guidelines')} />
-            <Separator />
-            <CardRow label="Privacy policy" hasChevron />
-            <Separator />
-            <CardRow label="Terms of service" hasChevron />
-            <Separator />
-            <CardRow label="App version" value="1.0.0" />
-          </div>
-        </section>
+        <SectionLabel>About</SectionLabel>
+        <GroupCard>
+          <Row
+            label="Community guidelines"
+            hasChevron
+            onClick={() => navigate("/settings/community-guidelines")}
+          />
+          <Separator />
+          <Row label="Privacy policy" hasChevron />
+          <Separator />
+          <Row label="Terms of service" hasChevron />
+          <Separator />
+          <Row label="App version" value="1.0.0" />
+        </GroupCard>
 
         {/* DANGER ZONE */}
         {user && (
-          <section className="mb-4">
-            <div className="bg-[#242422] rounded-2xl border border-[#2E2E2C] overflow-hidden mx-4 mt-8">
+          <>
+            <div style={{ margin: "24px 20px 0" }}>
               <button
                 onClick={handleLogout}
-                className="w-full min-h-[52px] flex items-center justify-center text-[17px] font-semibold text-[#FF3B30] bg-[#242422] active:bg-[#2A2A28] transition-colors"
+                className="w-full active:opacity-70 transition-opacity"
+                style={{
+                  height: "52px",
+                  borderRadius: "16px",
+                  backgroundColor: "#1C1C1A",
+                  fontSize: "16px",
+                  fontWeight: 600,
+                  color: "#FF3B30",
+                }}
               >
-                Log out
+                Sign out
               </button>
             </div>
-
-            <div className="text-center mt-6">
+            <div className="text-center" style={{ marginTop: "16px" }}>
               <button
                 onClick={() => {
                   setDeleteEmailConfirm("");
                   setDeleteError(null);
                   setShowDeleteModal(true);
                 }}
-                className="text-[13px] text-[#5A5A52] hover:text-[#9A9A8E] transition-colors"
+                style={{ fontSize: "13px", color: "#6B6B63" }}
+                className="active:opacity-60 transition-opacity"
               >
                 Delete account permanently
               </button>
             </div>
-          </section>
+          </>
         )}
-
       </div>
 
-      {/* Delete Account Modal */}
+      {/* Delete modal */}
       <Dialog
         open={showDeleteModal}
         onOpenChange={(open) => !isDeleting && setShowDeleteModal(open)}
       >
-        <DialogContent className="sm:max-w-[380px] rounded-2xl w-[90%] p-6 bg-[#2A2A28] border-[#383836]">
-          <DialogTitle className="text-[18px] font-semibold text-[#E5E2DE] mb-1">
+        <DialogContent
+          className="sm:max-w-[380px] rounded-2xl w-[90%] p-6"
+          style={{ backgroundColor: "#1C1C1A", border: "1px solid #2A2A28" }}
+        >
+          <DialogTitle style={{ fontSize: "18px", fontWeight: 600, color: "#F0EEE9", marginBottom: "4px" }}>
             Delete account permanently?
           </DialogTitle>
-          <DialogDescription className="text-[14px] text-[#9A9A8E] mb-5 leading-relaxed">
-            This will delete your profile and all your hosted events. This cannot be undone.
-            Type your email to confirm:
+          <DialogDescription style={{ fontSize: "14px", color: "#6B6B63", marginBottom: "20px", lineHeight: 1.5 }}>
+            This will delete your profile and all your hosted events. This cannot be undone. Type your email to confirm:
           </DialogDescription>
-
           <input
             type="email"
             autoComplete="email"
@@ -318,25 +406,50 @@ export function SettingsPage() {
             value={deleteEmailConfirm}
             onChange={(e) => { setDeleteEmailConfirm(e.target.value); setDeleteError(null); }}
             disabled={isDeleting}
-            className="w-full h-[44px] border border-[#383836] rounded-lg px-3 text-[15px] text-[#E5E2DE] placeholder:text-[#5A5A52] outline-none focus:border-[#FF3B30] transition-colors mb-3 bg-[#242422]"
+            className="w-full outline-none transition-colors"
+            style={{
+              height: "48px",
+              backgroundColor: "#242422",
+              border: "1px solid #2A2A28",
+              borderRadius: "12px",
+              padding: "0 14px",
+              fontSize: "16px",
+              color: "#F0EEE9",
+              marginBottom: "8px",
+            }}
           />
-
           {deleteError && (
-            <p className="text-[13px] text-[#FF3B30] mb-3">{deleteError}</p>
+            <p style={{ fontSize: "13px", color: "#FF3B30", marginBottom: "12px" }}>{deleteError}</p>
           )}
-
-          <div className="flex gap-3 mt-1">
+          <div className="flex gap-3" style={{ marginTop: "4px" }}>
             <button
               onClick={() => setShowDeleteModal(false)}
               disabled={isDeleting}
-              className="flex-1 h-[44px] rounded-full border border-[#383836] font-medium text-[#E5E2DE] active:bg-[#343432] disabled:opacity-40"
+              className="flex-1 active:opacity-70 transition-opacity"
+              style={{
+                height: "44px",
+                borderRadius: "999px",
+                border: "1px solid #2A2A28",
+                fontSize: "15px",
+                fontWeight: 500,
+                color: "#F0EEE9",
+              }}
             >
               Cancel
             </button>
             <button
               onClick={handleDeleteAccount}
               disabled={isDeleting || !deleteEmailConfirm.trim()}
-              className="flex-1 h-[44px] rounded-full bg-[#FF3B30] text-white font-medium active:opacity-90 disabled:opacity-50"
+              className="flex-1 active:opacity-80 transition-opacity"
+              style={{
+                height: "44px",
+                borderRadius: "999px",
+                backgroundColor: "#FF3B30",
+                color: "white",
+                fontSize: "15px",
+                fontWeight: 500,
+                opacity: isDeleting || !deleteEmailConfirm.trim() ? 0.4 : 1,
+              }}
             >
               {isDeleting ? "Deleting…" : "Delete"}
             </button>
@@ -344,20 +457,50 @@ export function SettingsPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Location Modal */}
+      {/* Location modal */}
       {showLocationModal && (
-        <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex justify-center items-end sm:items-center">
-          <div className="bg-[#242422] w-full max-w-md h-[80vh] sm:h-[500px] sm:rounded-2xl rounded-t-2xl flex flex-col">
-            <div className="flex items-center justify-between p-4 bg-[#242422] border-b border-[#2E2E2C] sm:rounded-t-2xl rounded-t-2xl">
-              <button onClick={() => setShowLocationModal(false)} className="text-[#FF6B35] font-medium text-[17px]">Cancel</button>
-              <h3 className="text-[17px] font-semibold text-[#E5E2DE]">Select Location</h3>
-              <div className="w-16" />
+        <div
+          className="fixed inset-0 z-[100] flex justify-center items-end sm:items-center"
+          style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
+        >
+          <div
+            className="w-full max-w-md flex flex-col"
+            style={{
+              height: "80vh",
+              backgroundColor: "#1C1C1A",
+              borderRadius: "20px 20px 0 0",
+            }}
+          >
+            <div
+              className="flex items-center justify-between"
+              style={{
+                padding: "16px 20px",
+                borderBottom: "1px solid #2A2A28",
+              }}
+            >
+              <button
+                onClick={() => setShowLocationModal(false)}
+                style={{ fontSize: "16px", fontWeight: 500, color: "#FF6B35" }}
+                className="active:opacity-60 transition-opacity"
+              >
+                Cancel
+              </button>
+              <span style={{ fontSize: "17px", fontWeight: 600, color: "#F0EEE9" }}>
+                Select Location
+              </span>
+              <div style={{ width: "60px" }} />
             </div>
-            <div className="flex-1 overflow-y-auto p-4 space-y-2">
+            <div className="flex-1 overflow-y-auto" style={{ padding: "8px 20px" }}>
               {LOCATIONS.map((loc) => (
-                <button 
+                <button
                   key={loc}
-                  className="w-full text-left px-4 py-3 bg-[#242422] rounded-xl text-[17px] text-[#E5E2DE] active:bg-[#2A2A28] hover:bg-[#2A2A28] transition-colors"
+                  className="w-full text-left active:opacity-60 transition-opacity"
+                  style={{
+                    padding: "14px 0",
+                    fontSize: "16px",
+                    color: "#F0EEE9",
+                    borderBottom: "1px solid #2A2A28",
+                  }}
                   onClick={() => {
                     updateProfileMutation.mutate({ location: loc });
                     setShowLocationModal(false);

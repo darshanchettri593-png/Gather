@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { Link, useNavigate } from "react-router";
 import { format } from "date-fns";
-import { Settings as SettingsIcon, MapPin, CalendarRange, Users, User as UserIcon } from "lucide-react";
+import { Settings as SettingsIcon, MapPin, CalendarDays, Users, User as UserIcon } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useUserEvents, useProfile } from "@/hooks/useUser";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,6 +10,8 @@ import { supabase } from "@/lib/supabase";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEventRatingSummary, useProfileRatings } from "@/hooks/useRatings";
 import { StarDisplay } from "@/components/rating-section";
+
+// ─── EmptyState (exported for events-feed) ───────────────────────────────────
 
 interface EmptyStateProps {
   icon: React.ElementType;
@@ -21,22 +23,31 @@ interface EmptyStateProps {
 
 export function EmptyState({ icon: Icon, heading, subtext, buttonText, onAction }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center text-center mt-[80px]">
-      <Icon className="h-12 w-12 mb-4" strokeWidth={1.5} style={{ color: "#5A5A52" }} />
-      <h3 className="font-semibold mb-1.5" style={{ fontSize: "24px", color: "#E5E2DE" }}>
+    <div className="flex flex-col items-center justify-center text-center" style={{ padding: "40px 24px" }}>
+      <Icon size={32} strokeWidth={1.5} style={{ color: "#3D3D38" }} />
+      <h3
+        style={{ fontSize: "15px", fontWeight: 600, color: "#6B6B63", marginTop: "12px" }}
+      >
         {heading}
       </h3>
-      <p className="max-w-[260px]" style={{ fontSize: "14px", color: "#9A9A8E" }}>
-        {subtext}
-      </p>
+      {subtext && (
+        <p style={{ fontSize: "13px", color: "#3D3D38", marginTop: "4px" }}>
+          {subtext}
+        </p>
+      )}
       {buttonText && onAction && (
         <button
           onClick={onAction}
-          className="mt-6 px-8 rounded-full text-white font-semibold active:scale-[0.98] transition-transform"
+          className="active:opacity-80 transition-opacity"
           style={{
-            height: "52px",
+            marginTop: "20px",
             backgroundColor: "#FF6B35",
-            fontSize: "16px",
+            color: "white",
+            fontSize: "15px",
+            fontWeight: 600,
+            height: "48px",
+            borderRadius: "999px",
+            padding: "0 28px",
           }}
         >
           {buttonText}
@@ -46,70 +57,90 @@ export function EmptyState({ icon: Icon, heading, subtext, buttonText, onAction 
   );
 }
 
+// ─── Event Card (compact horizontal) ─────────────────────────────────────────
+
 function EventCard({ event, isPast }: { event: any; isPast: boolean }) {
   const { data: ratingSummary } = useEventRatingSummary(event.id, isPast);
+  const vibeInitial = event.vibe ? event.vibe.charAt(0).toUpperCase() : "G";
 
   return (
     <Link
       to={`/event/${event.id}`}
-      className={`block relative group ${isPast ? "opacity-[0.65]" : ""}`}
+      className="block active:opacity-80 transition-opacity"
     >
       <div
-        className="glass-card rounded-xl overflow-hidden active:scale-[0.99] transition-transform"
+        className="flex gap-3"
+        style={{
+          backgroundColor: "#1C1C1A",
+          border: "1px solid #2A2A28",
+          borderRadius: "14px",
+          padding: "12px",
+          opacity: isPast ? 0.5 : 1,
+        }}
       >
-        <div className="h-[140px] w-full shrink-0 relative overflow-hidden bg-[#242422]">
+        {/* Thumbnail */}
+        <div
+          style={{
+            width: "72px",
+            height: "72px",
+            borderRadius: "10px",
+            overflow: "hidden",
+            flexShrink: 0,
+            backgroundColor: "#242422",
+            position: "relative",
+          }}
+        >
           {event.cover_image_url ? (
             <img
               src={event.cover_image_url}
               alt=""
-              className={`h-full w-full object-cover transition-all duration-500 ${isPast ? "grayscale group-hover:grayscale-0" : ""}`}
+              className="w-full h-full object-cover"
             />
           ) : (
-            <div className="h-full w-full flex items-center justify-center">
-              <span className="text-[12px] font-bold uppercase tracking-wide" style={{ color: "rgba(255,107,53,0.30)" }}>
-                Gather
+            <div className="w-full h-full flex items-center justify-center">
+              <span style={{ fontSize: "18px", fontWeight: 700, color: "#3D3D38" }}>
+                {vibeInitial}
               </span>
             </div>
           )}
           {isPast && (
             <div
-              className="absolute top-3 right-3 px-2 py-[2px] rounded-full text-[10px] font-semibold uppercase tracking-wider backdrop-blur-sm"
+              className="absolute top-[6px] right-[6px] flex items-center justify-center"
               style={{
-                border: "1px solid #FF6B35",
-                color: "#FF6B35",
-                backgroundColor: "rgba(19,19,18,0.90)",
+                border: "1px solid #2A2A28",
+                borderRadius: "999px",
+                padding: "1px 5px",
               }}
             >
-              Past
+              <span style={{ fontSize: "9px", color: "#6B6B63", fontWeight: 500 }}>Past</span>
             </div>
           )}
         </div>
-        <div className="p-4 flex flex-col gap-1.5">
-          <h3 className="font-semibold leading-snug line-clamp-1" style={{ fontSize: "17px", color: "#E5E2DE" }}>
+
+        {/* Info */}
+        <div className="flex flex-col gap-[3px] flex-1 min-w-0 justify-center">
+          <h3
+            className="line-clamp-1"
+            style={{ fontSize: "15px", fontWeight: 600, color: "#F0EEE9", lineHeight: 1.3 }}
+          >
             {event.title}
           </h3>
-          <div className="flex justify-between items-center">
-            <p className="font-medium" style={{ fontSize: "13px", color: "#9A9A8E" }}>
-              {format(new Date(event.event_datetime), "MMM d, h:mm a")}
-            </p>
-            <p style={{ fontSize: "12px", color: "#5A5A52" }}>
-              {event._count?.attendees || 0} attending
-            </p>
-          </div>
-          {isPast && (
-            <div className="mt-0.5">
-              {ratingSummary ? (
-                <StarDisplay avg={ratingSummary.avg} count={ratingSummary.count} />
-              ) : (
-                <span style={{ fontSize: "12px", color: "#5A5A52" }}>Not yet rated</span>
-              )}
-            </div>
+          <span style={{ fontSize: "12px", color: "#6B6B63" }}>
+            {format(new Date(event.event_datetime), "MMM d, h:mm a")}
+          </span>
+          <span style={{ fontSize: "12px", color: "#6B6B63" }}>
+            {event._count?.attendees || 0} attending
+          </span>
+          {isPast && ratingSummary && (
+            <StarDisplay avg={ratingSummary.avg} count={ratingSummary.count} />
           )}
         </div>
       </div>
     </Link>
   );
 }
+
+// ─── Profile Page ─────────────────────────────────────────────────────────────
 
 export function ProfilePage() {
   const navigate = useNavigate();
@@ -158,33 +189,48 @@ export function ProfilePage() {
 
   const joinDate = user?.created_at ? format(new Date(user.created_at), "MMMM yyyy") : "";
 
+  // ─── Unauthenticated ─────────────────────────────────────────────────────────
+
   if (!user) {
     return (
-      <div className="page-transition profile-mesh max-w-md mx-auto min-h-screen bg-[#131312] pb-[100px] flex flex-col pt-4">
-        <div className="flex items-center justify-between py-4 px-5">
-          <h1
-            className="font-extrabold text-[#E5E2DE]"
-            style={{ fontSize: "32px", letterSpacing: "-0.5px" }}
+      <div
+        className="page-transition max-w-md mx-auto min-h-screen flex flex-col"
+        style={{ backgroundColor: "#111110", paddingBottom: "80px" }}
+      >
+        {/* Header row */}
+        <div
+          className="flex items-center justify-between"
+          style={{ padding: "20px 20px 0" }}
+        >
+          <h1 style={{ fontSize: "24px", fontWeight: 700, color: "#F0EEE9" }}>Profile</h1>
+          <button
+            onClick={() => navigate("/settings")}
+            className="active:opacity-60 transition-opacity"
+            style={{ color: "#6B6B63" }}
           >
-            Profile
-          </h1>
-          <button onClick={() => navigate("/settings")} className="active:opacity-70" style={{ color: "#9A9A8E" }}>
-            <SettingsIcon className="h-[22px] w-[22px]" strokeWidth={1.75} />
+            <SettingsIcon size={22} strokeWidth={1.8} />
           </button>
         </div>
 
-        <div className="flex flex-col items-center text-center px-4 pt-[15vh]">
+        <div className="flex flex-col items-center text-center px-8" style={{ paddingTop: "15vh" }}>
           <div
-            className="w-16 h-16 rounded-full flex flex-col items-center justify-center mb-2"
-            style={{ backgroundColor: "#242422", border: "1px solid #2E2E2C", color: "#5A5A52" }}
+            className="flex items-center justify-center"
+            style={{
+              width: "48px",
+              height: "48px",
+              borderRadius: "50%",
+              backgroundColor: "#1C1C1A",
+            }}
           >
-            <UserIcon className="h-8 w-8" strokeWidth={1.5} />
+            <UserIcon size={24} strokeWidth={1.5} color="#3D3D38" />
           </div>
-          <h2 className="font-semibold text-[#E5E2DE] mt-4" style={{ fontSize: "20px" }}>
-            Your profile lives here
+          <h2
+            style={{ fontSize: "18px", fontWeight: 600, color: "#F0EEE9", marginTop: "16px" }}
+          >
+            Your profile lives here.
           </h2>
-          <p className="mt-2 max-w-[280px]" style={{ fontSize: "14px", color: "#9A9A8E" }}>
-            Sign in to host events, track who's coming, and see what you've joined.
+          <p style={{ fontSize: "14px", color: "#6B6B63", marginTop: "8px", lineHeight: 1.5 }}>
+            Sign in to host events and track who's coming.
           </p>
           <button
             onClick={() =>
@@ -193,12 +239,25 @@ export function ProfilePage() {
                 "/profile"
               )
             }
-            className="mt-6 rounded-full text-white font-semibold active:scale-[0.98] transition-transform"
-            style={{ width: "160px", height: "44px", backgroundColor: "#FF6B35", fontSize: "16px" }}
+            className="active:opacity-80 transition-opacity"
+            style={{
+              marginTop: "24px",
+              backgroundColor: "#FF6B35",
+              color: "white",
+              fontSize: "15px",
+              fontWeight: 600,
+              height: "48px",
+              borderRadius: "999px",
+              padding: "0 32px",
+            }}
           >
             Sign in
           </button>
-          <Link to="/" className="mt-4 hover:text-[#9A9A8E] transition-colors" style={{ fontSize: "13px", color: "#5A5A52" }}>
+          <Link
+            to="/"
+            style={{ fontSize: "13px", color: "#6B6B63", marginTop: "12px" }}
+            className="active:opacity-60 transition-opacity"
+          >
             Just browsing? Keep exploring.
           </Link>
         </div>
@@ -206,213 +265,225 @@ export function ProfilePage() {
     );
   }
 
+  // ─── Authenticated ────────────────────────────────────────────────────────────
+
   return (
-    <div className="page-transition profile-mesh max-w-md mx-auto min-h-screen bg-[#131312] pb-[100px] flex flex-col pt-4">
-      {/* Header */}
-      <div className="flex items-center justify-between py-4 px-5">
-        <h1
-          className="font-extrabold text-[#E5E2DE]"
-          style={{ fontSize: "32px", letterSpacing: "-0.5px" }}
+    <div
+      className="page-transition max-w-md mx-auto min-h-screen flex flex-col"
+      style={{ backgroundColor: "#111110", paddingBottom: "80px" }}
+    >
+      {/* Header row — no background, no border */}
+      <div
+        className="flex items-center justify-between"
+        style={{ padding: "20px 20px 0" }}
+      >
+        <h1 style={{ fontSize: "24px", fontWeight: 700, color: "#F0EEE9" }}>Profile</h1>
+        <button
+          onClick={() => navigate("/settings")}
+          className="active:opacity-60 transition-opacity"
+          style={{ color: "#6B6B63" }}
         >
-          Profile
-        </h1>
-        <button onClick={() => navigate("/settings")} className="active:opacity-70" style={{ color: "#9A9A8E" }}>
-          <SettingsIcon className="h-[22px] w-[22px]" strokeWidth={1.75} />
+          <SettingsIcon size={22} strokeWidth={1.8} />
         </button>
       </div>
 
       {isLoading ? (
-        <div className="space-y-6 mt-4 px-4">
-          <Skeleton className="h-[200px] w-full rounded-3xl bg-[#242422]" />
+        <div style={{ padding: "16px 20px" }}>
+          <Skeleton className="h-[160px] w-full rounded-[20px]" style={{ backgroundColor: "#1C1C1A" }} />
         </div>
       ) : (
         <>
-          {/* Profile hero */}
-          <div className="flex flex-col items-center px-4 pb-6">
-            {/* Avatar with glow */}
-            <div className="relative mb-4">
-              {/* Orange glow behind avatar */}
-              <div
-                className="absolute inset-0 rounded-full blur-3xl"
-                style={{ backgroundColor: "rgba(255,107,53,0.20)" }}
-              />
-              <div
-                className="relative rounded-full overflow-hidden flex items-center justify-center bg-[#FF6B35] text-white cursor-pointer"
-                style={{
-                  width: "112px",
-                  height: "112px",
-                  border: "2px solid rgba(255,107,53,0.30)",
-                  padding: "4px",
-                  backgroundColor: "#1C1C1A",
-                }}
-              >
-                {!profile?.avatar_url && (
-                  <span
-                    className="absolute z-0 font-semibold pointer-events-none text-white"
-                    style={{ fontSize: "40px" }}
-                  >
-                    {(profile?.display_name || user?.email || "?").charAt(0).toUpperCase()}
-                  </span>
-                )}
-                <div className="z-10 w-full h-full relative rounded-full overflow-hidden">
-                  <ImageUploader
-                    bucket="avatars"
-                    folder={user.id}
-                    aspectRatio="1/1"
-                    defaultImage={profile?.avatar_url}
-                    onUploadSuccess={(url) => updateAvatarMutation.mutate(url)}
-                    showCameraBadge={false}
-                  />
-                </div>
-              </div>
-              {/* Edit button */}
-              <div
-                className="absolute bottom-0 right-0 flex items-center justify-center rounded-full pointer-events-none z-20"
-                style={{
-                  width: "32px",
-                  height: "32px",
-                  backgroundColor: "#FF6B35",
-                }}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                </svg>
-              </div>
-            </div>
-
-            {/* Name */}
-            <h2
-              className="font-bold text-[#E5E2DE] text-center"
-              style={{ fontSize: "32px", letterSpacing: "-0.02em" }}
-            >
-              {profile?.display_name || user?.email?.split("@")[0]}
-            </h2>
-
-            {/* Location / join date */}
-            {profile?.location && (
-              <p className="flex items-center gap-1 mt-1" style={{ fontSize: "16px", color: "#9A9A8E" }}>
-                <MapPin className="w-3.5 h-3.5" style={{ color: "#5A5A52" }} />
-                {profile.location}
-              </p>
-            )}
-            {joinDate && (
-              <p className="mt-1" style={{ fontSize: "13px", color: "#5A5A52" }}>
-                Member since {joinDate}
-              </p>
-            )}
-          </div>
-
-          {/* Stats grid — 2 columns */}
-          <div className="grid grid-cols-2 gap-3 px-4 mb-4">
-            <div
-              className="rounded-xl p-5 text-center"
-              style={{ backgroundColor: "#242422", border: "1px solid #2E2E2C" }}
-            >
-              <span className="font-bold block" style={{ fontSize: "24px", color: "#FF6B35" }}>
-                {userEvents?.hosted?.length || 0}
-              </span>
-              <span
-                className="uppercase tracking-widest mt-1 block"
-                style={{ fontSize: "10px", color: "#5A5A52" }}
-              >
-                Hosted
-              </span>
-            </div>
-            <div
-              className="rounded-xl p-5 text-center"
-              style={{ backgroundColor: "#242422", border: "1px solid #2E2E2C" }}
-            >
-              <span className="font-bold block" style={{ fontSize: "24px", color: "#FF6B35" }}>
-                {userEvents?.joined?.length || 0}
-              </span>
-              <span
-                className="uppercase tracking-widest mt-1 block"
-                style={{ fontSize: "10px", color: "#5A5A52" }}
-              >
-                Joined
-              </span>
-            </div>
-          </div>
-
-          {/* Ratings summary */}
-          {profileRatings && (
-            <div
-              className="mx-4 rounded-xl p-4 flex items-center justify-center gap-3 mb-4"
-              style={{ backgroundColor: "#242422", border: "1px solid #2E2E2C" }}
-            >
-              <span className="font-bold" style={{ fontSize: "24px", color: "#E5E2DE" }}>
-                {profileRatings.averageRating.toFixed(1)}
-              </span>
-              <StarDisplay avg={profileRatings.averageRating} count={0} />
-              <span style={{ fontSize: "12px", color: "#5A5A52" }}>
-                {profileRatings.totalRatings} {profileRatings.totalRatings === 1 ? "rating" : "ratings"}
-              </span>
-            </div>
-          )}
-
-          {/* Tabs — sticky */}
+          {/* Profile card */}
           <div
-            className="sticky top-0 z-30 mx-4 flex relative"
             style={{
-              backgroundColor: "rgba(28,28,26,0.95)",
-              backdropFilter: "blur(8px)",
-              WebkitBackdropFilter: "blur(8px)",
-              borderBottom: "1px solid rgba(255,255,255,0.05)",
+              margin: "16px 20px",
+              padding: "20px",
+              backgroundColor: "#1C1C1A",
+              border: "1px solid #2A2A28",
+              borderRadius: "20px",
             }}
           >
-            <button
-              onClick={() => switchTab("hosting")}
-              className={`flex-1 h-[44px] transition-colors relative`}
-              style={{
-                fontSize: "17px",
-                color: activeTab === "hosting" ? "#FF6B35" : "#9A9A8E",
-                fontWeight: activeTab === "hosting" ? 600 : 400,
-              }}
-            >
-              Hosting
-            </button>
-            <button
-              onClick={() => switchTab("joined")}
-              className="flex-1 h-[44px] transition-colors relative"
-              style={{
-                fontSize: "17px",
-                color: activeTab === "joined" ? "#FF6B35" : "#9A9A8E",
-                fontWeight: activeTab === "joined" ? 600 : 400,
-              }}
-            >
-              Joined
-            </button>
+            {/* Avatar row */}
+            <div className="flex items-center gap-4">
+              {/* Avatar 68px */}
+              <div className="relative" style={{ flexShrink: 0 }}>
+                <div
+                  className="rounded-full overflow-hidden flex items-center justify-center cursor-pointer"
+                  style={{
+                    width: "68px",
+                    height: "68px",
+                    backgroundColor: "#242422",
+                    border: "1px solid #2A2A28",
+                    position: "relative",
+                  }}
+                >
+                  {!profile?.avatar_url && (
+                    <span
+                      style={{ fontSize: "26px", fontWeight: 600, color: "#F0EEE9", position: "absolute", zIndex: 0 }}
+                    >
+                      {(profile?.display_name || user?.email || "?").charAt(0).toUpperCase()}
+                    </span>
+                  )}
+                  <div className="w-full h-full relative z-10">
+                    <ImageUploader
+                      bucket="avatars"
+                      folder={user.id}
+                      aspectRatio="1/1"
+                      defaultImage={profile?.avatar_url}
+                      onUploadSuccess={(url) => updateAvatarMutation.mutate(url)}
+                      showCameraBadge={false}
+                    />
+                  </div>
+                </div>
+                {/* Camera badge */}
+                <div
+                  className="absolute bottom-0 right-0 flex items-center justify-center pointer-events-none z-20"
+                  style={{
+                    width: "22px",
+                    height: "22px",
+                    borderRadius: "50%",
+                    backgroundColor: "#1C1C1A",
+                    border: "1px solid #2A2A28",
+                  }}
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6B6B63" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
+                    <circle cx="12" cy="13" r="3"/>
+                  </svg>
+                </div>
+              </div>
 
-            {/* Inactive underline */}
-            <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-[#2E2E2C] pointer-events-none" />
-            {/* Active indicator */}
-            <div
-              className="absolute bottom-0 h-[2px] transition-all duration-200 pointer-events-none"
-              style={{
-                width: "50%",
-                left: activeTab === "hosting" ? "0%" : "50%",
-                backgroundColor: "#FF6B35",
-              }}
-            />
+              {/* Name / location / joined */}
+              <div className="flex flex-col gap-[4px] min-w-0">
+                <span
+                  style={{ fontSize: "18px", fontWeight: 600, color: "#F0EEE9" }}
+                  className="line-clamp-1"
+                >
+                  {profile?.display_name || user?.email?.split("@")[0]}
+                </span>
+                {profile?.location && (
+                  <div className="flex items-center gap-[4px]">
+                    <MapPin size={12} color="#6B6B63" strokeWidth={1.8} />
+                    <span style={{ fontSize: "13px", color: "#6B6B63" }}>{profile.location}</span>
+                  </div>
+                )}
+                {joinDate && (
+                  <span style={{ fontSize: "12px", color: "#3D3D38" }}>
+                    Joined {joinDate}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Separator */}
+            <div style={{ height: "1px", backgroundColor: "#2A2A28", margin: "16px 0" }} />
+
+            {/* Stats row */}
+            <div className="flex">
+              <div className="flex-1 flex flex-col items-center text-center">
+                <span style={{ fontSize: "22px", fontWeight: 700, color: "#F0EEE9" }}>
+                  {userEvents?.hosted?.length || 0}
+                </span>
+                <span
+                  style={{
+                    fontSize: "10px",
+                    fontWeight: 600,
+                    color: "#6B6B63",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.08em",
+                    marginTop: "2px",
+                  }}
+                >
+                  Hosted
+                </span>
+              </div>
+              {/* Divider */}
+              <div style={{ width: "1px", backgroundColor: "#2A2A28" }} />
+              <div className="flex-1 flex flex-col items-center text-center">
+                <span style={{ fontSize: "22px", fontWeight: 700, color: "#F0EEE9" }}>
+                  {userEvents?.joined?.length || 0}
+                </span>
+                <span
+                  style={{
+                    fontSize: "10px",
+                    fontWeight: 600,
+                    color: "#6B6B63",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.08em",
+                    marginTop: "2px",
+                  }}
+                >
+                  Joined
+                </span>
+              </div>
+              {profileRatings && (
+                <>
+                  <div style={{ width: "1px", backgroundColor: "#2A2A28" }} />
+                  <div className="flex-1 flex flex-col items-center text-center">
+                    <span style={{ fontSize: "22px", fontWeight: 700, color: "#F0EEE9" }}>
+                      {profileRatings.averageRating.toFixed(1)}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: "10px",
+                        fontWeight: 600,
+                        color: "#6B6B63",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.08em",
+                        marginTop: "2px",
+                      }}
+                    >
+                      Rating
+                    </span>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
 
-          {/* Event list */}
-          <div className="mt-4 space-y-4 px-4">
+          {/* Tab switcher */}
+          <div
+            className="flex relative"
+            style={{
+              margin: "8px 20px 0",
+              borderBottom: "1px solid #2A2A28",
+            }}
+          >
+            {(["hosting", "joined"] as const).map((tab) => (
+              <button
+                key={tab}
+                onClick={() => switchTab(tab)}
+                className="flex-1 transition-colors"
+                style={{
+                  height: "44px",
+                  fontSize: "17px",
+                  fontWeight: activeTab === tab ? 600 : 400,
+                  color: activeTab === tab ? "#F0EEE9" : "#6B6B63",
+                  borderBottom: activeTab === tab ? "2px solid #FF6B35" : "2px solid transparent",
+                  marginBottom: "-1px",
+                }}
+              >
+                {tab === "hosting" ? "Hosting" : "Joined"}
+              </button>
+            ))}
+          </div>
+
+          {/* Tab content */}
+          <div style={{ padding: "16px 20px", backgroundColor: "#111110" }}>
             {upcomingEvents.length === 0 && pastEvents.length === 0 ? (
               activeTab === "hosting" ? (
                 <EmptyState
-                  icon={CalendarRange}
-                  heading="You haven't hosted anything yet."
-                  subtext="What are you waiting for?"
-                  buttonText="Host a thing"
+                  icon={CalendarDays}
+                  heading="Nothing hosted yet."
+                  subtext=""
+                  buttonText="Host a Gathering"
                   onAction={() => navigate("/host")}
                 />
               ) : (
                 <EmptyState
                   icon={Users}
-                  heading="You haven't joined anything yet."
-                  subtext="Go find your people."
+                  heading="Haven't joined anything yet."
+                  subtext=""
                   buttonText="Find events"
                   onAction={() => navigate("/")}
                 />
@@ -420,30 +491,42 @@ export function ProfilePage() {
             ) : (
               <>
                 {upcomingEvents.length === 0 ? (
-                  <p className="text-center py-8" style={{ fontSize: "14px", color: "#5A5A52" }}>
+                  <p style={{ fontSize: "14px", color: "#6B6B63", textAlign: "center", padding: "24px 0" }}>
                     No upcoming events
                   </p>
                 ) : (
-                  upcomingEvents.map((event: any) => (
-                    <EventCard key={event.id} event={event} isPast={false} />
-                  ))
+                  <div className="flex flex-col gap-[10px]">
+                    {upcomingEvents.map((event: any) => (
+                      <EventCard key={event.id} event={event} isPast={false} />
+                    ))}
+                  </div>
                 )}
 
                 {pastEvents.length > 0 && (
-                  <div className="border-t border-[#2E2E2C] pt-4 mt-2">
+                  <div style={{ marginTop: "20px" }}>
+                    <span
+                      style={{
+                        fontSize: "11px",
+                        fontWeight: 600,
+                        color: "#3D3D38",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.08em",
+                        display: "block",
+                        marginBottom: "8px",
+                      }}
+                    >
+                      PAST
+                    </span>
                     <button
                       onClick={() => setShowPastEvents((v) => !v)}
-                      className="w-full flex items-center justify-between py-3 font-semibold transition-colors"
-                      style={{ fontSize: "14px", color: "#E5E2DE" }}
+                      className="w-full flex items-center justify-between py-2 transition-opacity active:opacity-60"
+                      style={{ fontSize: "14px", color: "#6B6B63" }}
                     >
-                      <span>Past events ({pastEvents.length})</span>
-                      <span style={{ fontSize: "13px", color: "#5A5A52", fontWeight: 400 }}>
-                        {showPastEvents ? "Hide ▲" : "Show ▼"}
-                      </span>
+                      <span>{pastEvents.length} past event{pastEvents.length !== 1 ? "s" : ""}</span>
+                      <span>{showPastEvents ? "Hide ▲" : "Show ▼"}</span>
                     </button>
-
                     {showPastEvents && (
-                      <div className="space-y-4 pt-1">
+                      <div className="flex flex-col gap-[10px]" style={{ marginTop: "8px" }}>
                         {pastEvents.map((event: any) => (
                           <EventCard key={event.id} event={event} isPast />
                         ))}

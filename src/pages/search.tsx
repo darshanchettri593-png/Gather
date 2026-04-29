@@ -1,24 +1,24 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
-import { Search, X, Clock, SearchX, Activity, Palette, Users, BookOpen, Compass } from "lucide-react";
+import { Search, X, Clock, Activity, Palette, Users, BookOpen, Compass } from "lucide-react";
 import { getRecentSearches, saveRecentSearch, removeRecentSearch, clearRecentSearches } from "@/lib/searchHistory";
 import { useTrendingEvents, useLiveEventsSearch, useLiveHostsSearch } from "@/lib/queries";
 import { SectionHeader, SearchResultRow } from "@/components/ui/search-components";
 
 const PLACEHOLDERS = [
-  "Search Gather",
+  "Search events...",
   "Try 'jam session'",
-  "Try 'this weekend'",
-  "Try 'hiking'"
+  "Try 'hiking'",
+  "Try 'book club'",
 ];
 
-// Fix 7: solid tinted backgrounds — visible on dark bg
+// 2-col vibe grid — solid dark backgrounds, per-vibe icon color
 const VIBES = [
-  { name: "Move",    icon: Activity,  bg: "#3D1F1A", iconColor: "#FF6B35" },
-  { name: "Create",  icon: Palette,   bg: "#1A1A3D", iconColor: "#7B7FFF" },
-  { name: "Hang",    icon: Users,     bg: "#3D2E1A", iconColor: "#FFB347" },
-  { name: "Learn",   icon: BookOpen,  bg: "#1A2E3D", iconColor: "#47C1D3" },
-  { name: "Explore", icon: Compass,   bg: "#1A3D1A", iconColor: "#4CAF50" },
+  { name: "Move",    icon: Activity,  bg: "#1E1510", iconColor: "#FF6B35" },
+  { name: "Create",  icon: Palette,   bg: "#11101E", iconColor: "#7B7FFF" },
+  { name: "Hang",    icon: Users,     bg: "#1E1610", iconColor: "#FFB347" },
+  { name: "Learn",   icon: BookOpen,  bg: "#101519", iconColor: "#47C1D3" },
+  { name: "Explore", icon: Compass,   bg: "#101E12", iconColor: "#4CAF50" },
 ];
 
 export function SearchPage() {
@@ -29,7 +29,6 @@ export function SearchPage() {
   const [recent, setRecent] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Queries
   const { data: trendingEvents } = useTrendingEvents();
   const { data: searchEvents } = useLiveEventsSearch(debouncedQuery);
   const { data: searchHosts } = useLiveHostsSearch(debouncedQuery);
@@ -38,37 +37,27 @@ export function SearchPage() {
 
   useEffect(() => {
     setRecent(getRecentSearches());
-    // Auto-focus on mount
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+    if (inputRef.current) inputRef.current.focus();
   }, []);
 
   useEffect(() => {
-    // Rotating placeholder
     const interval = setInterval(() => {
-      setPlaceholderIdx((idx) => (idx + 1) % PLACEHOLDERS.length);
+      setPlaceholderIdx((i) => (i + 1) % PLACEHOLDERS.length);
     }, 3000);
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
-    // Debounce query
-    const handler = setTimeout(() => {
-      setDebouncedQuery(query);
-    }, 200);
+    const handler = setTimeout(() => setDebouncedQuery(query), 200);
     return () => clearTimeout(handler);
   }, [query]);
 
   useEffect(() => {
-    // Escape key
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setQuery("");
-      }
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setQuery("");
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
   }, []);
 
   const handleClear = () => {
@@ -76,13 +65,13 @@ export function SearchPage() {
     inputRef.current?.focus();
   };
 
-  const handleSearchSubmit = (searchQuery: string) => {
-    saveRecentSearch(searchQuery);
+  const handleSearchSubmit = (q: string) => {
+    saveRecentSearch(q);
     setRecent(getRecentSearches());
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSearchSubmit(query);
       e.currentTarget.blur();
     }
@@ -99,26 +88,33 @@ export function SearchPage() {
     setRecent(getRecentSearches());
   };
 
-  const handleClearAllRecent = () => {
-    clearRecentSearches();
-    setRecent([]);
-  };
-
   const handleVibeClick = (vibeName: string) => {
     navigate(`/?vibe=${vibeName.toLowerCase()}`);
   };
 
   return (
-    <div className="page-transition max-w-md mx-auto min-h-screen bg-[#131312] pb-[100px] flex flex-col pt-4">
-      {/* Header */}
-      <div className="pb-3 pt-0 px-5">
-        <h1 className="text-[28px] font-bold tracking-tight text-[#E5E2DE]">Search</h1>
+    <div
+      className="page-transition max-w-md mx-auto min-h-screen flex flex-col"
+      style={{ backgroundColor: "#111110", paddingBottom: "80px" }}
+    >
+      {/* Title row */}
+      <div style={{ padding: "20px 20px 12px" }}>
+        <h1 style={{ fontSize: "24px", fontWeight: 700, color: "#F0EEE9" }}>Search</h1>
       </div>
 
-      {/* Search Input (Sticky) */}
-      <div className="sticky top-0 z-20 px-5 py-2 bg-[#131312]/80 backdrop-blur-xl">
-        <div className="relative group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-[#5A5A52] stroke-[2.5]" />
+      {/* Search bar */}
+      <div style={{ margin: "0 20px 24px" }}>
+        <div
+          className="flex items-center gap-[10px]"
+          style={{
+            height: "48px",
+            backgroundColor: "#1C1C1A",
+            border: "1px solid #2A2A28",
+            borderRadius: "14px",
+            padding: "0 16px",
+          }}
+        >
+          <Search size={18} color="#6B6B63" strokeWidth={1.8} style={{ flexShrink: 0 }} />
           <input
             ref={inputRef}
             type="search"
@@ -126,120 +122,145 @@ export function SearchPage() {
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={PLACEHOLDERS[placeholderIdx]}
-            className="w-full pl-11 pr-10 h-[48px] rounded-full bg-[#242422] text-[16px] text-[#E5E2DE] placeholder:text-[#5A5A52] focus:outline-none border border-[#2E2E2C] focus:border-[#FF6B35]/50 transition-all"
+            className="flex-1 bg-transparent outline-none border-none"
+            style={{
+              fontSize: "16px",
+              color: "#F0EEE9",
+            }}
           />
           {isTyping && (
-            <button 
+            <button
               onClick={handleClear}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-[#5A5A52] hover:text-[#9A9A8E] outline-none"
+              className="active:opacity-60 transition-opacity"
             >
-              <X className="h-[18px] w-[18px] stroke-[2.5]" />
+              <X size={18} color="#6B6B63" strokeWidth={2} />
             </button>
           )}
         </div>
       </div>
 
-      <div className="px-5 mt-2 flex-1">
+      {/* Content */}
+      <div className="flex-1" style={{ padding: "0 20px" }}>
         {!isTyping ? (
-          <div className="animate-in fade-in duration-200 hide-scrollbar pb-10">
-            {/* Empty State A: Recent */}
+          <div>
+            {/* Recent searches */}
             {recent.length > 0 && (
-              <div className="mb-2">
-                <SectionHeader 
-                  title="Recent" 
-                  actionText="Clear" 
-                  onAction={handleClearAllRecent} 
-                />
-                <div className="flex flex-col">
-                  {recent.map((term, i) => (
-                    <div 
-                      key={term} 
-                      onClick={() => handleRecentClick(term)}
-                      className={`flex items-center h-12 cursor-pointer active:bg-[#242422] -mx-5 px-5 transition-colors ${i !== recent.length - 1 ? 'border-b border-[#2E2E2C]/50' : ''}`}
-                    >
-                      <Clock className="w-[14px] h-[14px] text-[#5A5A52] mr-3 shrink-0" />
-                      <span className="text-[15px] text-[#9A9A8E] flex-1 truncate">{term}</span>
-                      <button 
-                        onClick={(e) => handleRemoveRecent(e, term)}
-                        className="p-2 -mr-2 text-[#5A5A52] hover:text-[#9A9A8E]"
-                      >
-                        <X className="w-[14px] h-[14px]" />
-                      </button>
-                    </div>
-                  ))}
+              <div style={{ marginBottom: "24px" }}>
+                <div className="flex items-center justify-between" style={{ marginBottom: "8px" }}>
+                  <span
+                    style={{
+                      fontSize: "11px",
+                      fontWeight: 600,
+                      color: "#6B6B63",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.1em",
+                    }}
+                  >
+                    RECENT
+                  </span>
+                  <button
+                    onClick={() => { clearRecentSearches(); setRecent([]); }}
+                    style={{ fontSize: "13px", color: "#FF6B35" }}
+                    className="active:opacity-60 transition-opacity"
+                  >
+                    Clear
+                  </button>
                 </div>
+                {recent.map((term, i) => (
+                  <div
+                    key={term}
+                    onClick={() => handleRecentClick(term)}
+                    className="flex items-center gap-3 cursor-pointer active:opacity-60 transition-opacity"
+                    style={{
+                      height: "48px",
+                      borderBottom: i < recent.length - 1 ? "1px solid #2A2A28" : "none",
+                    }}
+                  >
+                    <Clock size={14} color="#3D3D38" strokeWidth={1.8} />
+                    <span
+                      style={{ fontSize: "15px", color: "#6B6B63", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+                    >
+                      {term}
+                    </span>
+                    <button
+                      onClick={(e) => handleRemoveRecent(e, term)}
+                      className="active:opacity-60"
+                    >
+                      <X size={14} color="#3D3D38" strokeWidth={2} />
+                    </button>
+                  </div>
+                ))}
               </div>
             )}
 
-            {/* Empty State B: Trending */}
+            {/* Browse by vibe */}
             <div>
-              <SectionHeader title="Trending in Siliguri" />
-              <div className="flex flex-col gap-3">
-                {trendingEvents && trendingEvents.length > 0 ? (
-                  trendingEvents.map((event) => (
-                    <SearchResultRow 
-                      key={event.id} 
-                      type="event" 
-                      data={event} 
-                      onClick={() => {}}
-                    />
-                  ))
-                ) : (
-                  <div className="py-2">
-                    <p className="text-[14px] text-[#9A9A8E] mb-2">Be the first to host something in Siliguri.</p>
-                    <button 
-                      onClick={() => navigate('/host')}
-                      className="text-[14px] font-semibold text-[#FF6B35] active:opacity-70"
-                    >
-                      Host
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
+              <span
+                style={{
+                  fontSize: "11px",
+                  fontWeight: 600,
+                  color: "#6B6B63",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.1em",
+                  display: "block",
+                  marginBottom: "12px",
+                }}
+              >
+                BROWSE BY VIBE
+              </span>
 
-            {/* Empty State C: Browse by Vibe */}
-            <div className="mt-2 mb-4">
-              <SectionHeader title="Browse" />
-              <div className="flex gap-[12px] overflow-x-auto hide-scrollbar pb-2 -mx-5 px-5">
-                {VIBES.map(v => (
+              {/* 2-col grid */}
+              <div
+                className="grid grid-cols-2 gap-[10px]"
+                style={{ marginBottom: "24px" }}
+              >
+                {VIBES.map((v) => (
                   <button
                     key={v.name}
                     onClick={() => handleVibeClick(v.name)}
-                    className="w-[110px] h-[110px] shrink-0 flex flex-col items-center justify-center gap-2 active:scale-95 transition-all"
+                    className="flex flex-col items-center justify-center aspect-square active:opacity-80 transition-opacity"
                     style={{
                       backgroundColor: v.bg,
-                      border: "1px solid rgba(255,255,255,0.08)",
-                      borderRadius: "18px",
+                      border: "1px solid #2A2A28",
+                      borderRadius: "16px",
                     }}
                   >
-                    <v.icon className="h-6 w-6" strokeWidth={2} style={{ color: v.iconColor }} />
-                    <span className="text-[13px] font-semibold text-[#E5E2DE]">{v.name}</span>
+                    <v.icon size={28} strokeWidth={1.8} color={v.iconColor} fill="none" />
+                    <span
+                      style={{
+                        fontSize: "14px",
+                        fontWeight: 600,
+                        color: "#F0EEE9",
+                        marginTop: "8px",
+                      }}
+                    >
+                      {v.name}
+                    </span>
                   </button>
                 ))}
               </div>
             </div>
           </div>
         ) : (
-          <div className="animate-in fade-in duration-200 pb-10">
-            {/* Live Search Results */}
-            
-            {(searchEvents?.length === 0 && searchHosts?.length === 0) ? (
-              <div className="flex flex-col items-center justify-center text-center mt-[64px]">
-                <SearchX className="h-10 w-10 text-[#5A5A52] mb-3" strokeWidth={1.5} />
-                <h3 className="text-[15px] font-semibold text-[#E5E2DE] mb-1">We looked everywhere.</h3>
-                <p className="text-[13px] text-[#9A9A8E]">Try a different vibe or location.</p>
+          <div>
+            {/* Live results */}
+            {searchEvents?.length === 0 && searchHosts?.length === 0 ? (
+              <div
+                className="flex items-center justify-center"
+                style={{ paddingTop: "60px" }}
+              >
+                <p style={{ fontSize: "15px", color: "#6B6B63" }}>Nothing matched.</p>
               </div>
             ) : (
               <div className="flex flex-col gap-4">
                 {searchEvents && searchEvents.length > 0 && (
                   <div>
                     <SectionHeader title="Events" count={searchEvents.length} />
-                    <div className="flex flex-col gap-3">
-                      {searchEvents.map(event => (
-                        <SearchResultRow 
-                          key={event.id} 
-                          type="event" 
+                    <div className="flex flex-col gap-[10px]" style={{ marginTop: "8px" }}>
+                      {searchEvents.map((event) => (
+                        <SearchResultRow
+                          key={event.id}
+                          type="event"
                           data={event}
                           onClick={() => handleSearchSubmit(query)}
                         />
@@ -247,19 +268,16 @@ export function SearchPage() {
                     </div>
                   </div>
                 )}
-
                 {searchHosts && searchHosts.length > 0 && (
                   <div>
                     <SectionHeader title="People" count={searchHosts.length} />
-                    <div className="flex flex-col gap-3">
-                      {searchHosts.map(host => (
-                        <SearchResultRow 
-                          key={host.id} 
-                          type="user" 
+                    <div className="flex flex-col gap-[10px]" style={{ marginTop: "8px" }}>
+                      {searchHosts.map((host) => (
+                        <SearchResultRow
+                          key={host.id}
+                          type="user"
                           data={host}
-                          onClick={() => {
-                            handleSearchSubmit(query);
-                          }}
+                          onClick={() => handleSearchSubmit(query)}
                         />
                       ))}
                     </div>

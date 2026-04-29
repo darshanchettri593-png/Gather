@@ -9,25 +9,43 @@ import { useToast } from "@/components/ui/toast";
 
 type AuthTab = "signup" | "signin";
 
-// 16px font-size prevents iOS auto-zoom which causes the keyboard-slide bug
+// Filled box style — 16px font prevents iOS auto-zoom
 const INPUT_CLASS =
-  "w-full h-[48px] border-b border-[#2E2E2C] bg-transparent px-0 placeholder:text-[#5A5A52] outline-none focus:border-[#FF6B35] transition-all rounded-none disabled:opacity-50";
+  "w-full outline-none transition-colors placeholder:text-[#3D3D38] disabled:opacity-50";
 
-const SUBMIT_CLASS =
-  "w-full h-[54px] mt-4 rounded-2xl bg-[#FF6B35] text-white text-[16px] font-bold disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] transition-all shadow-[0_8px_24px_rgba(255,107,53,0.3)]";
+const INPUT_STYLE: React.CSSProperties = {
+  height: "52px",
+  backgroundColor: "#242422",
+  border: "1px solid #2A2A28",
+  borderRadius: "12px",
+  padding: "0 16px",
+  fontSize: "16px",
+  color: "#F0EEE9",
+};
+
+const SUBMIT_STYLE: React.CSSProperties = {
+  width: "100%",
+  height: "52px",
+  marginTop: "16px",
+  borderRadius: "999px",
+  backgroundColor: "#FF6B35",
+  color: "white",
+  fontSize: "15px",
+  fontWeight: 600,
+};
 
 export function AuthModal() {
   const { isAuthModalOpen, closeAuthModal, authModalMessage, authModalRedirectTo } = useAuth();
   const { toast } = useToast();
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
-  const [tab, setTab] = useState<AuthTab>("signup");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [emailError, setEmailError] = useState<string | null>(null);
+  const [tab, setTab]                     = useState<AuthTab>("signup");
+  const [name, setName]                   = useState("");
+  const [email, setEmail]                 = useState("");
+  const [password, setPassword]           = useState("");
+  const [loading, setLoading]             = useState(false);
+  const [error, setError]                 = useState<string | null>(null);
+  const [emailError, setEmailError]       = useState<string | null>(null);
 
   useEffect(() => {
     if (isAuthModalOpen) {
@@ -37,12 +55,20 @@ export function AuthModal() {
       setPassword("");
       setError(null);
       setEmailError(null);
-      // Body lock prevents iOS viewport resize when keyboard opens
-      document.body.classList.add("auth-modal-open");
+      // Body lock — prevents iOS viewport resize when keyboard opens
+      document.body.style.overflow  = "hidden";
+      document.body.style.position  = "fixed";
+      document.body.style.width     = "100%";
     } else {
-      document.body.classList.remove("auth-modal-open");
+      document.body.style.overflow  = "";
+      document.body.style.position  = "";
+      document.body.style.width     = "";
     }
-    return () => document.body.classList.remove("auth-modal-open");
+    return () => {
+      document.body.style.overflow  = "";
+      document.body.style.position  = "";
+      document.body.style.width     = "";
+    };
   }, [isAuthModalOpen]);
 
   const passwordStrength =
@@ -64,32 +90,16 @@ export function AuthModal() {
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters");
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-    setEmailError(null);
-    storeIntent();
-
+    if (password.length < 8) { setError("Password must be at least 8 characters"); return; }
+    setLoading(true); setError(null); setEmailError(null); storeIntent();
     try {
       const { data, error: err } = await supabase.auth.signUp({
-        email,
-        password,
+        email, password,
         options: { data: { display_name: name } },
       });
-
       if (err) throw err;
-
-      if (data.session) {
-        closeAuthModal();
-        toast("Welcome to Gather!", "success");
-      } else {
-        closeAuthModal();
-        toast("Check your email to confirm your account", "info");
-      }
+      if (data.session) { closeAuthModal(); toast("Welcome to Gather!", "success"); }
+      else { closeAuthModal(); toast("Check your email to confirm your account", "info"); }
     } catch (err: any) {
       const msg = err.message || "";
       if (msg.includes("already registered") || msg.includes("already been registered")) {
@@ -97,35 +107,23 @@ export function AuthModal() {
       } else {
         setError(friendlyError(msg));
       }
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
-    storeIntent();
-
+    setLoading(true); setError(null); storeIntent();
     try {
       const { error: err } = await supabase.auth.signInWithPassword({ email, password });
       if (err) throw err;
-
-      closeAuthModal();
-      toast("Welcome back!", "success");
+      closeAuthModal(); toast("Welcome back!", "success");
     } catch (err: any) {
       setError(friendlyError(err.message));
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
   const handleForgotPassword = async () => {
-    if (!email.trim()) {
-      setError("Enter your email above first");
-      return;
-    }
+    if (!email.trim()) { setError("Enter your email above first"); return; }
     try {
       const { error: err } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
@@ -138,32 +136,35 @@ export function AuthModal() {
   };
 
   const switchTab = (t: AuthTab) => {
-    setTab(t);
-    setError(null);
-    setEmailError(null);
+    setTab(t); setError(null); setEmailError(null);
   };
 
-  const inputStyle: React.CSSProperties = {
-    fontSize: "16px", // Minimum 16px prevents iOS auto-zoom + keyboard slide
-    color: "#E5E2DE",
-  };
-
-  const modalJsx = (
-    <div className="p-8 pt-6">
+  const modalContent = (
+    <div style={{ padding: "8px 24px 24px" }}>
       {/* Tab row */}
-      <div className="flex mb-8 border-b border-[#2E2E2C]">
+      <div
+        className="flex"
+        style={{ borderBottom: "1px solid #2A2A28", marginBottom: "28px" }}
+      >
         {(["signup", "signin"] as AuthTab[]).map((t) => (
           <button
             key={t}
             type="button"
             onClick={() => switchTab(t)}
-            className={`flex-1 pb-4 text-[15px] font-bold transition-all relative ${
-              tab === t ? "text-[#E5E2DE]" : "text-[#5A5A52] hover:text-[#9A9A8E]"
-            }`}
+            className="flex-1 relative transition-colors active:opacity-70"
+            style={{
+              paddingBottom: "14px",
+              fontSize: "15px",
+              fontWeight: 700,
+              color: tab === t ? "#F0EEE9" : "#6B6B63",
+            }}
           >
             {t === "signup" ? "Sign up" : "Sign in"}
             {tab === t && (
-              <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#FF6B35] rounded-full" />
+              <span
+                className="absolute bottom-0 left-0 right-0 rounded-full"
+                style={{ height: "2px", backgroundColor: "#FF6B35" }}
+              />
             )}
           </button>
         ))}
@@ -171,30 +172,42 @@ export function AuthModal() {
 
       {/* Context message */}
       {authModalMessage && authModalMessage !== "Sign in to continue" && (
-        <p className="text-[14px] text-[#9A9A8E] mb-6 leading-relaxed font-medium" style={{ color: "#9A9A8E" }}>
+        <p
+          style={{
+            fontSize: "14px",
+            color: "#6B6B63",
+            marginBottom: "20px",
+            lineHeight: 1.5,
+          }}
+        >
           {authModalMessage}
         </p>
       )}
 
       {tab === "signup" ? (
-        <form onSubmit={handleSignUp} className="space-y-5">
-          <div className="space-y-1">
-            <label className="text-[11px] font-bold text-[#5A5A52] uppercase tracking-wider px-1">Full Name</label>
+        <form onSubmit={handleSignUp} className="flex flex-col gap-4">
+          <div className="flex flex-col gap-[6px]">
+            <label style={{ fontSize: "11px", fontWeight: 600, color: "#6B6B63", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+              Full Name
+            </label>
             <input
               type="text"
               autoComplete="name"
               autoFocus
-              placeholder="Elon Musk"
+              placeholder="Your name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               disabled={loading}
               required
               className={INPUT_CLASS}
-              style={inputStyle}
+              style={INPUT_STYLE}
             />
           </div>
-          <div className="space-y-1">
-            <label className="text-[11px] font-bold text-[#5A5A52] uppercase tracking-wider px-1">Email</label>
+
+          <div className="flex flex-col gap-[6px]">
+            <label style={{ fontSize: "11px", fontWeight: 600, color: "#6B6B63", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+              Email
+            </label>
             <input
               type="email"
               autoComplete="email"
@@ -204,16 +217,22 @@ export function AuthModal() {
               disabled={loading}
               required
               className={INPUT_CLASS}
-              style={inputStyle}
+              style={INPUT_STYLE}
             />
             {emailError && (
-              <div className="mt-2 p-3 bg-red-500/10 rounded-xl border border-red-500/20">
-                <p className="text-[12px] text-red-500 font-medium">
+              <div
+                style={{
+                  padding: "10px 12px",
+                  backgroundColor: "rgba(255,59,48,0.08)",
+                  borderRadius: "10px",
+                }}
+              >
+                <p style={{ fontSize: "12px", color: "#FF3B30" }}>
                   {emailError}{" "}
                   <button
                     type="button"
                     onClick={() => switchTab("signin")}
-                    className="underline font-bold"
+                    style={{ textDecoration: "underline", fontWeight: 700 }}
                   >
                     Sign in instead
                   </button>
@@ -222,8 +241,10 @@ export function AuthModal() {
             )}
           </div>
 
-          <div className="space-y-1">
-            <label className="text-[11px] font-bold text-[#5A5A52] uppercase tracking-wider px-1">Password</label>
+          <div className="flex flex-col gap-[6px]">
+            <label style={{ fontSize: "11px", fontWeight: 600, color: "#6B6B63", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+              Password
+            </label>
             <input
               type="password"
               autoComplete="new-password"
@@ -234,29 +255,44 @@ export function AuthModal() {
               required
               minLength={8}
               className={INPUT_CLASS}
-              style={inputStyle}
+              style={INPUT_STYLE}
             />
             {passwordStrength && (
-              <p className={`text-[12px] mt-2 font-bold ${passwordStrength.cls}`}>
+              <p className={`text-[12px] font-bold ${passwordStrength.cls}`}>
                 {passwordStrength.label}
               </p>
             )}
           </div>
 
-          {error && <p className="text-[13px] text-red-500 font-bold bg-red-500/10 p-3 rounded-xl border border-red-500/20">{error}</p>}
+          {error && (
+            <p
+              style={{
+                fontSize: "13px",
+                color: "#FF3B30",
+                backgroundColor: "rgba(255,59,48,0.08)",
+                borderRadius: "10px",
+                padding: "10px 12px",
+              }}
+            >
+              {error}
+            </p>
+          )}
 
           <button
             type="submit"
             disabled={loading || !name.trim() || !email.trim() || password.length < 8}
-            className={SUBMIT_CLASS}
+            className="active:opacity-80 transition-opacity disabled:opacity-40"
+            style={SUBMIT_STYLE}
           >
             {loading ? "Creating account…" : "Join Gather"}
           </button>
         </form>
       ) : (
-        <form onSubmit={handleSignIn} className="space-y-5">
-          <div className="space-y-1">
-            <label className="text-[11px] font-bold text-[#5A5A52] uppercase tracking-wider px-1">Email</label>
+        <form onSubmit={handleSignIn} className="flex flex-col gap-4">
+          <div className="flex flex-col gap-[6px]">
+            <label style={{ fontSize: "11px", fontWeight: 600, color: "#6B6B63", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+              Email
+            </label>
             <input
               type="email"
               autoComplete="email"
@@ -267,11 +303,14 @@ export function AuthModal() {
               disabled={loading}
               required
               className={INPUT_CLASS}
-              style={inputStyle}
+              style={INPUT_STYLE}
             />
           </div>
-          <div className="space-y-1">
-            <label className="text-[11px] font-bold text-[#5A5A52] uppercase tracking-wider px-1">Password</label>
+
+          <div className="flex flex-col gap-[6px]">
+            <label style={{ fontSize: "11px", fontWeight: 600, color: "#6B6B63", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+              Password
+            </label>
             <input
               type="password"
               autoComplete="current-password"
@@ -281,25 +320,39 @@ export function AuthModal() {
               disabled={loading}
               required
               className={INPUT_CLASS}
-              style={inputStyle}
+              style={INPUT_STYLE}
             />
           </div>
 
-          {error && <p className="text-[13px] text-red-500 font-bold bg-red-500/10 p-3 rounded-xl border border-red-500/20">{error}</p>}
+          {error && (
+            <p
+              style={{
+                fontSize: "13px",
+                color: "#FF3B30",
+                backgroundColor: "rgba(255,59,48,0.08)",
+                borderRadius: "10px",
+                padding: "10px 12px",
+              }}
+            >
+              {error}
+            </p>
+          )}
 
           <button
             type="submit"
             disabled={loading || !email.trim() || !password}
-            className={SUBMIT_CLASS}
+            className="active:opacity-80 transition-opacity disabled:opacity-40"
+            style={SUBMIT_STYLE}
           >
             {loading ? "Signing in…" : "Sign in"}
           </button>
 
-          <div className="text-center pt-2">
+          <div className="text-center" style={{ paddingTop: "4px" }}>
             <button
               type="button"
               onClick={handleForgotPassword}
-              className="text-[13px] text-[#5A5A52] font-bold hover:text-[#9A9A8E] transition-colors"
+              style={{ fontSize: "13px", color: "#6B6B63" }}
+              className="active:opacity-60 transition-opacity"
             >
               Forgot password?
             </button>
@@ -312,9 +365,12 @@ export function AuthModal() {
   if (isDesktop) {
     return (
       <Dialog open={isAuthModalOpen} onOpenChange={(open) => !open && closeAuthModal()}>
-        <DialogContent className="sm:max-w-[420px] p-0 overflow-hidden rounded-3xl border border-[#2E2E2C] bg-[#242422] shadow-2xl">
+        <DialogContent
+          className="sm:max-w-[420px] p-0 overflow-hidden rounded-3xl"
+          style={{ backgroundColor: "#1C1C1A", border: "1px solid #2A2A28" }}
+        >
           <DialogTitle className="sr-only">Authentication</DialogTitle>
-          {modalJsx}
+          <div style={{ padding: "24px 0 0" }}>{modalContent}</div>
         </DialogContent>
       </Dialog>
     );
@@ -323,20 +379,35 @@ export function AuthModal() {
   return (
     <Drawer open={isAuthModalOpen} onOpenChange={(open) => !open && closeAuthModal()}>
       <DrawerContent
-        className="rounded-t-3xl border-t border-[#2E2E2C] bg-[#242422] px-0"
+        className="rounded-t-3xl px-0"
         style={{
           position: "fixed",
           bottom: 0,
           left: 0,
           right: 0,
+          backgroundColor: "#1C1C1A",
+          borderTop: "1px solid #2A2A28",
           maxHeight: "90vh",
           overflowY: "auto",
           WebkitOverflowScrolling: "touch" as any,
+          transform: "translateZ(0)",
+          willChange: "transform",
+          paddingBottom: "env(safe-area-inset-bottom, 20px)",
         }}
       >
         <DrawerTitle className="sr-only">Authentication</DrawerTitle>
-        <div className="mx-auto mt-4 mb-2 h-1.5 w-[40px] rounded-full" style={{ backgroundColor: "#383836" }} />
-        {modalJsx}
+        {/* Drag handle */}
+        <div className="flex justify-center" style={{ paddingTop: "12px", paddingBottom: "4px" }}>
+          <div
+            style={{
+              width: "36px",
+              height: "4px",
+              borderRadius: "999px",
+              backgroundColor: "#2A2A28",
+            }}
+          />
+        </div>
+        {modalContent}
       </DrawerContent>
     </Drawer>
   );

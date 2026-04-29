@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth-context";
-import { Link, Outlet, useLocation, useNavigate } from "react-router";
+import { Outlet, useLocation, useNavigate } from "react-router";
 import { MapPin, ChevronDown } from "lucide-react";
 import { AuthModal } from "@/components/auth-modal";
 import { BottomNav } from "./bottom-nav";
@@ -12,77 +12,76 @@ export function MainLayout() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [headerCity, setHeaderCity] = useState(
-    () => localStorage.getItem("gather_city") || "Siliguri"
+  const [headerState, setHeaderState] = useState(
+    () => localStorage.getItem("gather_state") || "West Bengal"
   );
 
   useEffect(() => {
     const handleStorage = () => {
-      setHeaderCity(localStorage.getItem("gather_city") || "Siliguri");
+      setHeaderState(localStorage.getItem("gather_state") || "West Bengal");
     };
     window.addEventListener("storage", handleStorage);
     return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
-  const isSettings = location.pathname.startsWith("/settings");
-  const isProfile = location.pathname === "/profile";
-  const isSearch = location.pathname === "/search";
+  const isSettings  = location.pathname.startsWith("/settings");
+  const isProfile   = location.pathname === "/profile";
+  const isSearch    = location.pathname === "/search";
   const isEventDetail = location.pathname.startsWith("/event/");
-  const hideHeader = isSettings || isProfile || isSearch || isEventDetail;
+  const hideHeader  = isSettings || isProfile || isSearch || isEventDetail;
 
   return (
     <div
-      className={`flex min-h-screen flex-col bg-[#131312] ${
-        isEventDetail ? "pb-0" : "pb-[80px]"
-      }`}
+      className={`flex min-h-screen flex-col ${isEventDetail ? "pb-0" : "pb-[64px]"}`}
+      style={{ backgroundColor: "#111110" }}
     >
       {!hideHeader && (
         <header
           className="sticky top-0 z-50 w-full"
           style={{
-            backgroundColor: "rgba(28,28,26,0.80)",
+            backgroundColor: "rgba(17,17,16,0.92)",
             backdropFilter: "blur(20px)",
             WebkitBackdropFilter: "blur(20px)",
-            borderBottom: "1px solid rgba(255,255,255,0.05)",
-            boxShadow: "0 4px 20px rgba(15,15,14,0.4)",
-            height: "64px",
+            borderBottom: "1px solid #2A2A28",
+            height: "56px",
           }}
         >
           <div
-            className="relative flex h-full w-full items-center justify-between"
+            className="flex h-full w-full items-center justify-between"
             style={{ padding: "0 20px" }}
           >
-            {/* LEFT: location — tapping opens city picker in events-feed */}
+            {/* LEFT: state location — opens state picker */}
             <button
-              className="flex items-center gap-1.5 active:opacity-70 transition-opacity"
+              className="flex items-center gap-[6px] active:opacity-60 transition-opacity"
               onClick={() => window.dispatchEvent(new CustomEvent("gather:open-city-picker"))}
             >
-              <MapPin className="h-5 w-5 shrink-0" style={{ color: "#FF6B35" }} />
+              <MapPin
+                size={16}
+                strokeWidth={2}
+                style={{ color: "#FF6B35", flexShrink: 0 }}
+              />
               <span
-                className="font-semibold tracking-tight"
-                style={{ fontSize: "18px", color: "#E5E2DE" }}
+                style={{
+                  fontSize: "16px",
+                  fontWeight: 600,
+                  color: "#F0EEE9",
+                  whiteSpace: "nowrap",
+                }}
               >
-                {headerCity}
+                {headerState}
               </span>
               <ChevronDown
-                className="h-3.5 w-3.5 shrink-0"
-                style={{ color: "#5A5A52" }}
+                size={14}
+                strokeWidth={2}
+                style={{ color: "#6B6B63", flexShrink: 0 }}
               />
             </button>
 
-            {/* CENTER: Gather wordmark */}
-            <span
-              className="absolute left-1/2 -translate-x-1/2 font-bold tracking-tighter pointer-events-none select-none"
-              style={{ fontSize: "20px", color: "#E5E2DE" }}
-            >
-              Gather
-            </span>
-
-            {/* RIGHT: avatar / sign-in */}
+            {/* RIGHT: avatar or sign-in */}
             {!user ? (
               <button
-                className="text-[14px] font-medium active:opacity-70 transition-opacity"
-                style={{ color: "#E5E2DE" }}
+                style={{ fontSize: "14px", fontWeight: 500, color: "#FF6B35" }}
+                className="active:opacity-60 transition-opacity"
                 onClick={() =>
                   openAuthModal(
                     "Quick sign up to join or host events. Takes 10 seconds.",
@@ -95,12 +94,15 @@ export function MainLayout() {
             ) : (
               <button
                 onClick={() => navigate("/profile")}
-                className="flex items-center justify-center overflow-hidden rounded-full bg-[#2A2A28] text-[14px] font-medium active:opacity-70 transition-opacity shrink-0"
+                className="flex items-center justify-center overflow-hidden rounded-full active:opacity-60 transition-opacity shrink-0"
                 style={{
-                  width: "40px",
-                  height: "40px",
-                  border: "1px solid rgba(255,255,255,0.10)",
-                  color: "#E5E2DE",
+                  width: "34px",
+                  height: "34px",
+                  border: "1px solid #2A2A28",
+                  backgroundColor: "#242422",
+                  color: "#F0EEE9",
+                  fontSize: "14px",
+                  fontWeight: 600,
                 }}
               >
                 {profile?.avatar_url ? (
