@@ -33,7 +33,7 @@ export function EventDetailPage() {
   // ─── Chat ────────────────────────────────────────────────────────────────────
   const queryClient = useQueryClient();
   const { data: messages = [] } = useMessages(id || "");
-  const { mutate: sendMessage, isPending: isSending } = useSendMessage();
+  const { mutate: sendMessage, isPending: isSending, error: sendError } = useSendMessage();
   const [chatInput, setChatInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -578,6 +578,7 @@ export function EventDetailPage() {
               minHeight: messages.length === 0 ? "48px" : undefined,
               width: "100%",
               overflowX: "hidden",
+              overflowY: "auto",
             }}
           >
             {messages.length === 0 ? (
@@ -599,6 +600,7 @@ export function EventDetailPage() {
                       gap: "10px",
                       justifyContent: isOwn ? "flex-end" : "flex-start",
                       flexDirection: isOwn ? "row-reverse" : "row",
+                      padding: "0 16px",
                     }}
                   >
                     {/* Avatar */}
@@ -629,7 +631,7 @@ export function EventDetailPage() {
                         maxWidth: "75%",
                         minWidth: 0,
                         wordBreak: "break-word",
-                        overflowWrap: "break-word",
+                        overflowWrap: "anywhere",
                         alignItems: isOwn ? "flex-end" : "flex-start",
                       }}
                     >
@@ -723,6 +725,11 @@ export function EventDetailPage() {
                     <Send className="h-4 w-4 text-white" strokeWidth={2} />
                   </button>
                 </div>
+              )}
+              {sendError && (
+                <p style={{ color: "#FF3B30", fontSize: "12px", padding: "4px 16px" }}>
+                  {(sendError as Error).message}
+                </p>
               )}
             </>
           )}

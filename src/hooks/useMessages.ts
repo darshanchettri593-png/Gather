@@ -45,14 +45,18 @@ export function useSendMessage() {
       userId: string;
       content: string;
     }) => {
-      console.log('[Chat] sending:', { eventId, userId, content: content.trim() });
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('messages')
-        .insert({ event_id: eventId, user_id: userId, content: content.trim() });
+        .insert({ event_id: eventId, user_id: userId, content: content.trim() })
+        .select();
+
+      console.log('[Chat] insert result:', data, error);
+
       if (error) {
-        console.error('[Chat] error:', error);
+        console.error('[Chat] RLS error:', error.message, error.code);
         throw new Error(error.message);
       }
+      return data;
     },
     onSuccess: (_data, { eventId }) => {
       queryClient.invalidateQueries({ queryKey: ['messages', eventId] });
