@@ -82,7 +82,6 @@ export function CreateEventPage() {
         title,
         vibe,
         district,
-        city: localStorage.getItem("gather_city") || "Siliguri",
         location_text: locationStr,
         description: description || null,
         event_datetime: eventDateTime.toISOString(),

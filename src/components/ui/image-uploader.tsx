@@ -255,45 +255,97 @@ export function ImageUploader({
       </div>
 
       {cropImageUrl && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-          <div className="bg-[#2C2C2A] border border-[#383836] rounded-3xl p-6 w-full max-w-[400px] flex flex-col items-center shadow-2xl animate-in zoom-in fade-in duration-200">
-            <h3 className="text-[18px] font-bold text-[#F0F0EA] mb-5 text-center uppercase tracking-wider">
-              {aspectRatio === '1/1' ? 'Crop Profile Photo' : 'Crop Cover Photo'}
-            </h3>
-            
-            <div className="w-full max-h-[50vh] overflow-hidden flex justify-center bg-[#1C1C1A] rounded-2xl border border-[#383836]">
-              <ReactCrop
-                crop={crop}
-                onChange={(_, percentCrop) => setCrop(percentCrop)}
-                onComplete={(c) => setCompletedCrop(c)}
-                aspect={aspect}
-                circularCrop={aspectRatio === '1/1'}
-                className="max-h-[50vh]"
-              >
-                <img
-                  ref={imgRef}
-                  src={cropImageUrl}
-                  alt="Crop preview"
-                  onLoad={onImageLoad}
-                  className="max-w-full max-h-[50vh] object-contain"
-                />
-              </ReactCrop>
-            </div>
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 100,
+            display: "flex",
+            flexDirection: "column",
+            backgroundColor: "rgba(0,0,0,0.95)",
+          }}
+        >
+          {/* Top bar */}
+          <div
+            style={{
+              height: "56px",
+              flexShrink: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "0 20px",
+              backgroundColor: "rgba(0,0,0,0.8)",
+            }}
+          >
+            <button
+              onClick={handleCropCancel}
+              className="active:opacity-60 transition-opacity"
+              style={{ fontSize: "15px", color: "#F0EEE9" }}
+            >
+              Cancel
+            </button>
+            <span style={{ fontSize: "17px", fontWeight: 600, color: "#F0EEE9" }}>
+              Crop Photo
+            </span>
+            <button
+              onClick={handleCropConfirm}
+              className="active:opacity-60 transition-opacity"
+              style={{ fontSize: "15px", fontWeight: 600, color: "#FF6B35" }}
+            >
+              Done
+            </button>
+          </div>
 
-            <div className="flex w-full gap-4 mt-8">
-              <button
-                onClick={handleCropCancel}
-                className="flex-1 h-[52px] rounded-2xl border border-[#383836] text-[#F0F0EA] font-bold active:bg-[#343432] transition-all"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleCropConfirm}
-                className="flex-1 h-[52px] rounded-2xl bg-[#FF6B35] text-white font-bold active:scale-[0.98] transition-all shadow-[0_8px_20px_rgba(255,107,53,0.3)]"
-              >
-                Use photo
-              </button>
-            </div>
+          {/* Crop area */}
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "#000",
+              overflow: "hidden",
+            }}
+          >
+            <ReactCrop
+              crop={crop}
+              onChange={(_, percentCrop) => setCrop(percentCrop)}
+              onComplete={(c) => setCompletedCrop(c)}
+              aspect={aspect}
+              circularCrop={aspectRatio === '1/1'}
+              style={{ maxWidth: "100vw", maxHeight: "calc(100vh - 116px)" }}
+            >
+              <img
+                ref={imgRef}
+                src={cropImageUrl}
+                alt="Crop preview"
+                onLoad={onImageLoad}
+                style={{
+                  maxWidth: "100vw",
+                  maxHeight: "calc(100vh - 116px)",
+                  objectFit: "contain",
+                  display: "block",
+                }}
+              />
+            </ReactCrop>
+          </div>
+
+          {/* Bottom info bar */}
+          <div
+            style={{
+              height: "60px",
+              flexShrink: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "rgba(0,0,0,0.8)",
+            }}
+          >
+            <span style={{ fontSize: "13px", color: "#6B6B63" }}>
+              {aspectRatio === "1/1"
+                ? "1:1 • Crop to fit profile"
+                : "16:9 • Crop to fit cover"}
+            </span>
           </div>
         </div>
       )}
