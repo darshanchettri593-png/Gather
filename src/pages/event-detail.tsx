@@ -22,7 +22,7 @@ export function EventDetailPage() {
   const { toast } = useToast();
 
   const { data: event, isLoading, error } = useEventDetail(id || "");
-  const { data: hasRSVPd } = useRSVPStatus(id || "", user?.id);
+  const { data: hasRSVPd, isLoading: rsvpLoading } = useRSVPStatus(id || "", user?.id);
   const { mutate: toggleRSVP, isPending: isRSVPPending } = useToggleRSVP();
   const { mutate: deleteEvent, isPending: isDeleting } = useDeleteEvent();
 
@@ -666,73 +666,75 @@ export function EventDetailPage() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Send input */}
-          {!isPastEvent && (
-            <>
-              {!user ? (
-                <p style={{ fontSize: "13px", color: "#5A5A52" }}>
-                  <button
-                    onClick={() => openAuthModal("Sign in to join the conversation.", `/event/${id}`)}
-                    style={{ color: "#FF6B35", fontWeight: 600 }}
-                    className="active:opacity-70"
-                  >
-                    Sign in
-                  </button>
-                  {" "}to join the conversation.
-                </p>
-              ) : !hasRSVPd ? (
-                <p style={{ fontSize: "13px", color: "#5A5A52" }}>
-                  RSVP to join the conversation.
-                </p>
-              ) : (
-                <div
-                  className="flex items-center gap-3"
+          {/* Send input — visible on all events (past and upcoming) */}
+          <>
+            {!user ? (
+              <p style={{ fontSize: "13px", color: "#5A5A52" }}>
+                <button
+                  onClick={() => openAuthModal("Sign in to join the conversation.", `/event/${id}`)}
+                  style={{ color: "#FF6B35", fontWeight: 600 }}
+                  className="active:opacity-70"
+                >
+                  Sign in
+                </button>
+                {" "}to join the conversation.
+              </p>
+            ) : rsvpLoading ? (
+              <p style={{ color: "#6B6B63", fontSize: "13px" }}>
+                Loading...
+              </p>
+            ) : !hasRSVPd ? (
+              <p style={{ color: "#6B6B63", fontSize: "13px" }}>
+                RSVP to join the conversation.
+              </p>
+            ) : (
+              <div
+                className="flex items-center gap-3"
+                style={{
+                  backgroundColor: "#2A2A28",
+                  border: "1px solid #383836",
+                  borderRadius: "14px",
+                  padding: "8px 8px 8px 14px",
+                }}
+              >
+                <input
+                  type="text"
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSendMessage();
+                    }
+                  }}
+                  placeholder="Say something..."
+                  maxLength={500}
+                  className="flex-1 bg-transparent outline-none"
                   style={{
-                    backgroundColor: "#2A2A28",
-                    border: "1px solid #383836",
-                    borderRadius: "14px",
-                    padding: "8px 8px 8px 14px",
+                    fontSize: "16px",
+                    color: "#E5E2DE",
+                  }}
+                />
+                <button
+                  onClick={handleSendMessage}
+                  disabled={!chatInput.trim() || isSending}
+                  className="flex items-center justify-center rounded-xl shrink-0 transition-opacity active:opacity-70 disabled:opacity-30"
+                  style={{
+                    width: "36px",
+                    height: "36px",
+                    backgroundColor: "#FF6B35",
                   }}
                 >
-                  <input
-                    type="text"
-                    value={chatInput}
-                    onChange={(e) => setChatInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && !e.shiftKey) {
-                        e.preventDefault();
-                        handleSendMessage();
-                      }
-                    }}
-                    placeholder="Say something..."
-                    maxLength={500}
-                    className="flex-1 bg-transparent outline-none"
-                    style={{
-                      fontSize: "16px",
-                      color: "#E5E2DE",
-                    }}
-                  />
-                  <button
-                    onClick={handleSendMessage}
-                    disabled={!chatInput.trim() || isSending}
-                    className="flex items-center justify-center rounded-xl shrink-0 transition-opacity active:opacity-70 disabled:opacity-30"
-                    style={{
-                      width: "36px",
-                      height: "36px",
-                      backgroundColor: "#FF6B35",
-                    }}
-                  >
-                    <Send className="h-4 w-4 text-white" strokeWidth={2} />
-                  </button>
-                </div>
-              )}
-              {sendError && (
-                <p style={{ color: "#FF3B30", fontSize: "12px", padding: "4px 16px" }}>
-                  {(sendError as Error).message}
-                </p>
-              )}
-            </>
-          )}
+                  <Send className="h-4 w-4 text-white" strokeWidth={2} />
+                </button>
+              </div>
+            )}
+            {sendError && (
+              <p style={{ color: "#FF3B30", fontSize: "12px", padding: "4px 16px" }}>
+                {(sendError as Error).message}
+              </p>
+            )}
+          </>
         </div>
 
         {/* Ratings (past events only) */}

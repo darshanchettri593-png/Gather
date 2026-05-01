@@ -14,7 +14,6 @@ export function useEvents(vibeFilter: string) {
           users!host_id(display_name, avatar_url),
           attendees(count)
         `)
-        .gte('event_datetime', new Date().toISOString())
         .order('event_datetime', { ascending: true });
 
       if (vibeFilter && vibeFilter !== 'All') {
