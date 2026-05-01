@@ -68,6 +68,7 @@ export function CreateEventPage() {
   const [time, setTime]                   = useState("");
   const [locationStr, setLocationStr]     = useState("");
   const [description, setDescription]    = useState("");
+  const [whatsappLink, setWhatsappLink]  = useState("");
 
   const isFormValid = coverUrl && title && vibe && district && locationStr && date && time;
 
@@ -86,6 +87,7 @@ export function CreateEventPage() {
         description: description || null,
         event_datetime: eventDateTime.toISOString(),
         cover_image_url: coverUrl || null,
+        whatsapp_link: whatsappLink || null,
       }).select().single();
 
       if (error) throw new Error(error.message);
@@ -310,6 +312,22 @@ export function CreateEventPage() {
               </button>
             ))}
           </div>
+        </div>
+
+        {/* WhatsApp Group */}
+        <div>
+          <label style={LABEL_STYLE}>WhatsApp Group</label>
+          <input
+            type="url"
+            placeholder="Paste invite link (optional)"
+            value={whatsappLink}
+            onChange={(e) => setWhatsappLink(e.target.value)}
+            style={INPUT_STYLE}
+            className="placeholder:text-[#3D3D38]"
+          />
+          <p style={{ fontSize: "12px", color: "#6B6B63", marginTop: "4px" }}>
+            Share a WhatsApp group link with attendees
+          </p>
         </div>
 
         {/* Description */}
