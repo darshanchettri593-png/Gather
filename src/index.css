@@ -284,7 +284,7 @@ html {
 }
 
 .tab-transition {
-  animation: tabFadeIn 0.15s ease-out forwards;
+  animation: tabFadeIn 0.12s ease-out forwards;
   will-change: opacity;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;

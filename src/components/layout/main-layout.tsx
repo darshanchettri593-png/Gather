@@ -122,7 +122,10 @@ export function MainLayout() {
         </header>
       )}
 
-      <main className="flex-1 w-full max-w-5xl mx-auto">
+      <main
+        key={location.key}
+        className="tab-transition flex-1 w-full max-w-5xl mx-auto"
+      >
         <Outlet />
       </main>
 
