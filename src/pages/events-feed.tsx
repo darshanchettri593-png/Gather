@@ -4,28 +4,7 @@ import { format } from "date-fns";
 import { CalendarDays, AlertCircle, MapPin, Loader2 } from "lucide-react";
 import { useEvents } from "@/hooks/useEvents";
 
-// ─── Constants ───────────────────────────────────────────────────────────────
-
 const VIBES = ["All", "Move", "Create", "Hang", "Learn", "Explore"];
-
-const INDIAN_STATES = [
-  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
-  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
-  "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya",
-  "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim",
-  "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand",
-  "West Bengal", "Delhi", "Jammu & Kashmir",
-];
-
-const WB_DISTRICTS = [
-  "Siliguri", "Kolkata", "Darjeeling", "Jalpaiguri", "Kalimpong",
-  "Kurseong", "Alipurduar", "Cooch Behar", "Howrah", "Durgapur", "Asansol",
-];
-
-function getDistrictsForState(state: string): string[] {
-  if (state === "West Bengal") return WB_DISTRICTS;
-  return [];
-}
 
 function getVibeLabel(vibe: string) {
   return vibe;
@@ -49,7 +28,6 @@ function FeaturedEventCard({ event }: { event: any }) {
           overflow: "hidden",
         }}
       >
-        {/* 16:9 image */}
         <div className="relative w-full aspect-video overflow-hidden">
           {event.cover_image_url ? (
             <img
@@ -77,18 +55,14 @@ function FeaturedEventCard({ event }: { event: any }) {
             </div>
           )}
 
-          {/* Simple dark overlay — bottom only */}
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
-              background:
-                "linear-gradient(to top, rgba(17,17,16,0.9) 0%, transparent 60%)",
+              background: "linear-gradient(to top, rgba(17,17,16,0.9) 0%, transparent 60%)",
             }}
           />
 
-          {/* Overlay content — bottom-left */}
           <div className="absolute bottom-0 left-0 p-[14px]">
-            {/* Vibe pill */}
             <div
               className="inline-flex items-center"
               style={{
@@ -105,22 +79,15 @@ function FeaturedEventCard({ event }: { event: any }) {
             >
               {getVibeLabel(event.vibe)}
             </div>
-            {/* Title */}
             <h3
               className="line-clamp-2 mt-[6px]"
-              style={{
-                fontSize: "20px",
-                fontWeight: 700,
-                color: "#F0EEE9",
-                lineHeight: 1.2,
-              }}
+              style={{ fontSize: "20px", fontWeight: 700, color: "#F0EEE9", lineHeight: 1.2 }}
             >
               {event.title}
             </h3>
           </div>
         </div>
 
-        {/* Card footer */}
         <div
           className="flex items-center justify-between"
           style={{ padding: "12px 14px" }}
@@ -177,7 +144,6 @@ function CompactEventCard({ event }: { event: any }) {
           padding: "12px",
         }}
       >
-        {/* Thumbnail 72×72 */}
         <div
           style={{
             width: "72px",
@@ -204,7 +170,6 @@ function CompactEventCard({ event }: { event: any }) {
           )}
         </div>
 
-        {/* Info */}
         <div className="flex flex-col gap-[4px] flex-1 min-w-0 justify-center">
           <span
             style={{
@@ -249,9 +214,7 @@ function FeedEmptyState({ onHost }: { onHost: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center text-center px-6 py-20">
       <CalendarDays size={40} color="#3D3D38" strokeWidth={1.5} />
-      <h3
-        style={{ fontSize: "18px", fontWeight: 600, color: "#F0EEE9", marginTop: "16px" }}
-      >
+      <h3 style={{ fontSize: "18px", fontWeight: 600, color: "#F0EEE9", marginTop: "16px" }}>
         Nothing here yet.
       </h3>
       <p style={{ fontSize: "14px", color: "#6B6B63", marginTop: "8px" }}>
@@ -281,32 +244,9 @@ function FeedEmptyState({ onHost }: { onHost: () => void }) {
 
 export function EventFeedPage() {
   const navigate = useNavigate();
-
-  const [selectedState, setSelectedState] = useState<string>(() => {
-    const stored = localStorage.getItem("gather_state");
-    if (!stored) {
-      localStorage.setItem("gather_state", "West Bengal");
-      return "West Bengal";
-    }
-    return stored;
-  });
-
-  const [districtFilter, setDistrictFilter] = useState<string>("All");
   const [vibeFilter, setVibeFilter] = useState<string>("All");
-  const [isStateModalOpen, setIsStateModalOpen] = useState(false);
 
-  // Listen for header tap event
-  useEffect(() => {
-    const openModal = () => setIsStateModalOpen(true);
-    window.addEventListener("gather:open-city-picker", openModal);
-    return () => window.removeEventListener("gather:open-city-picker", openModal);
-  }, []);
-
-  const { data: events, isLoading, error, refetch } = useEvents(
-    vibeFilter,
-    selectedState,
-    districtFilter
-  );
+  const { data: events, isLoading, error, refetch } = useEvents(vibeFilter);
 
   // 8-second timeout — show empty state instead of infinite skeleton
   const [isTimedOut, setIsTimedOut] = useState(false);
@@ -351,17 +291,7 @@ export function EventFeedPage() {
     if (isRefreshing) setPullProgress(50);
   }, [isRefreshing]);
 
-  const handleStateSelect = (state: string) => {
-    setSelectedState(state);
-    localStorage.setItem("gather_state", state);
-    window.dispatchEvent(new Event("storage"));
-    setDistrictFilter("All");
-    setIsStateModalOpen(false);
-  };
-
-  const districts = getDistrictsForState(selectedState);
-
-  // ─── Render content ─────────────────────────────────────────────────────────
+  // ─── Render content ──────────────────────────────────────────────────────────
 
   const renderContent = () => {
     if (error) {
@@ -377,12 +307,7 @@ export function EventFeedPage() {
           <button
             onClick={() => refetch()}
             className="active:opacity-70 transition-opacity"
-            style={{
-              marginTop: "20px",
-              fontSize: "15px",
-              fontWeight: 600,
-              color: "#FF6B35",
-            }}
+            style={{ marginTop: "20px", fontSize: "15px", fontWeight: 600, color: "#FF6B35" }}
           >
             Try again
           </button>
@@ -457,7 +382,7 @@ export function EventFeedPage() {
     );
   };
 
-  // ─── JSX ────────────────────────────────────────────────────────────────────
+  // ─── JSX ─────────────────────────────────────────────────────────────────────
 
   return (
     <div
@@ -483,54 +408,10 @@ export function EventFeedPage() {
         </div>
       </div>
 
-      {/* State pills — horizontal scroll */}
-      {districts.length > 0 && (
-        <div
-          className="flex gap-2 no-scrollbar overflow-x-auto"
-          style={{ padding: "12px 20px" }}
-        >
-          <button
-            onClick={() => setDistrictFilter("All")}
-            className="flex-shrink-0 transition-opacity active:opacity-70"
-            style={{
-              height: "32px",
-              padding: "0 14px",
-              borderRadius: "999px",
-              fontSize: "13px",
-              fontWeight: districtFilter === "All" ? 600 : 400,
-              backgroundColor: districtFilter === "All" ? "#FF6B35" : "#1C1C1A",
-              color: districtFilter === "All" ? "white" : "#6B6B63",
-              border: districtFilter === "All" ? "none" : "1px solid #2A2A28",
-            }}
-          >
-            All
-          </button>
-          {districts.map((d) => (
-            <button
-              key={d}
-              onClick={() => setDistrictFilter(d)}
-              className="flex-shrink-0 transition-opacity active:opacity-70"
-              style={{
-                height: "32px",
-                padding: "0 14px",
-                borderRadius: "999px",
-                fontSize: "13px",
-                fontWeight: districtFilter === d ? 600 : 400,
-                backgroundColor: districtFilter === d ? "#FF6B35" : "#1C1C1A",
-                color: districtFilter === d ? "white" : "#6B6B63",
-                border: districtFilter === d ? "none" : "1px solid #2A2A28",
-              }}
-            >
-              {d}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Vibe pills — horizontal scroll */}
+      {/* Vibe pills */}
       <div
         className="flex gap-2 no-scrollbar overflow-x-auto"
-        style={{ padding: districts.length > 0 ? "0 20px 12px" : "12px 20px" }}
+        style={{ padding: "12px 20px" }}
       >
         {VIBES.map((v) => (
           <button
@@ -569,76 +450,6 @@ export function EventFeedPage() {
       </div>
 
       {renderContent()}
-
-      {/* State Picker Modal */}
-      {isStateModalOpen && (
-        <>
-          <div
-            className="fixed inset-0 z-[100]"
-            style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
-            onClick={() => setIsStateModalOpen(false)}
-          />
-          <div
-            className="fixed inset-x-0 bottom-0 z-[101] flex flex-col"
-            style={{
-              backgroundColor: "#1C1C1A",
-              borderRadius: "24px 24px 0 0",
-              maxHeight: "85vh",
-            }}
-          >
-            {/* Drag handle */}
-            <div className="flex justify-center" style={{ marginTop: "12px" }}>
-              <div
-                style={{
-                  width: "36px",
-                  height: "4px",
-                  borderRadius: "999px",
-                  backgroundColor: "#2A2A28",
-                }}
-              />
-            </div>
-
-            {/* Title */}
-            <div style={{ padding: "20px 20px 16px" }}>
-              <h3
-                style={{ fontSize: "17px", fontWeight: 600, color: "#F0EEE9" }}
-              >
-                Your state
-              </h3>
-            </div>
-
-            {/* States list */}
-            <div className="flex-1 overflow-y-auto" style={{ paddingBottom: "env(safe-area-inset-bottom, 20px)" }}>
-              {INDIAN_STATES.map((state, i) => (
-                <button
-                  key={state}
-                  onClick={() => handleStateSelect(state)}
-                  className="w-full flex items-center justify-between active:opacity-60 transition-opacity"
-                  style={{
-                    height: "48px",
-                    padding: "0 20px",
-                    borderBottom: i < INDIAN_STATES.length - 1 ? "1px solid #2A2A28" : "none",
-                  }}
-                >
-                  <span style={{ fontSize: "16px", color: "#F0EEE9" }}>
-                    {state}
-                  </span>
-                  {selectedState === state && (
-                    <div
-                      style={{
-                        width: "8px",
-                        height: "8px",
-                        borderRadius: "50%",
-                        backgroundColor: "#FF6B35",
-                      }}
-                    />
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-        </>
-      )}
     </div>
   );
 }
