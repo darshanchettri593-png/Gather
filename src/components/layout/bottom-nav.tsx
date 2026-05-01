@@ -48,9 +48,9 @@ export function BottomNav() {
         >
           <Compass
             size={22}
-            strokeWidth={1.8}
+            strokeWidth={isActive("/") ? 2.5 : 1.5}
             color={isActive("/") ? activeColor : inactiveColor}
-            fill="none"
+            fill={isActive("/") ? "rgba(255,107,53,0.15)" : "none"}
             style={{ display: "block" }}
           />
           <span
@@ -124,9 +124,9 @@ export function BottomNav() {
         >
           <User
             size={22}
-            strokeWidth={1.8}
+            strokeWidth={isActive("/profile") ? 2.5 : 1.8}
             color={isActive("/profile") ? activeColor : inactiveColor}
-            fill="none"
+            fill={isActive("/profile") ? "rgba(255,107,53,0.15)" : "none"}
           />
           <span
             style={{

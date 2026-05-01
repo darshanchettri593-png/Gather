@@ -3,13 +3,11 @@ import type React from "react";
 import { useAuth } from "@/lib/auth-context";
 import { supabase } from "@/lib/supabase";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { Drawer, DrawerContent, DrawerTitle } from "@/components/ui/drawer";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useToast } from "@/components/ui/toast";
 
 type AuthTab = "signup" | "signin";
 
-// Filled box style — 16px font prevents iOS auto-zoom
 const INPUT_CLASS =
   "w-full outline-none transition-colors placeholder:text-[#3D3D38] disabled:opacity-50";
 
@@ -19,7 +17,7 @@ const INPUT_STYLE: React.CSSProperties = {
   border: "1px solid #2A2A28",
   borderRadius: "12px",
   padding: "0 16px",
-  fontSize: "16px",
+  fontSize: "16px", // critical — prevents iOS auto-zoom
   color: "#F0EEE9",
 };
 
@@ -39,13 +37,13 @@ export function AuthModal() {
   const { toast } = useToast();
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
-  const [tab, setTab]                     = useState<AuthTab>("signup");
-  const [name, setName]                   = useState("");
-  const [email, setEmail]                 = useState("");
-  const [password, setPassword]           = useState("");
-  const [loading, setLoading]             = useState(false);
-  const [error, setError]                 = useState<string | null>(null);
-  const [emailError, setEmailError]       = useState<string | null>(null);
+  const [tab, setTab]               = useState<AuthTab>("signup");
+  const [name, setName]             = useState("");
+  const [email, setEmail]           = useState("");
+  const [password, setPassword]     = useState("");
+  const [loading, setLoading]       = useState(false);
+  const [error, setError]           = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   useEffect(() => {
     if (isAuthModalOpen) {
@@ -55,19 +53,32 @@ export function AuthModal() {
       setPassword("");
       setError(null);
       setEmailError(null);
-      // Body lock — prevents iOS viewport resize when keyboard opens
-      document.body.style.overflow  = "hidden";
-      document.body.style.position  = "fixed";
-      document.body.style.width     = "100%";
+
+      // Save current scroll position, then lock body in place
+      const scrollY = window.scrollY;
+      document.body.dataset.scrollY = String(scrollY);
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.left = "0";
+      document.body.style.right = "0";
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow  = "";
-      document.body.style.position  = "";
-      document.body.style.width     = "";
+      // Restore scroll position
+      const scrollY = document.body.dataset.scrollY;
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
+      document.body.style.overflow = "";
+      window.scrollTo(0, parseInt(scrollY || "0"));
     }
+
     return () => {
-      document.body.style.overflow  = "";
-      document.body.style.position  = "";
-      document.body.style.width     = "";
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
+      document.body.style.overflow = "";
     };
   }, [isAuthModalOpen]);
 
@@ -142,10 +153,7 @@ export function AuthModal() {
   const modalContent = (
     <div style={{ padding: "8px 24px 24px" }}>
       {/* Tab row */}
-      <div
-        className="flex"
-        style={{ borderBottom: "1px solid #2A2A28", marginBottom: "28px" }}
-      >
+      <div className="flex" style={{ borderBottom: "1px solid #2A2A28", marginBottom: "28px" }}>
         {(["signup", "signin"] as AuthTab[]).map((t) => (
           <button
             key={t}
@@ -170,16 +178,8 @@ export function AuthModal() {
         ))}
       </div>
 
-      {/* Context message */}
       {authModalMessage && authModalMessage !== "Sign in to continue" && (
-        <p
-          style={{
-            fontSize: "14px",
-            color: "#6B6B63",
-            marginBottom: "20px",
-            lineHeight: 1.5,
-          }}
-        >
+        <p style={{ fontSize: "14px", color: "#6B6B63", marginBottom: "20px", lineHeight: 1.5 }}>
           {authModalMessage}
         </p>
       )}
@@ -220,20 +220,10 @@ export function AuthModal() {
               style={INPUT_STYLE}
             />
             {emailError && (
-              <div
-                style={{
-                  padding: "10px 12px",
-                  backgroundColor: "rgba(255,59,48,0.08)",
-                  borderRadius: "10px",
-                }}
-              >
+              <div style={{ padding: "10px 12px", backgroundColor: "rgba(255,59,48,0.08)", borderRadius: "10px" }}>
                 <p style={{ fontSize: "12px", color: "#FF3B30" }}>
                   {emailError}{" "}
-                  <button
-                    type="button"
-                    onClick={() => switchTab("signin")}
-                    style={{ textDecoration: "underline", fontWeight: 700 }}
-                  >
+                  <button type="button" onClick={() => switchTab("signin")} style={{ textDecoration: "underline", fontWeight: 700 }}>
                     Sign in instead
                   </button>
                 </p>
@@ -258,22 +248,12 @@ export function AuthModal() {
               style={INPUT_STYLE}
             />
             {passwordStrength && (
-              <p className={`text-[12px] font-bold ${passwordStrength.cls}`}>
-                {passwordStrength.label}
-              </p>
+              <p className={`text-[12px] font-bold ${passwordStrength.cls}`}>{passwordStrength.label}</p>
             )}
           </div>
 
           {error && (
-            <p
-              style={{
-                fontSize: "13px",
-                color: "#FF3B30",
-                backgroundColor: "rgba(255,59,48,0.08)",
-                borderRadius: "10px",
-                padding: "10px 12px",
-              }}
-            >
+            <p style={{ fontSize: "13px", color: "#FF3B30", backgroundColor: "rgba(255,59,48,0.08)", borderRadius: "10px", padding: "10px 12px" }}>
               {error}
             </p>
           )}
@@ -325,15 +305,7 @@ export function AuthModal() {
           </div>
 
           {error && (
-            <p
-              style={{
-                fontSize: "13px",
-                color: "#FF3B30",
-                backgroundColor: "rgba(255,59,48,0.08)",
-                borderRadius: "10px",
-                padding: "10px 12px",
-              }}
-            >
+            <p style={{ fontSize: "13px", color: "#FF3B30", backgroundColor: "rgba(255,59,48,0.08)", borderRadius: "10px", padding: "10px 12px" }}>
               {error}
             </p>
           )}
@@ -362,6 +334,7 @@ export function AuthModal() {
     </div>
   );
 
+  // ─── Desktop: Dialog ─────────────────────────────────────────────────────────
   if (isDesktop) {
     return (
       <Dialog open={isAuthModalOpen} onOpenChange={(open) => !open && closeAuthModal()}>
@@ -376,40 +349,43 @@ export function AuthModal() {
     );
   }
 
+  // ─── Mobile: custom fixed overlay (no Vaul — avoids iOS black screen) ────────
+  if (!isAuthModalOpen) return null;
+
   return (
-    <Drawer open={isAuthModalOpen} onOpenChange={(open) => !open && closeAuthModal()}>
-      <DrawerContent
-        className="rounded-t-3xl px-0"
+    // Overlay — position:fixed, no overflow:hidden here
+    <div
+      onClick={closeAuthModal}
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 100,
+        display: "flex",
+        alignItems: "flex-end",
+        backgroundColor: "rgba(0,0,0,0.6)",
+      }}
+    >
+      {/* Sheet — position:relative, scrollable */}
+      <div
+        onClick={(e) => e.stopPropagation()}
         style={{
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
+          position: "relative",
+          width: "100%",
           backgroundColor: "#1C1C1A",
-          borderTop: "1px solid #2A2A28",
+          borderRadius: "24px 24px 0 0",
           maxHeight: "90vh",
           overflowY: "auto",
           WebkitOverflowScrolling: "touch" as any,
-          transform: "translateZ(0)",
-          willChange: "transform",
-          paddingBottom: "env(safe-area-inset-bottom, 20px)",
+          paddingBottom: "env(safe-area-inset-bottom, 24px)",
         }}
       >
-        <DrawerTitle className="sr-only">Authentication</DrawerTitle>
         {/* Drag handle */}
-        <div className="flex justify-center" style={{ paddingTop: "12px", paddingBottom: "4px" }}>
-          <div
-            style={{
-              width: "36px",
-              height: "4px",
-              borderRadius: "999px",
-              backgroundColor: "#2A2A28",
-            }}
-          />
+        <div style={{ display: "flex", justifyContent: "center", paddingTop: "12px", paddingBottom: "4px" }}>
+          <div style={{ width: "36px", height: "4px", borderRadius: "999px", backgroundColor: "#2A2A28" }} />
         </div>
         {modalContent}
-      </DrawerContent>
-    </Drawer>
+      </div>
+    </div>
   );
 }
 

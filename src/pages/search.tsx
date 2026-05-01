@@ -209,35 +209,42 @@ export function SearchPage() {
                 BROWSE BY VIBE
               </span>
 
-              {/* 2-col grid */}
+              {/* 2-col grid — last card spans full width if count is odd */}
               <div
                 className="grid grid-cols-2 gap-[10px]"
                 style={{ marginBottom: "24px" }}
               >
-                {VIBES.map((v) => (
-                  <button
-                    key={v.name}
-                    onClick={() => handleVibeClick(v.name)}
-                    className="flex flex-col items-center justify-center aspect-square active:opacity-80 transition-opacity"
-                    style={{
-                      backgroundColor: v.bg,
-                      border: "1px solid #2A2A28",
-                      borderRadius: "16px",
-                    }}
-                  >
-                    <v.icon size={28} strokeWidth={1.8} color={v.iconColor} fill="none" />
-                    <span
+                {VIBES.map((v, index) => {
+                  const isLastOdd =
+                    index === VIBES.length - 1 && VIBES.length % 2 !== 0;
+                  return (
+                    <button
+                      key={v.name}
+                      onClick={() => handleVibeClick(v.name)}
+                      className="flex flex-col items-center justify-center active:opacity-80 transition-opacity"
                       style={{
-                        fontSize: "14px",
-                        fontWeight: 600,
-                        color: "#F0EEE9",
-                        marginTop: "8px",
+                        backgroundColor: v.bg,
+                        border: "1px solid #2A2A28",
+                        borderRadius: "16px",
+                        gridColumn: isLastOdd ? "span 2" : "span 1",
+                        aspectRatio: isLastOdd ? "unset" : "1 / 1",
+                        height: isLastOdd ? "100px" : undefined,
                       }}
                     >
-                      {v.name}
-                    </span>
-                  </button>
-                ))}
+                      <v.icon size={28} strokeWidth={1.8} color={v.iconColor} fill="none" />
+                      <span
+                        style={{
+                          fontSize: "14px",
+                          fontWeight: 600,
+                          color: "#F0EEE9",
+                          marginTop: "8px",
+                        }}
+                      >
+                        {v.name}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>

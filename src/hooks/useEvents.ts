@@ -14,32 +14,30 @@ export function useEvents(vibeFilter: string, city: string, districtFilter: stri
           host:users!host_id(id, display_name, avatar_url),
           attendees!left(count)
         `)
-        .gte('event_datetime', new Date().toISOString())
         .order('event_datetime', { ascending: true });
+      // Date filter removed — was blocking events due to timezone mismatches
 
-      if (vibeFilter !== 'All') {
+      if (vibeFilter && vibeFilter !== 'All') {
         query = query.eq('vibe', vibeFilter.toLowerCase());
       }
 
-      // Only filter by district when a specific one is selected.
-      // City/state filter removed — was blocking all results with exact-match.
-      if (districtFilter !== 'All') {
+      if (districtFilter && districtFilter !== 'All') {
         query = query.eq('district', districtFilter);
       }
 
       const { data, error } = await query;
 
-      if (error) {
-        console.error('[useEvents] Query error:', error);
-        throw new Error(error.message);
-      }
+      console.log('[useEvents] data:', data);
+      console.log('[useEvents] error:', error);
+
+      if (error) throw error;
 
       return (data || []).map((d: any) => ({
         ...d,
         _count: {
-          attendees: d.attendees?.[0]?.count || 0
-        }
+          attendees: d.attendees?.[0]?.count || 0,
+        },
       })) as Event[];
-    }
+    },
   });
 }
