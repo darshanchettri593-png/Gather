@@ -93,8 +93,12 @@ export function CreateEventPage() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["events"] });
-      toast("Your event is live!", "success");
-      navigate(`/event/${data.id}`);
+      toast("Your gathering is live! 🎉", "success");
+      if (data?.id) {
+        navigate(`/event/${data.id}`);
+      } else {
+        navigate("/");
+      }
     },
   });
 

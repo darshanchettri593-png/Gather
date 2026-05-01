@@ -37,7 +37,6 @@ export function EventDetailPage() {
   const [chatInput, setChatInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Realtime subscription
   useEffect(() => {
     if (!id) return;
     return subscribeToMessages(id, () => {
@@ -45,7 +44,6 @@ export function EventDetailPage() {
     });
   }, [id, queryClient]);
 
-  // Scroll to latest message when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -86,11 +84,7 @@ export function EventDetailPage() {
       url: window.location.href,
     };
     if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-      } catch {
-        // user cancelled — do nothing
-      }
+      try { await navigator.share(shareData); } catch { /* cancelled */ }
     } else {
       await navigator.clipboard.writeText(window.location.href);
       toast("Link copied!");
@@ -152,29 +146,21 @@ export function EventDetailPage() {
   // ─── Loading skeleton ────────────────────────────────────────────────────────
   if (isLoading) {
     return (
-      <div className="relative min-h-screen bg-[#131312] pb-[100px]">
-        <div className="w-full bg-[#2A2A28] animate-pulse" style={{ height: "530px" }} />
-        <div
-          className="bg-[#242422] rounded-xl -mt-12 mx-6 p-8 space-y-6 relative z-20"
-          style={{ border: "1px solid #2E2E2C", boxShadow: "0 20px 50px rgba(0,0,0,0.5)" }}
-        >
-          <div className="h-4 w-16 bg-[#2A2A28] rounded animate-pulse" />
-          <div className="h-[36px] w-[80%] bg-[#2A2A28] rounded animate-pulse" />
-          <div className="space-y-4">
-            <div className="h-[64px] w-full bg-[#2A2A28] rounded-lg animate-pulse" />
-            <div className="h-[64px] w-full bg-[#2A2A28] rounded-lg animate-pulse" />
-            <div className="h-[64px] w-full bg-[#2A2A28] rounded-lg animate-pulse" />
+      <div className="relative min-h-screen pb-[100px]" style={{ backgroundColor: "#111110" }}>
+        <div className="w-full animate-pulse" style={{ height: "320px", backgroundColor: "#1C1C1A" }} />
+        <div style={{ backgroundColor: "#1C1C1A", borderRadius: "24px 24px 0 0", marginTop: "-24px", padding: "24px 20px" }}>
+          <div className="h-4 w-24 rounded animate-pulse mb-4" style={{ backgroundColor: "#242422" }} />
+          <div className="h-7 w-3/4 rounded animate-pulse mb-6" style={{ backgroundColor: "#242422" }} />
+          <div className="space-y-3">
+            <div className="h-16 rounded-xl animate-pulse" style={{ backgroundColor: "#242422" }} />
+            <div className="h-16 rounded-xl animate-pulse" style={{ backgroundColor: "#242422" }} />
           </div>
         </div>
         <div
-          className="fixed bottom-0 left-0 right-0 px-4 py-[14px]"
-          style={{
-            height: "96px",
-            backgroundColor: "#1C1C1A",
-            borderTop: "1px solid #2E2E2C",
-          }}
+          className="fixed bottom-0 left-0 right-0 px-5"
+          style={{ height: "84px", backgroundColor: "#1C1C1A", borderTop: "1px solid #2A2A28", display: "flex", alignItems: "center" }}
         >
-          <div className="h-[54px] w-full bg-[#2A2A28] rounded-xl animate-pulse" />
+          <div className="h-[52px] w-full rounded-full animate-pulse" style={{ backgroundColor: "#242422" }} />
         </div>
       </div>
     );
@@ -183,15 +169,23 @@ export function EventDetailPage() {
   // ─── Error / not found ───────────────────────────────────────────────────────
   if (error || !event) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-[#131312] px-4 text-center">
-        <AlertCircle className="h-12 w-12 text-[#5A5A52] mb-4" strokeWidth={1.5} />
-        <h3 className="text-[20px] font-semibold text-[#E5E2DE] mb-2">Event not found</h3>
-        <p className="text-[14px] text-[#9A9A8E] mb-6 max-w-[280px]">
+      <div className="flex flex-col items-center justify-center min-h-screen px-4 text-center" style={{ backgroundColor: "#111110" }}>
+        <AlertCircle size={48} strokeWidth={1.5} style={{ color: "#3D3D38", marginBottom: "16px" }} />
+        <h3 style={{ fontSize: "20px", fontWeight: 600, color: "#F0EEE9", marginBottom: "8px" }}>Event not found</h3>
+        <p style={{ fontSize: "14px", color: "#6B6B63", marginBottom: "24px", maxWidth: "280px" }}>
           This event might have been deleted or the link is broken.
         </p>
         <button
-          className="px-8 h-[48px] rounded-full bg-[#242422] text-[#E5E2DE] font-semibold active:bg-[#2A2A28] transition-colors"
-          style={{ border: "1px solid #2E2E2C" }}
+          style={{
+            padding: "0 28px",
+            height: "48px",
+            borderRadius: "999px",
+            backgroundColor: "#1C1C1A",
+            border: "1px solid #2A2A28",
+            color: "#F0EEE9",
+            fontSize: "15px",
+            fontWeight: 500,
+          }}
           onClick={() => navigate("/")}
         >
           Back to feed
@@ -210,10 +204,10 @@ export function EventDetailPage() {
 
   // ─── Page ────────────────────────────────────────────────────────────────────
   return (
-    <div className="relative min-h-screen bg-[#131312] pb-[100px]">
+    <div className="relative min-h-screen" style={{ backgroundColor: "#111110", paddingBottom: "100px" }}>
 
-      {/* ── Hero image ──────────────────────────────────────────────────────── */}
-      <div className="relative w-full" style={{ height: "530px" }}>
+      {/* ── Hero image — 320px, no title overlay ─────────────────────────────── */}
+      <div className="relative w-full" style={{ height: "320px" }}>
         {event.cover_image_url ? (
           <img
             src={event.cover_image_url}
@@ -221,23 +215,17 @@ export function EventDetailPage() {
             className="w-full h-full object-cover"
           />
         ) : (
-          <div
-            className="w-full h-full flex items-center justify-center"
-            style={{ backgroundColor: "#242422" }}
-          >
-            <span className="text-[28px] font-bold uppercase tracking-widest" style={{ color: "rgba(255,107,53,0.15)" }}>
+          <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: "#1C1C1A" }}>
+            <span style={{ fontSize: "22px", fontWeight: 700, color: "#3D3D38", textTransform: "uppercase", letterSpacing: "0.1em" }}>
               Gather
             </span>
           </div>
         )}
 
-        {/* Cinematic gradient overlay */}
+        {/* Subtle bottom gradient so content card blends */}
         <div
           className="absolute inset-0 pointer-events-none"
-          style={{
-            background:
-              "linear-gradient(to bottom, rgba(19,19,18,0) 0%, rgba(19,19,18,0.4) 40%, rgba(19,19,18,1) 100%)",
-          }}
+          style={{ background: "linear-gradient(to bottom, transparent 50%, rgba(17,17,16,0.6) 100%)" }}
         />
 
         {/* Back button */}
@@ -245,132 +233,126 @@ export function EventDetailPage() {
           onClick={() => navigate(-1)}
           className="absolute top-4 left-4 z-10 flex items-center justify-center rounded-full active:scale-90 transition-transform"
           style={{
-            width: "40px",
-            height: "40px",
-            backgroundColor: "rgba(0,0,0,0.40)",
+            width: "40px", height: "40px",
+            backgroundColor: "rgba(0,0,0,0.50)",
             backdropFilter: "blur(8px)",
             WebkitBackdropFilter: "blur(8px)",
-            border: "1px solid rgba(255,255,255,0.10)",
+            border: "1px solid rgba(255,255,255,0.12)",
           }}
         >
           <ArrowLeft className="h-5 w-5 text-white" />
         </button>
-
-        {/* Top-right buttons */}
-        <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
-          {isHost && (
-            <button
-              onClick={() => setIsMenuOpen((v) => !v)}
-              className="flex items-center justify-center rounded-full active:scale-90 transition-transform"
-              style={{
-                width: "40px",
-                height: "40px",
-                backgroundColor: "rgba(0,0,0,0.40)",
-                backdropFilter: "blur(8px)",
-                WebkitBackdropFilter: "blur(8px)",
-                border: "1px solid rgba(255,255,255,0.10)",
-              }}
-              aria-label="More options"
-            >
-              <MoreVertical className="h-5 w-5 text-white" />
-            </button>
-          )}
-          <button
-            onClick={handleShare}
-            className="flex items-center justify-center rounded-full active:scale-95 transition-transform"
-            style={{
-              width: "40px",
-              height: "40px",
-              backgroundColor: "#1C1C1A",
-              border: "1px solid #2A2A28",
-            }}
-            aria-label="Share"
-          >
-            <Share2 size={20} color="#F0EEE9" strokeWidth={1.8} />
-          </button>
-        </div>
-
-        {/* Hero bottom content */}
-        <div className="absolute bottom-0 left-0 w-full p-6">
-          <div className="flex items-center gap-2 mb-3">
-            <span
-              className="rounded-full px-3 py-1 font-semibold"
-              style={{
-                fontSize: "12px",
-                backgroundColor: "rgba(255,107,53,0.2)",
-                border: "1px solid rgba(255,107,53,0.3)",
-                color: "#FF6B35",
-              }}
-            >
-              {getVibeLabel(event.vibe)}
-            </span>
-          </div>
-          <h1
-            className="font-bold text-white leading-[1.05]"
-            style={{ fontSize: "48px", letterSpacing: "-0.04em" }}
-          >
-            {event.title}
-          </h1>
-        </div>
       </div>
-
-      {/* ── Dropdown menu ────────────────────────────────────────────────────── */}
-      {isMenuOpen && (
-        <>
-          <div className="fixed inset-0 z-[90]" onClick={() => setIsMenuOpen(false)} />
-          <div
-            className="absolute top-[60px] right-4 z-[100] rounded-xl border shadow-xl overflow-hidden min-w-[160px] animate-in fade-in zoom-in-95 duration-100"
-            style={{ backgroundColor: "#2A2A28", borderColor: "#383836" }}
-          >
-            <button
-              onClick={() => {
-                setIsMenuOpen(false);
-                setIsDeleteModalOpen(true);
-              }}
-              className="w-full flex items-center px-4 py-3 text-[15px] font-medium active:bg-[#343432] transition-colors text-left"
-              style={{ color: "#FF3B30" }}
-            >
-              Delete event
-            </button>
-          </div>
-        </>
-      )}
 
       {/* ── Content card ──────────────────────────────────────────────────────── */}
       <div
-        className="relative -mt-12 z-20 mx-0 px-6 pt-8 pb-[100px] min-h-[60vh] rounded-xl"
         style={{
-          backgroundColor: "#242422",
-          border: "1px solid #2E2E2C",
-          boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
+          backgroundColor: "#1C1C1A",
+          borderRadius: "24px 24px 0 0",
+          marginTop: "-24px",
+          padding: "24px 20px",
+          paddingBottom: "40px",
+          position: "relative",
+          zIndex: 10,
         }}
       >
+        {/* Row 1: Vibe pill (left) + Share + Host menu (right) */}
+        <div className="flex items-center justify-between mb-4">
+          <span
+            style={{
+              fontSize: "11px",
+              fontWeight: 700,
+              color: "#FF6B35",
+              textTransform: "uppercase",
+              letterSpacing: "0.08em",
+              backgroundColor: "rgba(255,107,53,0.12)",
+              border: "1px solid rgba(255,107,53,0.2)",
+              borderRadius: "999px",
+              padding: "4px 10px",
+            }}
+          >
+            {getVibeLabel(event.vibe)}
+          </span>
+
+          <div className="flex items-center gap-2">
+            {isHost && (
+              <div style={{ position: "relative" }}>
+                <button
+                  onClick={() => setIsMenuOpen((v) => !v)}
+                  className="flex items-center justify-center rounded-full active:opacity-60 transition-opacity"
+                  style={{ width: "36px", height: "36px", backgroundColor: "#242422", border: "1px solid #2A2A28" }}
+                  aria-label="More options"
+                >
+                  <MoreVertical size={18} color="#6B6B63" strokeWidth={1.8} />
+                </button>
+                {isMenuOpen && (
+                  <>
+                    <div className="fixed inset-0 z-[90]" onClick={() => setIsMenuOpen(false)} />
+                    <div
+                      className="absolute z-[100] rounded-xl overflow-hidden"
+                      style={{
+                        top: "calc(100% + 6px)",
+                        right: 0,
+                        minWidth: "160px",
+                        backgroundColor: "#242422",
+                        border: "1px solid #2A2A28",
+                      }}
+                    >
+                      <button
+                        onClick={() => { setIsMenuOpen(false); setIsDeleteModalOpen(true); }}
+                        className="w-full flex items-center px-4 py-3 text-left active:bg-[#2A2A28] transition-colors"
+                        style={{ fontSize: "15px", fontWeight: 500, color: "#FF3B30" }}
+                      >
+                        Delete event
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+            <button
+              onClick={handleShare}
+              className="flex items-center justify-center rounded-full active:opacity-60 transition-opacity"
+              style={{ width: "36px", height: "36px", backgroundColor: "#242422", border: "1px solid #2A2A28" }}
+              aria-label="Share"
+            >
+              <Share2 size={18} color="#6B6B63" strokeWidth={1.8} />
+            </button>
+          </div>
+        </div>
+
+        {/* Event title */}
+        <h1
+          style={{
+            fontSize: "24px",
+            fontWeight: 700,
+            color: "#F0EEE9",
+            lineHeight: 1.25,
+            marginBottom: "24px",
+            wordBreak: "break-word",
+            overflowWrap: "break-word",
+          }}
+        >
+          {event.title}
+        </h1>
 
         {/* Info grid — 3 columns */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-3 gap-3 mb-6">
           {/* Date */}
           <div className="flex flex-col items-center text-center">
             <div
-              className="flex items-center justify-center rounded-lg mb-3"
-              style={{
-                width: "48px",
-                height: "48px",
-                backgroundColor: "#2A2A28",
-                border: "1px solid rgba(255,255,255,0.05)",
-              }}
+              className="flex items-center justify-center rounded-xl mb-2"
+              style={{ width: "44px", height: "44px", backgroundColor: "#242422", border: "1px solid #2A2A28" }}
             >
-              <CalendarRange className="h-5 w-5" style={{ color: "#FF6B35" }} />
+              <CalendarRange size={20} style={{ color: "#FF6B35" }} />
             </div>
-            <span
-              className="uppercase tracking-widest mb-1 block"
-              style={{ fontSize: "12px", color: "#5A5A52" }}
-            >
+            <span style={{ fontSize: "10px", color: "#6B6B63", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "2px", display: "block" }}>
               Date
             </span>
-            <span className="font-semibold block" style={{ fontSize: "15px", color: "#E5E2DE", lineHeight: 1.2 }}>
+            <span style={{ fontSize: "14px", fontWeight: 600, color: "#F0EEE9", lineHeight: 1.2 }}>
               {format(new Date(event.event_datetime), "MMM d")}
             </span>
-            <span style={{ fontSize: "13px", color: "#9A9A8E" }}>
+            <span style={{ fontSize: "12px", color: "#6B6B63" }}>
               {format(new Date(event.event_datetime), "EEEE")}
             </span>
           </div>
@@ -378,26 +360,18 @@ export function EventDetailPage() {
           {/* Time */}
           <div className="flex flex-col items-center text-center">
             <div
-              className="flex items-center justify-center rounded-lg mb-3"
-              style={{
-                width: "48px",
-                height: "48px",
-                backgroundColor: "#2A2A28",
-                border: "1px solid rgba(255,255,255,0.05)",
-              }}
+              className="flex items-center justify-center rounded-xl mb-2"
+              style={{ width: "44px", height: "44px", backgroundColor: "#242422", border: "1px solid #2A2A28" }}
             >
-              <Clock className="h-5 w-5" style={{ color: "#FF6B35" }} />
+              <Clock size={20} style={{ color: "#FF6B35" }} />
             </div>
-            <span
-              className="uppercase tracking-widest mb-1 block"
-              style={{ fontSize: "12px", color: "#5A5A52" }}
-            >
+            <span style={{ fontSize: "10px", color: "#6B6B63", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "2px", display: "block" }}>
               Time
             </span>
-            <span className="font-semibold block" style={{ fontSize: "15px", color: "#E5E2DE", lineHeight: 1.2 }}>
+            <span style={{ fontSize: "14px", fontWeight: 600, color: "#F0EEE9", lineHeight: 1.2 }}>
               {format(new Date(event.event_datetime), "h:mm")}
             </span>
-            <span style={{ fontSize: "13px", color: "#9A9A8E" }}>
+            <span style={{ fontSize: "12px", color: "#6B6B63" }}>
               {format(new Date(event.event_datetime), "a")}
             </span>
           </div>
@@ -405,131 +379,107 @@ export function EventDetailPage() {
           {/* Entry */}
           <div className="flex flex-col items-center text-center">
             <div
-              className="flex items-center justify-center rounded-lg mb-3"
-              style={{
-                width: "48px",
-                height: "48px",
-                backgroundColor: "#2A2A28",
-                border: "1px solid rgba(255,255,255,0.05)",
-              }}
+              className="flex items-center justify-center rounded-xl mb-2"
+              style={{ width: "44px", height: "44px", backgroundColor: "#242422", border: "1px solid #2A2A28" }}
             >
-              <MapPin className="h-5 w-5" style={{ color: "#FF6B35" }} />
+              <MapPin size={20} style={{ color: "#FF6B35" }} />
             </div>
-            <span
-              className="uppercase tracking-widest mb-1 block"
-              style={{ fontSize: "12px", color: "#5A5A52" }}
-            >
+            <span style={{ fontSize: "10px", color: "#6B6B63", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "2px", display: "block" }}>
               Entry
             </span>
-            <span className="font-semibold block" style={{ fontSize: "15px", color: "#E5E2DE", lineHeight: 1.2 }}>
+            <span style={{ fontSize: "14px", fontWeight: 600, color: "#F0EEE9", lineHeight: 1.2 }}>
               Free
             </span>
           </div>
         </div>
 
-        {/* Location row */}
+        {/* Divider */}
+        <div style={{ height: "1px", backgroundColor: "#2A2A28", marginBottom: "20px" }} />
+
+        {/* Location */}
         <div
-          className="flex items-start gap-3 mb-8 p-4 rounded-xl"
-          style={{ backgroundColor: "#2A2A28", border: "1px solid rgba(255,255,255,0.05)" }}
+          className="flex items-start gap-3 mb-6 p-4 rounded-xl"
+          style={{ backgroundColor: "#242422", border: "1px solid #2A2A28" }}
         >
-          <MapPin className="h-4 w-4 mt-0.5 shrink-0" style={{ color: "#FF6B35" }} />
+          <MapPin size={16} strokeWidth={1.8} style={{ color: "#FF6B35", marginTop: "2px", flexShrink: 0 }} />
           <div className="flex flex-col">
-            <span className="font-medium" style={{ fontSize: "15px", color: "#E5E2DE" }}>
+            <span style={{ fontSize: "15px", color: "#F0EEE9", fontWeight: 500 }}>
               {event.location_text}
             </span>
             <a
               href={`https://www.google.com/maps/search/?api=1&query=${encodedLocation}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-semibold hover:underline mt-1 inline-block"
-              style={{ fontSize: "13px", color: "#FF6B35" }}
+              style={{ fontSize: "13px", color: "#FF6B35", marginTop: "4px", fontWeight: 600 }}
+              className="hover:underline"
             >
               Open in Maps
             </a>
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="h-[1px] bg-[#2E2E2C] mb-8" />
-
-        {/* About section */}
+        {/* About */}
         {event.description && (
-          <div className="mb-8">
-            <h2 className="font-semibold mb-4" style={{ fontSize: "24px", color: "#E5E2DE" }}>
-              About the Gathering
+          <div className="mb-6">
+            <h2 style={{ fontSize: "16px", fontWeight: 600, color: "#F0EEE9", marginBottom: "10px" }}>
+              About
             </h2>
-            <p
-              className="leading-relaxed whitespace-pre-wrap"
-              style={{ fontSize: "18px", color: "#a8a29e", lineHeight: 1.6 }}
-            >
+            <p style={{ fontSize: "15px", color: "#6B6B63", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>
               {event.description}
             </p>
           </div>
         )}
 
-        {/* Host row */}
+        {/* Host */}
         <div
-          className="flex items-center gap-4 mb-8 p-4 rounded-xl"
-          style={{ backgroundColor: "#2A2A28", border: "1px solid rgba(255,255,255,0.05)" }}
+          className="flex items-center gap-3 mb-6 p-4 rounded-xl"
+          style={{ backgroundColor: "#242422", border: "1px solid #2A2A28" }}
         >
           <div
             className="shrink-0 rounded-full overflow-hidden flex items-center justify-center text-white font-bold"
-            style={{
-              width: "48px",
-              height: "48px",
-              border: "2px solid rgba(255,107,53,0.30)",
-              backgroundColor: "#FF6B35",
-            }}
+            style={{ width: "44px", height: "44px", backgroundColor: "#FF6B35", border: "2px solid rgba(255,107,53,0.3)" }}
           >
             {event.host?.avatar_url ? (
               <img src={event.host.avatar_url} alt="" className="h-full w-full object-cover" />
             ) : (
-              <span style={{ fontSize: "16px" }}>
-                {event.host?.display_name?.charAt(0) || "?"}
-              </span>
+              <span style={{ fontSize: "16px" }}>{event.host?.display_name?.charAt(0) || "?"}</span>
             )}
           </div>
           <div>
-            <span
-              className="block uppercase tracking-widest"
-              style={{ fontSize: "10px", color: "#5A5A52" }}
-            >
+            <span style={{ fontSize: "10px", color: "#6B6B63", textTransform: "uppercase", letterSpacing: "0.08em", display: "block" }}>
               Hosted by
             </span>
-            <span className="font-semibold" style={{ fontSize: "14px", color: "#E5E2DE" }}>
+            <span style={{ fontSize: "15px", fontWeight: 600, color: "#F0EEE9" }}>
               {event.host?.display_name}
             </span>
           </div>
         </div>
 
-        {/* Attendees row */}
-        <div className="mb-8 pt-6 border-t border-[#2E2E2C]">
-          <h2
-            className="font-bold uppercase tracking-[0.1em] mb-4"
-            style={{ fontSize: "12px", color: "#5A5A52" }}
-          >
-            People Going
+        {/* Who's coming */}
+        <div className="mb-6" style={{ paddingTop: "16px", borderTop: "1px solid #2A2A28" }}>
+          <h2 style={{ fontSize: "11px", fontWeight: 700, color: "#6B6B63", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "12px" }}>
+            Who's Coming
           </h2>
           {attendeesList.length === 0 ? (
             <div
-              className="rounded-2xl p-4 text-center border border-dashed"
-              style={{ backgroundColor: "#2A2A28", borderColor: "#383836" }}
+              className="p-4 text-center rounded-xl"
+              style={{ backgroundColor: "#242422", border: "1px dashed #2A2A28" }}
             >
-              <p className="text-[14px] text-[#5A5A52]">No one yet. Be the trendsetter.</p>
+              <p style={{ fontSize: "14px", color: "#6B6B63" }}>No one yet. Be the trendsetter.</p>
             </div>
           ) : (
             <div className="flex items-center gap-3">
-              <div className="flex -space-x-2.5">
+              <div className="flex -space-x-2">
                 {displayAttendees.map((att: any, i: number) => (
                   <div
                     key={att.id}
-                    className="rounded-full overflow-hidden flex items-center justify-center text-[12px] font-bold shrink-0"
+                    className="rounded-full overflow-hidden flex items-center justify-center font-bold shrink-0"
                     style={{
-                      width: "40px",
-                      height: "40px",
-                      border: "2px solid #242422",
-                      backgroundColor: "#2A2A28",
-                      color: "#9A9A8E",
+                      width: "36px", height: "36px",
+                      border: "2px solid #1C1C1A",
+                      backgroundColor: "#242422",
+                      color: "#6B6B63",
+                      fontSize: "12px",
                       zIndex: 10 - i,
                     }}
                   >
@@ -542,20 +492,14 @@ export function EventDetailPage() {
                 ))}
                 {overflowCount > 0 && (
                   <div
-                    className="rounded-full flex items-center px-3 font-bold z-0 ml-1"
-                    style={{
-                      height: "40px",
-                      border: "2px solid #242422",
-                      backgroundColor: "#2A2A28",
-                      fontSize: "13px",
-                      color: "#E5E2DE",
-                    }}
+                    className="rounded-full flex items-center px-2 font-bold"
+                    style={{ height: "36px", border: "2px solid #1C1C1A", backgroundColor: "#242422", fontSize: "12px", color: "#F0EEE9" }}
                   >
                     +{overflowCount}
                   </div>
                 )}
               </div>
-              <span style={{ fontSize: "14px", color: "#9A9A8E" }}>
+              <span style={{ fontSize: "13px", color: "#6B6B63" }}>
                 {attendeesList.length} going
               </span>
             </div>
@@ -563,26 +507,18 @@ export function EventDetailPage() {
         </div>
 
         {/* ── Group Chat ───────────────────────────────────────────────────────── */}
-        <div className="pt-6 border-t border-[#2E2E2C] mb-8">
-          <h2
-            className="font-bold uppercase tracking-[0.1em] mb-4"
-            style={{ fontSize: "12px", color: "#5A5A52" }}
-          >
+        <div style={{ paddingTop: "16px", borderTop: "1px solid #2A2A28", marginBottom: "8px" }}>
+          <h2 style={{ fontSize: "11px", fontWeight: 700, color: "#6B6B63", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "12px" }}>
             Group Chat
           </h2>
 
           {/* Message list */}
           <div
             className="flex flex-col gap-4 mb-4"
-            style={{
-              minHeight: messages.length === 0 ? "48px" : undefined,
-              width: "100%",
-              overflowX: "hidden",
-              overflowY: "auto",
-            }}
+            style={{ minHeight: messages.length === 0 ? "48px" : undefined, width: "100%", overflowX: "hidden", overflowY: "auto" }}
           >
             {messages.length === 0 ? (
-              <p style={{ fontSize: "14px", color: "#5A5A52" }}>
+              <p style={{ fontSize: "14px", color: "#6B6B63" }}>
                 No messages yet. Be the first to say something.
               </p>
             ) : (
@@ -600,62 +536,40 @@ export function EventDetailPage() {
                       gap: "10px",
                       justifyContent: isOwn ? "flex-end" : "flex-start",
                       flexDirection: isOwn ? "row-reverse" : "row",
-                      padding: "0 16px",
+                      padding: "0 4px",
                     }}
                   >
-                    {/* Avatar */}
                     <div
                       className="shrink-0 rounded-full flex items-center justify-center text-white font-bold overflow-hidden"
                       style={{
-                        width: "30px",
-                        height: "30px",
-                        fontSize: "12px",
-                        backgroundColor: isOwn ? "#FF6B35" : "#2A2A28",
-                        border: isOwn ? "none" : "1px solid #383836",
-                        flexShrink: 0,
+                        width: "30px", height: "30px", fontSize: "12px", flexShrink: 0,
+                        backgroundColor: isOwn ? "#FF6B35" : "#242422",
+                        border: isOwn ? "none" : "1px solid #2A2A28",
                       }}
                     >
                       {msg.user?.avatar_url ? (
                         <img src={msg.user.avatar_url} alt="" className="w-full h-full object-cover" />
-                      ) : (
-                        initial
-                      )}
+                      ) : initial}
                     </div>
-
-                    {/* Bubble */}
                     <div
                       style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "2px",
-                        maxWidth: "75%",
-                        minWidth: 0,
-                        wordBreak: "break-word",
-                        overflowWrap: "anywhere",
+                        display: "flex", flexDirection: "column", gap: "2px",
+                        maxWidth: "75%", minWidth: 0,
+                        wordBreak: "break-word", overflowWrap: "anywhere",
                         alignItems: isOwn ? "flex-end" : "flex-start",
                       }}
                     >
                       <div className="flex items-baseline gap-2">
                         {!isOwn && (
-                          <span style={{ fontSize: "13px", fontWeight: 600, color: "#E5E2DE" }}>
+                          <span style={{ fontSize: "13px", fontWeight: 600, color: "#F0EEE9" }}>
                             {msg.user?.display_name || "Guest"}
                           </span>
                         )}
-                        <span style={{ fontSize: "11px", color: "#5A5A52" }}>
+                        <span style={{ fontSize: "11px", color: "#6B6B63" }}>
                           {format(new Date(msg.created_at), "h:mm a")}
                         </span>
                       </div>
-                      <p
-                        style={{
-                          fontSize: "15px",
-                          color: "#E5E2DE",
-                          lineHeight: 1.45,
-                          wordBreak: "break-word",
-                          overflowWrap: "anywhere",
-                          whiteSpace: "pre-wrap",
-                          margin: 0,
-                        }}
-                      >
+                      <p style={{ fontSize: "15px", color: "#F0EEE9", lineHeight: 1.45, wordBreak: "break-word", overflowWrap: "anywhere", whiteSpace: "pre-wrap", margin: 0 }}>
                         {msg.content}
                       </p>
                     </div>
@@ -666,10 +580,10 @@ export function EventDetailPage() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Send input — visible on all events (past and upcoming) */}
+          {/* Send input — visible on all events */}
           <>
             {!user ? (
-              <p style={{ fontSize: "13px", color: "#5A5A52" }}>
+              <p style={{ fontSize: "13px", color: "#6B6B63" }}>
                 <button
                   onClick={() => openAuthModal("Sign in to join the conversation.", `/event/${id}`)}
                   style={{ color: "#FF6B35", fontWeight: 600 }}
@@ -680,57 +594,38 @@ export function EventDetailPage() {
                 {" "}to join the conversation.
               </p>
             ) : rsvpLoading ? (
-              <p style={{ color: "#6B6B63", fontSize: "13px" }}>
-                Loading...
-              </p>
+              <p style={{ color: "#6B6B63", fontSize: "13px" }}>Loading...</p>
             ) : !hasRSVPd ? (
-              <p style={{ color: "#6B6B63", fontSize: "13px" }}>
-                RSVP to join the conversation.
-              </p>
+              <p style={{ color: "#6B6B63", fontSize: "13px" }}>RSVP to join the conversation.</p>
             ) : (
               <div
                 className="flex items-center gap-3"
-                style={{
-                  backgroundColor: "#2A2A28",
-                  border: "1px solid #383836",
-                  borderRadius: "14px",
-                  padding: "8px 8px 8px 14px",
-                }}
+                style={{ backgroundColor: "#242422", border: "1px solid #2A2A28", borderRadius: "14px", padding: "8px 8px 8px 14px" }}
               >
                 <input
                   type="text"
                   value={chatInput}
                   onChange={(e) => setChatInput(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      handleSendMessage();
-                    }
+                    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSendMessage(); }
                   }}
                   placeholder="Say something..."
                   maxLength={500}
                   className="flex-1 bg-transparent outline-none"
-                  style={{
-                    fontSize: "16px",
-                    color: "#E5E2DE",
-                  }}
+                  style={{ fontSize: "16px", color: "#F0EEE9" }}
                 />
                 <button
                   onClick={handleSendMessage}
                   disabled={!chatInput.trim() || isSending}
                   className="flex items-center justify-center rounded-xl shrink-0 transition-opacity active:opacity-70 disabled:opacity-30"
-                  style={{
-                    width: "36px",
-                    height: "36px",
-                    backgroundColor: "#FF6B35",
-                  }}
+                  style={{ width: "36px", height: "36px", backgroundColor: "#FF6B35" }}
                 >
                   <Send className="h-4 w-4 text-white" strokeWidth={2} />
                 </button>
               </div>
             )}
             {sendError && (
-              <p style={{ color: "#FF3B30", fontSize: "12px", padding: "4px 16px" }}>
+              <p style={{ color: "#FF3B30", fontSize: "12px", padding: "4px 0" }}>
                 {(sendError as Error).message}
               </p>
             )}
@@ -739,7 +634,7 @@ export function EventDetailPage() {
 
         {/* Ratings (past events only) */}
         {isPastEvent && (
-          <div className="pt-6 border-t border-[#2E2E2C]">
+          <div style={{ paddingTop: "16px", borderTop: "1px solid #2A2A28", marginTop: "16px" }}>
             <RatingSection
               eventId={id!}
               isHost={isHost}
@@ -752,86 +647,91 @@ export function EventDetailPage() {
 
       {/* ── Sticky bottom CTA ─────────────────────────────────────────────────── */}
       <div
-        className="fixed bottom-0 left-0 right-0 z-40 px-5 flex items-center sm:max-w-md sm:mx-auto"
+        className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-between"
         style={{
-          height: "96px",
           backgroundColor: "#1C1C1A",
-          borderTop: "1px solid #2E2E2C",
-          boxShadow: "0 -8px 30px rgba(15,15,14,0.6)",
-          paddingBottom: "env(safe-area-inset-bottom, 12px)",
+          borderTop: "1px solid #2A2A28",
+          padding: "16px 20px",
+          paddingBottom: "calc(16px + env(safe-area-inset-bottom, 0px))",
         }}
       >
-        <div className="flex items-center justify-between w-full gap-4">
-          {/* Left: price */}
-          <div className="flex flex-col">
-            <span style={{ fontSize: "12px", color: "#5A5A52", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-              Entry
-            </span>
-            <span className="font-bold" style={{ fontSize: "20px", color: "#E5E2DE" }}>
-              Free
-            </span>
-          </div>
-
-          {/* Right: CTA button */}
-          {isPastEvent ? (
-            <button
-              disabled
-              className="flex-1 rounded-xl font-bold cursor-not-allowed"
-              style={{
-                height: "54px",
-                backgroundColor: "#2A2A28",
-                color: "#5A5A52",
-                fontSize: "16px",
-                border: "1px solid #383836",
-              }}
-            >
-              Event Ended
-            </button>
-          ) : hasRSVPd ? (
-            <button
-              disabled={isRSVPPending}
-              onClick={handleRSVPClick}
-              className="flex-1 rounded-xl font-bold flex items-center justify-center active:scale-[0.98] transition-all"
-              style={{
-                height: "54px",
-                backgroundColor: "transparent",
-                border: "2px solid #FF6B35",
-                color: "#FF6B35",
-                fontSize: "16px",
-              }}
-            >
-              <Check className="h-5 w-5 mr-2" strokeWidth={3} />
-              You're Going
-            </button>
-          ) : (
-            <button
-              disabled={isRSVPPending}
-              onClick={handleRSVPClick}
-              className="flex-1 rounded-xl text-white font-bold active:scale-[0.98] transition-all"
-              style={{
-                height: "54px",
-                backgroundColor: "#FF6B35",
-                fontSize: "24px",
-                boxShadow: "0 4px 15px rgba(255,107,53,0.3)",
-              }}
-            >
-              I'm Going
-            </button>
-          )}
+        {/* Left: price */}
+        <div className="flex flex-col">
+          <span style={{ fontSize: "11px", color: "#6B6B63", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+            Entry
+          </span>
+          <span style={{ fontSize: "20px", fontWeight: 700, color: "#F0EEE9" }}>
+            Free
+          </span>
         </div>
+
+        {/* Right: CTA */}
+        {isPastEvent ? (
+          <button
+            disabled
+            style={{
+              height: "52px",
+              padding: "0 28px",
+              borderRadius: "999px",
+              backgroundColor: "#242422",
+              border: "1px solid #2A2A28",
+              color: "#6B6B63",
+              fontSize: "15px",
+              fontWeight: 600,
+              cursor: "not-allowed",
+            }}
+          >
+            Event Ended
+          </button>
+        ) : hasRSVPd ? (
+          <button
+            disabled={isRSVPPending}
+            onClick={handleRSVPClick}
+            className="flex items-center justify-center active:scale-[0.98] transition-all"
+            style={{
+              height: "52px",
+              padding: "0 28px",
+              borderRadius: "999px",
+              backgroundColor: "transparent",
+              border: "1px solid #FF6B35",
+              color: "#FF6B35",
+              fontSize: "15px",
+              fontWeight: 600,
+            }}
+          >
+            <Check className="h-4 w-4 mr-2" strokeWidth={2.5} />
+            You're Going
+          </button>
+        ) : (
+          <button
+            disabled={isRSVPPending}
+            onClick={handleRSVPClick}
+            className="text-white active:scale-[0.98] transition-all"
+            style={{
+              height: "52px",
+              padding: "0 32px",
+              borderRadius: "999px",
+              backgroundColor: "#FF6B35",
+              fontSize: "15px",
+              fontWeight: 600,
+            }}
+          >
+            I'm Going
+          </button>
+        )}
       </div>
 
       {/* ── Cancel RSVP modal ─────────────────────────────────────────────────── */}
       <Dialog open={isCancelModalOpen} onOpenChange={setIsCancelModalOpen}>
         <DialogContent
           className="sm:max-w-[360px] rounded-2xl w-[90%] p-6 shadow-2xl"
-          style={{ backgroundColor: "#2A2A28", border: "1px solid #383836" }}
+          style={{ backgroundColor: "#1C1C1A", border: "1px solid #2A2A28" }}
         >
-          <DialogTitle className="text-[20px] font-bold text-[#E5E2DE] mb-2">
+          <DialogTitle className="text-[20px] font-bold mb-2" style={{ color: "#F0EEE9" }}>
             Change your mind?
           </DialogTitle>
-          <DialogDescription className="text-[15px] text-[#9A9A8E] mb-6 leading-relaxed">
-            Cancelling your RSVP will notify the host and free up your spot for someone else.
+          <DialogDescription className="text-[15px] mb-6 leading-relaxed" style={{ color: "#6B6B63" }}>
+            Cancelling your RSVP will free up your spot for someone else.
           </DialogDescription>
           <div className="flex flex-col gap-3">
             <button
@@ -843,8 +743,8 @@ export function EventDetailPage() {
             </button>
             <button
               onClick={() => setIsCancelModalOpen(false)}
-              className="w-full h-[50px] rounded-xl font-bold text-[#E5E2DE] active:bg-[#343432] transition-all"
-              style={{ border: "1px solid #383836" }}
+              className="w-full h-[50px] rounded-xl font-bold active:opacity-70 transition-all"
+              style={{ border: "1px solid #2A2A28", color: "#F0EEE9" }}
             >
               Nevermind, I'm going
             </button>
@@ -853,19 +753,16 @@ export function EventDetailPage() {
       </Dialog>
 
       {/* ── Delete event modal ────────────────────────────────────────────────── */}
-      <Dialog
-        open={isDeleteModalOpen}
-        onOpenChange={(open) => !isDeleting && setIsDeleteModalOpen(open)}
-      >
+      <Dialog open={isDeleteModalOpen} onOpenChange={(open) => !isDeleting && setIsDeleteModalOpen(open)}>
         <DialogContent
           className="sm:max-w-[360px] rounded-2xl w-[90%] p-6 shadow-2xl"
-          style={{ backgroundColor: "#2A2A28", border: "1px solid #383836" }}
+          style={{ backgroundColor: "#1C1C1A", border: "1px solid #2A2A28" }}
         >
-          <DialogTitle className="text-[20px] font-bold text-[#E5E2DE] mb-2">
+          <DialogTitle className="text-[20px] font-bold mb-2" style={{ color: "#F0EEE9" }}>
             Delete this event?
           </DialogTitle>
-          <DialogDescription className="text-[15px] text-[#9A9A8E] mb-6 leading-relaxed">
-            This action is permanent. All attendees will be notified that the event was cancelled.
+          <DialogDescription className="text-[15px] mb-6 leading-relaxed" style={{ color: "#6B6B63" }}>
+            This action is permanent. All attendees will be notified.
           </DialogDescription>
           <div className="flex flex-col gap-3">
             <button
@@ -879,8 +776,8 @@ export function EventDetailPage() {
             <button
               onClick={() => setIsDeleteModalOpen(false)}
               disabled={isDeleting}
-              className="w-full h-[50px] rounded-xl font-bold text-[#E5E2DE] active:bg-[#343432] transition-all"
-              style={{ border: "1px solid #383836" }}
+              className="w-full h-[50px] rounded-xl font-bold active:opacity-70 transition-all"
+              style={{ border: "1px solid #2A2A28", color: "#F0EEE9" }}
             >
               Go Back
             </button>
