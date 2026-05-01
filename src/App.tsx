@@ -19,7 +19,7 @@ const queryClient = new QueryClient();
 function AnimatedRoutes() {
   const location = useLocation();
   return (
-    <div key={location.pathname} className="page-enter">
+    <main key={location.pathname} className="tab-transition">
       <Routes>
         {/* Reset Password flow */}
         <Route path="/reset-password" element={<ResetPassword />} />
@@ -36,7 +36,7 @@ function AnimatedRoutes() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
-    </div>
+    </main>
   );
 }
 
