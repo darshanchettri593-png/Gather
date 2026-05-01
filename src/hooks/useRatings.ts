@@ -127,7 +127,7 @@ export function useEventRatingSummary(eventId: string, enabled = true) {
   });
 }
 
-// ─── Profile-level rating summary (all ratings received as a host) ───────────
+// ─── Profile-level ratings: as host + as attendee ────────────────────────────
 
 export function useProfileRatings(userId: string | undefined) {
   return useQuery({
@@ -135,31 +135,52 @@ export function useProfileRatings(userId: string | undefined) {
     queryFn: async () => {
       if (!userId) return null;
 
-      // 1. Get all events hosted by this user
-      const { data: events, error: eventsErr } = await supabase
+      const calcAvg = (items: { rating_value: number }[]): string | null => {
+        if (!items.length) return null;
+        const sum = items.reduce((acc, r) => acc + r.rating_value, 0);
+        return (sum / items.length).toFixed(1);
+      };
+
+      // Ratings received AS HOST — attendees rated events this user hosted
+      const { data: events } = await supabase
         .from('events')
         .select('id')
         .eq('host_id', userId);
 
-      if (eventsErr) throw eventsErr;
-      if (!events || events.length === 0) return null;
+      const eventIds = (events || []).map((e: { id: string }) => e.id);
 
-      const eventIds = events.map((e) => e.id);
+      const { data: asHostRaw } = eventIds.length
+        ? await supabase
+            .from('event_ratings')
+            .select('rating_value')
+            .in('event_id', eventIds)
+            .eq('rater_type', 'attendee')
+        : { data: [] as { rating_value: number }[] };
 
-      // 2. Get all attendee ratings for those events
-      const { data: ratings, error: ratingsErr } = await supabase
+      // Ratings received AS ATTENDEE — host rated this user
+      const { data: asAttendeeRaw } = await supabase
         .from('event_ratings')
         .select('rating_value')
-        .in('event_id', eventIds)
-        .eq('rater_type', 'attendee');
+        .eq('rater_id', userId)
+        .eq('rater_type', 'host');
 
-      if (ratingsErr) throw ratingsErr;
-      if (!ratings || ratings.length === 0) return null;
+      const asHost = asHostRaw || [];
+      const asAttendee = asAttendeeRaw || [];
+      const all = [...asHost, ...asAttendee];
 
-      const avg = ratings.reduce((sum, r) => sum + r.rating_value, 0) / ratings.length;
       return {
-        averageRating: Math.round(avg * 10) / 10,
-        totalRatings: ratings.length,
+        asHost: {
+          avg: calcAvg(asHost),
+          count: asHost.length,
+        },
+        asAttendee: {
+          avg: calcAvg(asAttendee),
+          count: asAttendee.length,
+        },
+        overall: {
+          avg: calcAvg(all),
+          count: all.length,
+        },
       };
     },
     enabled: !!userId,

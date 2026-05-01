@@ -425,29 +425,65 @@ export function ProfilePage() {
                   Joined
                 </span>
               </div>
-              {profileRatings && (
-                <>
-                  <div style={{ width: "1px", backgroundColor: "#2A2A28" }} />
-                  <div className="flex-1 flex flex-col items-center text-center">
-                    <span style={{ fontSize: "22px", fontWeight: 700, color: "#F0EEE9" }}>
-                      {profileRatings.averageRating.toFixed(1)}
-                    </span>
-                    <span
-                      style={{
-                        fontSize: "10px",
-                        fontWeight: 600,
-                        color: "#6B6B63",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.08em",
-                        marginTop: "2px",
-                      }}
-                    >
-                      Rating
-                    </span>
-                  </div>
-                </>
-              )}
             </div>
+
+            {/* Ratings section */}
+            {profileRatings && profileRatings.overall.count > 0 ? (
+              <div style={{ borderTop: "1px solid #2A2A28", marginTop: "16px", paddingTop: "16px" }}>
+                {/* Overall */}
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
+                  <span style={{ fontSize: "28px", fontWeight: 700, color: "#F0EEE9" }}>
+                    {profileRatings.overall.avg}
+                  </span>
+                  <div style={{ display: "flex", gap: "2px" }}>
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <svg key={star} width="16" height="16" viewBox="0 0 24 24"
+                        fill={star <= Math.round(Number(profileRatings.overall.avg)) ? "#FF6B35" : "#2A2A28"}
+                      >
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                    ))}
+                  </div>
+                  <span style={{ fontSize: "13px", color: "#6B6B63" }}>
+                    {profileRatings.overall.count} rating{profileRatings.overall.count !== 1 ? "s" : ""}
+                  </span>
+                </div>
+
+                {/* Breakdown cards */}
+                <div style={{ display: "flex", gap: "12px" }}>
+                  {profileRatings.asHost.count > 0 && (
+                    <div style={{ flex: 1, background: "#242422", border: "1px solid #2A2A28", borderRadius: "10px", padding: "10px 12px" }}>
+                      <p style={{ fontSize: "10px", color: "#6B6B63", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600, margin: "0 0 4px" }}>
+                        As Host
+                      </p>
+                      <p style={{ fontSize: "18px", fontWeight: 700, color: "#FF6B35", margin: 0 }}>
+                        {profileRatings.asHost.avg} ⭐
+                      </p>
+                      <p style={{ fontSize: "11px", color: "#6B6B63", margin: "2px 0 0" }}>
+                        {profileRatings.asHost.count} ratings
+                      </p>
+                    </div>
+                  )}
+                  {profileRatings.asAttendee.count > 0 && (
+                    <div style={{ flex: 1, background: "#242422", border: "1px solid #2A2A28", borderRadius: "10px", padding: "10px 12px" }}>
+                      <p style={{ fontSize: "10px", color: "#6B6B63", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600, margin: "0 0 4px" }}>
+                        As Attendee
+                      </p>
+                      <p style={{ fontSize: "18px", fontWeight: 700, color: "#FF6B35", margin: 0 }}>
+                        {profileRatings.asAttendee.avg} ⭐
+                      </p>
+                      <p style={{ fontSize: "11px", color: "#6B6B63", margin: "2px 0 0" }}>
+                        {profileRatings.asAttendee.count} ratings
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div style={{ borderTop: "1px solid #2A2A28", marginTop: "16px", paddingTop: "16px", textAlign: "center" }}>
+                <p style={{ fontSize: "13px", color: "#3D3D38", margin: 0 }}>No ratings yet</p>
+              </div>
+            )}
           </div>
 
           {/* Tab switcher */}
