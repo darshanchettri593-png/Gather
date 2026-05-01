@@ -23,28 +23,20 @@ function centerAspectCrop(
   aspect: number,
 ) {
   return centerCrop(
-    makeAspectCrop(
-      {
-        unit: '%',
-        width: 90,
-      },
-      aspect,
-      mediaWidth,
-      mediaHeight,
-    ),
+    makeAspectCrop({ unit: '%', width: 90 }, aspect, mediaWidth, mediaHeight),
     mediaWidth,
     mediaHeight,
-  )
+  );
 }
 
-export function ImageUploader({ 
-  bucket, 
-  folder = "general", 
-  defaultImage, 
-  onUploadSuccess, 
+export function ImageUploader({
+  bucket,
+  folder = "general",
+  defaultImage,
+  onUploadSuccess,
   onUploadStart,
   onUploadEnd,
-  aspectRatio = "16/9" 
+  aspectRatio = "16/9"
 }: ImageUploaderProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -76,19 +68,12 @@ export function ImageUploader({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    if (file.size > 5 * 1024 * 1024) {
-      setError("Image must be smaller than 5MB");
-      return;
-    }
-
+    if (file.size > 5 * 1024 * 1024) { setError("Image must be smaller than 5MB"); return; }
     setError(null);
     const objectUrl = URL.createObjectURL(file);
     setCropImageUrl(objectUrl);
-    setCrop(undefined); // Reset crop
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    setCrop(undefined);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleCropCancel = () => {
@@ -103,10 +88,7 @@ export function ImageUploader({
     canvas.width = crop.width * scaleX;
     canvas.height = crop.height * scaleY;
     const ctx = canvas.getContext('2d');
-
-    if (!ctx) {
-      throw new Error('No 2d context');
-    }
+    if (!ctx) throw new Error('No 2d context');
 
     ctx.drawImage(
       image,
@@ -114,24 +96,21 @@ export function ImageUploader({
       crop.y * scaleY,
       crop.width * scaleX,
       crop.height * scaleY,
-      0,
-      0,
+      0, 0,
       crop.width * scaleX,
       crop.height * scaleY
     );
 
     return new Promise((resolve, reject) => {
       canvas.toBlob((blob) => {
-        if (!blob) {
-          reject(new Error('Canvas is empty'));
-          return;
-        }
+        if (!blob) { reject(new Error('Canvas is empty')); return; }
         resolve(new File([blob], 'cropped.jpg', { type: 'image/jpeg' }));
       }, 'image/jpeg', 1);
     });
   };
 
-  const handleCropConfirm = async () => {
+  // Renamed from handleCropConfirm → handleCropComplete (spec requirement)
+  const handleCropComplete = async () => {
     if (!imgRef.current || !completedCrop || completedCrop.width === 0 || completedCrop.height === 0) {
       if (!cropImageUrl) return;
     }
@@ -144,33 +123,20 @@ export function ImageUploader({
       setIsSuccess(false);
 
       const croppedFile = await getCroppedImg(imgRef.current!, completedCrop || crop!);
-      
       const objectUrl = URL.createObjectURL(croppedFile);
       setPreviewUrl(objectUrl);
 
-      const options = {
-        maxSizeMB: 2,
-        maxWidthOrHeight: 1200,
-        useWebWorker: true,
-        fileType: 'image/jpeg'
-      };
-      
+      const options = { maxSizeMB: 2, maxWidthOrHeight: 1200, useWebWorker: true, fileType: 'image/jpeg' };
       const compressedFile = await imageCompression(croppedFile, options);
-      
       const fileName = `${folder}/${crypto.randomUUID()}.jpg`;
 
-      const { data, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from(bucket)
-        .upload(fileName, compressedFile, {
-          contentType: 'image/jpeg',
-          upsert: false
-        });
+        .upload(fileName, compressedFile, { contentType: 'image/jpeg', upsert: false });
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from(bucket)
-        .getPublicUrl(fileName);
+      const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(fileName);
 
       onUploadSuccess(publicUrl);
       setIsSuccess(true);
@@ -200,30 +166,27 @@ export function ImageUploader({
           accept="image/jpeg, image/png, image/webp"
           className="hidden"
         />
-        
-        <div 
+
+        <div
           onClick={() => !isUploading && fileInputRef.current?.click()}
           className={`w-full h-full overflow-hidden flex flex-col items-center justify-center transition-all cursor-pointer group ${aspectRatio === '1/1' ? 'rounded-full aspect-square bg-transparent' : 'rounded-2xl aspect-[16/9] bg-[#242422] border border-[#2E2E2C]'} ${error ? 'border border-red-500 bg-red-500/5' : ''} ${isUploading ? 'pointer-events-none' : ''}`}
         >
           {previewUrl ? (
             <div className="relative w-full h-full">
-              <img 
-                src={previewUrl} 
-                alt="Preview" 
-                className={`w-full h-full object-cover transition-all duration-300 ${isUploading ? 'opacity-50 grayscale-[0.5]' : 'opacity-100 group-hover:scale-105'}`} 
+              <img
+                src={previewUrl}
+                alt="Preview"
+                className={`w-full h-full object-cover transition-all duration-300 ${isUploading ? 'opacity-50 grayscale-[0.5]' : 'opacity-100 group-hover:scale-105'}`}
               />
-              {isUploading && (
-                <div className="absolute inset-0 bg-[#FF6B35]/10 animate-pulse" />
-              )}
-              
+              {isUploading && <div className="absolute inset-0 bg-[#FF6B35]/10 animate-pulse" />}
               {isUploading ? (
-                 <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
-                    <Loader2 className="h-8 w-8 text-[#FF6B35] animate-spin" strokeWidth={3} />
-                 </div>
+                <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
+                  <Loader2 className="h-8 w-8 text-[#FF6B35] animate-spin" strokeWidth={3} />
+                </div>
               ) : isSuccess ? (
-                 <div className="absolute inset-0 flex items-center justify-center bg-green-500/80 animate-in zoom-in fade-in duration-300">
-                    <Check className="h-10 w-10 text-white" strokeWidth={4} />
-                 </div>
+                <div className="absolute inset-0 flex items-center justify-center bg-green-500/80 animate-in zoom-in fade-in duration-300">
+                  <Check className="h-10 w-10 text-white" strokeWidth={4} />
+                </div>
               ) : (
                 aspectRatio !== '1/1' && (
                   <button
@@ -246,7 +209,7 @@ export function ImageUploader({
             ) : null
           )}
         </div>
-        
+
         {error && (
           <div className="mt-3 text-[13px] text-red-500 font-bold text-center bg-red-500/10 p-2 rounded-lg border border-red-500/20">
             {error}
@@ -257,40 +220,54 @@ export function ImageUploader({
       {cropImageUrl && (
         <div
           style={{
-            position: "fixed",
+            position: 'fixed',
             inset: 0,
-            zIndex: 100,
-            display: "flex",
-            flexDirection: "column",
-            backgroundColor: "rgba(0,0,0,0.95)",
+            zIndex: 200,
+            background: '#000000',
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
           {/* Top bar */}
           <div
             style={{
-              height: "56px",
+              height: '56px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '0 20px',
+              background: 'rgba(0,0,0,0.9)',
+              borderBottom: '1px solid #1C1C1A',
               flexShrink: 0,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "0 20px",
-              backgroundColor: "rgba(0,0,0,0.8)",
             }}
           >
             <button
               onClick={handleCropCancel}
-              className="active:opacity-60 transition-opacity"
-              style={{ fontSize: "15px", color: "#F0EEE9" }}
+              style={{
+                color: '#F0EEE9',
+                fontSize: '15px',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '8px 0',
+              }}
             >
               Cancel
             </button>
-            <span style={{ fontSize: "17px", fontWeight: 600, color: "#F0EEE9" }}>
-              Crop Photo
+            <span style={{ color: '#F0EEE9', fontSize: '17px', fontWeight: 600 }}>
+              {aspectRatio === '1/1' ? 'Crop Profile Photo' : 'Crop Cover Photo'}
             </span>
             <button
-              onClick={handleCropConfirm}
-              className="active:opacity-60 transition-opacity"
-              style={{ fontSize: "15px", fontWeight: 600, color: "#FF6B35" }}
+              onClick={handleCropComplete}
+              style={{
+                color: '#FF6B35',
+                fontSize: '15px',
+                fontWeight: 600,
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '8px 0',
+              }}
             >
               Done
             </button>
@@ -300,31 +277,30 @@ export function ImageUploader({
           <div
             style={{
               flex: 1,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: "#000",
-              overflow: "hidden",
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: '#000',
+              overflow: 'hidden',
             }}
           >
             <ReactCrop
               crop={crop}
-              onChange={(_, percentCrop) => setCrop(percentCrop)}
+              onChange={(_, pct) => setCrop(pct)}
               onComplete={(c) => setCompletedCrop(c)}
               aspect={aspect}
               circularCrop={aspectRatio === '1/1'}
-              style={{ maxWidth: "100vw", maxHeight: "calc(100vh - 116px)" }}
+              style={{ maxHeight: '70vh' }}
             >
               <img
                 ref={imgRef}
                 src={cropImageUrl}
-                alt="Crop preview"
+                alt="Crop"
                 onLoad={onImageLoad}
                 style={{
-                  maxWidth: "100vw",
-                  maxHeight: "calc(100vh - 116px)",
-                  objectFit: "contain",
-                  display: "block",
+                  maxHeight: '70vh',
+                  maxWidth: '100vw',
+                  objectFit: 'contain',
                 }}
               />
             </ReactCrop>
@@ -333,18 +309,19 @@ export function ImageUploader({
           {/* Bottom info bar */}
           <div
             style={{
-              height: "60px",
+              height: '56px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'rgba(0,0,0,0.9)',
+              borderTop: '1px solid #1C1C1A',
               flexShrink: 0,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: "rgba(0,0,0,0.8)",
             }}
           >
-            <span style={{ fontSize: "13px", color: "#6B6B63" }}>
-              {aspectRatio === "1/1"
-                ? "1:1 • Crop to fit profile"
-                : "16:9 • Crop to fit cover"}
+            <span style={{ color: '#6B6B63', fontSize: '13px' }}>
+              {aspectRatio === '1/1'
+                ? '1:1 • Crop to fit profile photo'
+                : '16:9 • Crop to fit event cover'}
             </span>
           </div>
         </div>

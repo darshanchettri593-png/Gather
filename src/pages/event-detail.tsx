@@ -53,6 +53,7 @@ export function EventDetailPage() {
   const handleSendMessage = () => {
     const content = chatInput.trim();
     if (!content || !user || !id || isSending) return;
+    console.log('[Chat] sending:', { eventId: id, userId: user?.id, content });
     setChatInput("");
     sendMessage({ eventId: id, userId: user.id, content });
   };
@@ -571,7 +572,14 @@ export function EventDetailPage() {
           </h2>
 
           {/* Message list */}
-          <div className="flex flex-col gap-4 mb-4" style={{ minHeight: messages.length === 0 ? "48px" : undefined }}>
+          <div
+            className="flex flex-col gap-4 mb-4"
+            style={{
+              minHeight: messages.length === 0 ? "48px" : undefined,
+              width: "100%",
+              overflowX: "hidden",
+            }}
+          >
             {messages.length === 0 ? (
               <p style={{ fontSize: "14px", color: "#5A5A52" }}>
                 No messages yet. Be the first to say something.
@@ -581,13 +589,25 @@ export function EventDetailPage() {
                 const isOwn = msg.user_id === user?.id;
                 const initial = (msg.user?.display_name || "?").charAt(0).toUpperCase();
                 return (
-                  <div key={msg.id} className="flex items-start gap-3">
+                  <div
+                    key={msg.id}
+                    style={{
+                      display: "flex",
+                      width: "100%",
+                      overflow: "hidden",
+                      alignItems: "flex-start",
+                      gap: "10px",
+                      justifyContent: isOwn ? "flex-end" : "flex-start",
+                      flexDirection: isOwn ? "row-reverse" : "row",
+                    }}
+                  >
                     {/* Avatar */}
                     <div
-                      className="shrink-0 rounded-full flex items-center justify-center text-white font-bold text-[12px] overflow-hidden"
+                      className="shrink-0 rounded-full flex items-center justify-center text-white font-bold overflow-hidden"
                       style={{
-                        width: "32px",
-                        height: "32px",
+                        width: "30px",
+                        height: "30px",
+                        fontSize: "12px",
                         backgroundColor: isOwn ? "#FF6B35" : "#2A2A28",
                         border: isOwn ? "none" : "1px solid #383836",
                         flexShrink: 0,
@@ -601,17 +621,24 @@ export function EventDetailPage() {
                     </div>
 
                     {/* Bubble */}
-                    <div className="flex flex-col gap-[2px] min-w-0 flex-1">
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "2px",
+                        maxWidth: "75%",
+                        minWidth: 0,
+                        wordBreak: "break-word",
+                        overflowWrap: "break-word",
+                        alignItems: isOwn ? "flex-end" : "flex-start",
+                      }}
+                    >
                       <div className="flex items-baseline gap-2">
-                        <span
-                          style={{
-                            fontSize: "13px",
-                            fontWeight: 600,
-                            color: isOwn ? "#FF6B35" : "#E5E2DE",
-                          }}
-                        >
-                          {isOwn ? "You" : (msg.user?.display_name || "Guest")}
-                        </span>
+                        {!isOwn && (
+                          <span style={{ fontSize: "13px", fontWeight: 600, color: "#E5E2DE" }}>
+                            {msg.user?.display_name || "Guest"}
+                          </span>
+                        )}
                         <span style={{ fontSize: "11px", color: "#5A5A52" }}>
                           {format(new Date(msg.created_at), "h:mm a")}
                         </span>
@@ -622,6 +649,9 @@ export function EventDetailPage() {
                           color: "#E5E2DE",
                           lineHeight: 1.45,
                           wordBreak: "break-word",
+                          overflowWrap: "anywhere",
+                          whiteSpace: "pre-wrap",
+                          margin: 0,
                         }}
                       >
                         {msg.content}

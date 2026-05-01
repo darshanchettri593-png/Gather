@@ -62,7 +62,7 @@ function FeaturedEventCard({ event }: { event: any }) {
             }}
           />
 
-          <div className="absolute bottom-0 left-0 p-[14px]">
+          <div className="absolute bottom-0 left-0 p-[14px]" style={{ width: "100%" }}>
             <div
               className="inline-flex items-center"
               style={{
@@ -81,7 +81,15 @@ function FeaturedEventCard({ event }: { event: any }) {
             </div>
             <h3
               className="line-clamp-2 mt-[6px]"
-              style={{ fontSize: "20px", fontWeight: 700, color: "#F0EEE9", lineHeight: 1.2 }}
+              style={{
+                fontSize: "20px",
+                fontWeight: 700,
+                color: "#F0EEE9",
+                lineHeight: 1.2,
+                wordBreak: "break-word",
+                overflowWrap: "break-word",
+                width: "100%",
+              }}
             >
               {event.title}
             </h3>
@@ -184,7 +192,14 @@ function CompactEventCard({ event }: { event: any }) {
           </span>
           <h3
             className="line-clamp-2"
-            style={{ fontSize: "15px", fontWeight: 600, color: "#F0EEE9", lineHeight: 1.3 }}
+            style={{
+              fontSize: "15px",
+              fontWeight: 600,
+              color: "#F0EEE9",
+              lineHeight: 1.3,
+              wordBreak: "break-word",
+              overflowWrap: "break-word",
+            }}
           >
             {event.title}
           </h3>

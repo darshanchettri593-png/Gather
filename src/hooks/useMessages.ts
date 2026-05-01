@@ -45,10 +45,14 @@ export function useSendMessage() {
       userId: string;
       content: string;
     }) => {
+      console.log('[Chat] sending:', { eventId, userId, content: content.trim() });
       const { error } = await supabase
         .from('messages')
-        .insert({ event_id: eventId, user_id: userId, content });
-      if (error) throw new Error(error.message);
+        .insert({ event_id: eventId, user_id: userId, content: content.trim() });
+      if (error) {
+        console.error('[Chat] error:', error);
+        throw new Error(error.message);
+      }
     },
     onSuccess: (_data, { eventId }) => {
       queryClient.invalidateQueries({ queryKey: ['messages', eventId] });
