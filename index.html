@@ -6,10 +6,10 @@
     <title>Gather - Community Events</title>
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/favicon.png" />
-    
+
     <!-- PWA manifest (auto-injected by vite-plugin-pwa but add as fallback) -->
     <meta name="theme-color" content="#FF6B35" />
-    
+
     <!-- iOS PWA support -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -17,17 +17,100 @@
     <link rel="apple-touch-icon" href="/icons/icon-180x180.png" />
     <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png" />
     <link rel="apple-touch-icon" sizes="144x144" href="/icons/icon-144x144.png" />
-    
+
     <!-- Windows tile -->
     <meta name="msapplication-TileColor" content="#FF6B35" />
     <meta name="msapplication-TileImage" content="/icons/icon-144x144.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Step 3: root fades in as splash fades out — clean handoff -->
+    <style>
+      #root {
+        opacity: 0;
+        animation: rootFadeIn 0.3s ease-out 1.6s forwards;
+      }
+
+      @keyframes rootFadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+      }
+    </style>
   </head>
   <body>
+
+    <!-- Step 1: Splash screen — visible before React mounts -->
+    <div id="splash-screen" style="
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #111110;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+    ">
+      <!-- Gather G icon -->
+      <div style="
+        width: 80px;
+        height: 80px;
+        background: #FF6B35;
+        border-radius: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: splashIconPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+      ">
+        <span style="
+          color: white;
+          font-size: 42px;
+          font-weight: 800;
+          font-family: Inter, sans-serif;
+          line-height: 1;
+        ">G</span>
+      </div>
+
+      <!-- Gather wordmark -->
+      <span style="
+        color: #F0EEE9;
+        font-size: 24px;
+        font-weight: 700;
+        font-family: Inter, sans-serif;
+        letter-spacing: -0.03em;
+        animation: splashFadeUp 0.4s ease-out 0.3s both;
+      ">Gather</span>
+
+      <!-- Tagline -->
+      <span style="
+        color: #6B6B63;
+        font-size: 13px;
+        font-family: Inter, sans-serif;
+        animation: splashFadeUp 0.4s ease-out 0.45s both;
+      ">Find your people</span>
+    </div>
+
+    <style>
+      @keyframes splashIconPop {
+        from { opacity: 0; transform: scale(0.6); }
+        to   { opacity: 1; transform: scale(1); }
+      }
+
+      @keyframes splashFadeUp {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      #splash-screen.hiding {
+        opacity: 0;
+        transform: scale(1.05);
+        pointer-events: none;
+      }
+    </style>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-
