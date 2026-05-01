@@ -14,6 +14,8 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/compone
 import { useToast } from "@/components/ui/toast";
 import { useMessages, useSendMessage, subscribeToMessages } from "@/hooks/useMessages";
 import { useQueryClient } from "@tanstack/react-query";
+import { Countdown } from "@/components/ui/countdown";
+import { formatDuration } from "@/lib/event-status";
 
 export function EventDetailPage() {
   const { id } = useParams();
@@ -336,6 +338,14 @@ export function EventDetailPage() {
           {event.title}
         </h1>
 
+        {/* Countdown / Live / Ended banner */}
+        {event.end_datetime && (
+          <Countdown
+            eventDatetime={event.event_datetime}
+            endDatetime={event.end_datetime}
+          />
+        )}
+
         {/* Info grid — 3 columns */}
         <div className="grid grid-cols-3 gap-3 mb-6">
           {/* Date */}
@@ -369,11 +379,18 @@ export function EventDetailPage() {
               Time
             </span>
             <span style={{ fontSize: "14px", fontWeight: 600, color: "#F0EEE9", lineHeight: 1.2 }}>
-              {format(new Date(event.event_datetime), "h:mm")}
+              {format(new Date(event.event_datetime), "h:mm a")}
             </span>
-            <span style={{ fontSize: "12px", color: "#6B6B63" }}>
-              {format(new Date(event.event_datetime), "a")}
-            </span>
+            {event.end_datetime && (
+              <>
+                <span style={{ fontSize: "11px", color: "#6B6B63" }}>
+                  to {format(new Date(event.end_datetime), "h:mm a")}
+                </span>
+                <span style={{ fontSize: "11px", color: "#3D3D38" }}>
+                  ({formatDuration(event.event_datetime, event.end_datetime)})
+                </span>
+              </>
+            )}
           </div>
 
           {/* Entry */}

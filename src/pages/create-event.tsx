@@ -69,14 +69,25 @@ export function CreateEventPage() {
   const [locationStr, setLocationStr]     = useState("");
   const [description, setDescription]    = useState("");
   const [whatsappLink, setWhatsappLink]  = useState("");
+  const [endTime, setEndTime]            = useState("");
+  const [endTimeError, setEndTimeError]  = useState("");
 
-  const isFormValid = coverUrl && title && vibe && district && locationStr && date && time;
+  const isFormValid = coverUrl && title && vibe && district && locationStr && date && time && endTime;
 
   const createMutation = useMutation({
     mutationFn: async () => {
       if (!user) throw new Error("Must be logged in to host");
       const eventDateTime = new Date(`${date}T${time}`);
       if (eventDateTime <= new Date()) throw new Error("Date must be in the future");
+
+      // Build end datetime, handle overnight events
+      const endDT = new Date(`${date}T${endTime}`);
+      if (endDT <= eventDateTime) {
+        endDT.setDate(endDT.getDate() + 1);
+      }
+      const diffHours = (endDT.getTime() - eventDateTime.getTime()) / (1000 * 60 * 60);
+      if (diffHours > 12) throw new Error("Event cannot exceed 12 hours");
+      if (diffHours <= 0) throw new Error("End time must be after start time");
 
       const { data, error } = await supabase.from("events").insert({
         host_id: user.id,
@@ -86,6 +97,7 @@ export function CreateEventPage() {
         location_text: locationStr,
         description: description || null,
         event_datetime: eventDateTime.toISOString(),
+        end_datetime: endDT.toISOString(),
         cover_image_url: coverUrl || null,
         whatsapp_link: whatsappLink || null,
       }).select().single();
@@ -106,6 +118,16 @@ export function CreateEventPage() {
 
   const handleSubmit = () => {
     if (!isFormValid || createMutation.isPending || isUploadingImage) return;
+    setEndTimeError("");
+    if (!endTime) { setEndTimeError("End time is required"); return; }
+    if (date && time && endTime) {
+      const startDT = new Date(`${date}T${time}`);
+      const endDT = new Date(`${date}T${endTime}`);
+      if (endDT <= startDT) endDT.setDate(endDT.getDate() + 1);
+      const diffHours = (endDT.getTime() - startDT.getTime()) / (1000 * 60 * 60);
+      if (diffHours > 12) { setEndTimeError("Event cannot exceed 12 hours"); return; }
+      if (diffHours <= 0) { setEndTimeError("End time must be after start time"); return; }
+    }
     createMutation.mutate();
   };
 
@@ -272,6 +294,22 @@ export function CreateEventPage() {
               style={{ ...INPUT_STYLE, colorScheme: "dark" }}
             />
           </div>
+        </div>
+
+        {/* End Time */}
+        <div>
+          <label style={LABEL_STYLE}>End Time</label>
+          <input
+            type="time"
+            value={endTime}
+            onChange={(e) => { setEndTime(e.target.value); setEndTimeError(""); }}
+            style={{ ...INPUT_STYLE, colorScheme: "dark" }}
+          />
+          {endTimeError && (
+            <p style={{ color: "#FF3B30", fontSize: "12px", marginTop: "4px" }}>
+              {endTimeError}
+            </p>
+          )}
         </div>
 
         {/* Location */}

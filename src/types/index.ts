@@ -14,6 +14,7 @@ export interface Event {
   title: string;
   vibe: EventVibe;
   event_datetime: string;
+  end_datetime: string;
   location_text: string;
   description: string | null;
   cover_image_url: string | null;

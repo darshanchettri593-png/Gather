@@ -10,6 +10,8 @@ import { supabase } from "@/lib/supabase";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEventRatingSummary, useProfileRatings } from "@/hooks/useRatings";
 import { StarDisplay } from "@/components/rating-section";
+import { LiveBadge } from "@/components/ui/live-badge";
+import { getEventStatus } from "@/lib/event-status";
 
 // ─── EmptyState (exported for events-feed) ───────────────────────────────────
 
@@ -169,17 +171,24 @@ export function ProfilePage() {
 
   const isLoading = isEventsLoading || isProfileLoading;
 
-  const { upcomingEvents, pastEvents } = useMemo(() => {
+  const { liveEvents, upcomingEvents, pastEvents } = useMemo(() => {
     const rawEvents = activeTab === "hosting" ? userEvents?.hosted : userEvents?.joined;
-    if (!rawEvents) return { upcomingEvents: [], pastEvents: [] };
+    if (!rawEvents) return { liveEvents: [], upcomingEvents: [], pastEvents: [] };
     const now = new Date();
-    const upcoming = rawEvents
-      .filter((e) => new Date(e.event_datetime) >= now)
-      .sort((a, b) => new Date(a.event_datetime).getTime() - new Date(b.event_datetime).getTime());
-    const past = rawEvents
-      .filter((e) => new Date(e.event_datetime) < now)
-      .sort((a, b) => new Date(b.event_datetime).getTime() - new Date(a.event_datetime).getTime());
-    return { upcomingEvents: upcoming, pastEvents: past };
+    const live: any[] = [];
+    const upcoming: any[] = [];
+    const past: any[] = [];
+    for (const e of rawEvents) {
+      const status = e.end_datetime
+        ? getEventStatus(e.event_datetime, e.end_datetime)
+        : (new Date(e.event_datetime) >= now ? 'upcoming' : 'ended');
+      if (status === 'live') live.push(e);
+      else if (status === 'upcoming') upcoming.push(e);
+      else past.push(e);
+    }
+    upcoming.sort((a, b) => new Date(a.event_datetime).getTime() - new Date(b.event_datetime).getTime());
+    past.sort((a, b) => new Date(b.event_datetime).getTime() - new Date(a.event_datetime).getTime());
+    return { liveEvents: live, upcomingEvents: upcoming, pastEvents: past };
   }, [userEvents, activeTab]);
 
   const switchTab = useCallback((tab: "hosting" | "joined") => {
@@ -490,17 +499,46 @@ export function ProfilePage() {
               )
             ) : (
               <>
-                {upcomingEvents.length === 0 ? (
+                {/* LIVE NOW section — Hosting tab only */}
+                {activeTab === "hosting" && liveEvents.length > 0 && (
+                  <div style={{ marginBottom: "20px" }}>
+                    <span
+                      style={{
+                        fontSize: "11px",
+                        fontWeight: 600,
+                        color: "#FF3B30",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.08em",
+                        display: "block",
+                        marginBottom: "8px",
+                      }}
+                    >
+                      LIVE NOW
+                    </span>
+                    <div className="flex flex-col gap-[10px]">
+                      {liveEvents.map((event: any) => (
+                        <div
+                          key={event.id}
+                          style={{ border: "1px solid rgba(255,59,48,0.3)", borderRadius: "14px", overflow: "hidden" }}
+                        >
+                          <EventCard event={event} isPast={false} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {upcomingEvents.length === 0 && liveEvents.length === 0 ? (
                   <p style={{ fontSize: "14px", color: "#6B6B63", textAlign: "center", padding: "24px 0" }}>
                     No upcoming events
                   </p>
-                ) : (
+                ) : upcomingEvents.length > 0 ? (
                   <div className="flex flex-col gap-[10px]">
                     {upcomingEvents.map((event: any) => (
                       <EventCard key={event.id} event={event} isPast={false} />
                     ))}
                   </div>
-                )}
+                ) : null}
 
                 {pastEvents.length > 0 && (
                   <div style={{ marginTop: "20px" }}>

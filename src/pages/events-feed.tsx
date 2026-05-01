@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router";
 import { format } from "date-fns";
 import { CalendarDays, AlertCircle, MapPin, Loader2 } from "lucide-react";
 import { useEvents } from "@/hooks/useEvents";
+import { LiveBadge } from "@/components/ui/live-badge";
 
 const VIBES = ["All", "Move", "Create", "Hang", "Learn", "Explore"];
 
@@ -63,21 +64,30 @@ function FeaturedEventCard({ event }: { event: any }) {
           />
 
           <div className="absolute bottom-0 left-0 p-[14px]" style={{ width: "100%" }}>
-            <div
-              className="inline-flex items-center"
-              style={{
-                fontSize: "10px",
-                fontWeight: 700,
-                color: "#FF6B35",
-                textTransform: "uppercase",
-                letterSpacing: "0.06em",
-                backgroundColor: "rgba(255,107,53,0.15)",
-                border: "1px solid rgba(255,107,53,0.2)",
-                borderRadius: "999px",
-                padding: "3px 8px",
-              }}
-            >
-              {getVibeLabel(event.vibe)}
+            <div className="flex items-center gap-2 flex-wrap">
+              <div
+                className="inline-flex items-center"
+                style={{
+                  fontSize: "10px",
+                  fontWeight: 700,
+                  color: "#FF6B35",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.06em",
+                  backgroundColor: "rgba(255,107,53,0.15)",
+                  border: "1px solid rgba(255,107,53,0.2)",
+                  borderRadius: "999px",
+                  padding: "3px 8px",
+                }}
+              >
+                {getVibeLabel(event.vibe)}
+              </div>
+              {event.end_datetime && (
+                <LiveBadge
+                  eventDatetime={event.event_datetime}
+                  endDatetime={event.end_datetime}
+                  size="md"
+                />
+              )}
             </div>
             <h3
               className="line-clamp-2 mt-[6px]"
@@ -179,17 +189,26 @@ function CompactEventCard({ event }: { event: any }) {
         </div>
 
         <div className="flex flex-col gap-[4px] flex-1 min-w-0 justify-center">
-          <span
-            style={{
-              fontSize: "10px",
-              fontWeight: 700,
-              color: "#FF6B35",
-              textTransform: "uppercase",
-              letterSpacing: "0.06em",
-            }}
-          >
-            {getVibeLabel(event.vibe)}
-          </span>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span
+              style={{
+                fontSize: "10px",
+                fontWeight: 700,
+                color: "#FF6B35",
+                textTransform: "uppercase",
+                letterSpacing: "0.06em",
+              }}
+            >
+              {getVibeLabel(event.vibe)}
+            </span>
+            {event.end_datetime && (
+              <LiveBadge
+                eventDatetime={event.event_datetime}
+                endDatetime={event.end_datetime}
+                size="sm"
+              />
+            )}
+          </div>
           <h3
             className="line-clamp-2"
             style={{
