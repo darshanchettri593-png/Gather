@@ -54,7 +54,7 @@ export function SearchPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("events")
-        .select("*, users(display_name, avatar_url)")
+        .select("*")
         .gte("event_datetime", new Date().toISOString())
         .or(
           `title.ilike.%${debouncedQuery}%,location_text.ilike.%${debouncedQuery}%,district.ilike.%${debouncedQuery}%`
@@ -62,7 +62,7 @@ export function SearchPage() {
         .order("event_datetime", { ascending: true })
         .limit(20);
       if (error) throw error;
-      return data || [];
+      return (data || []).filter((r: any) => !!r.event_datetime);
     },
     enabled: debouncedQuery.length >= 2,
     staleTime: 0,
