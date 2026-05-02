@@ -321,10 +321,11 @@ export function ImageUploader({
                 alt="Crop"
                 onLoad={onImageLoad}
                 style={{
-                  maxHeight: '100%',
+                  maxHeight: 'calc(100dvh - 140px)',
                   maxWidth: '100%',
                   objectFit: 'contain',
                   display: 'block',
+                  width: '100%',
                 }}
               />
             </ReactCrop>
