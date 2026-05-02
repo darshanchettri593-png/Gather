@@ -16,6 +16,7 @@ import { useMessages, useSendMessage, subscribeToMessages } from "@/hooks/useMes
 import { useQueryClient } from "@tanstack/react-query";
 import { Countdown } from "@/components/ui/countdown";
 import { formatDuration } from "@/lib/event-status";
+import { MapPicker } from "@/components/ui/map-picker";
 
 export function EventDetailPage() {
   const { id } = useParams();
@@ -506,6 +507,17 @@ export function EventDetailPage() {
             </a>
           </div>
         </div>
+
+        {/* Map view */}
+        {event.latitude && event.longitude && (
+          <div className="mb-6">
+            <MapPicker
+              mode="view"
+              lat={event.latitude}
+              lng={event.longitude}
+            />
+          </div>
+        )}
 
         {/* WhatsApp group link */}
         {event.whatsapp_link && (

@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { EventVibe } from "@/types";
 import { useToast } from "@/components/ui/toast";
+import { MapPicker } from "@/components/ui/map-picker";
 
 const VIBES: { id: EventVibe; label: string; helper: string }[] = [
   { id: "move",    label: "Move",    helper: "Running, gym, hiking, yoga, sports, anything active" },
@@ -74,6 +75,7 @@ export function CreateEventPage() {
   const [endTimeError, setEndTimeError]  = useState("");
   const [capacity, setCapacity]          = useState("");
   const [capacityError, setCapacityError] = useState("");
+  const [mapCoords, setMapCoords] = useState<{ lat: number; lng: number } | null>(null);
 
   // Auto-set end date to start date when user picks a date
   useEffect(() => {
@@ -105,6 +107,8 @@ export function CreateEventPage() {
         cover_image_url: coverUrl || null,
         whatsapp_link: whatsappLink || null,
         capacity: parseInt(capacity),
+        latitude: mapCoords?.lat ?? null,
+        longitude: mapCoords?.lng ?? null,
       }).select().single();
 
       if (error) throw new Error(error.message);
@@ -344,6 +348,17 @@ export function CreateEventPage() {
             onChange={(e) => setLocationStr(e.target.value)}
             style={INPUT_STYLE}
             className="placeholder:text-[#3D3D38]"
+          />
+        </div>
+
+        {/* Map pin */}
+        <div>
+          <label style={LABEL_STYLE}>Pin Location</label>
+          <MapPicker
+            mode="picker"
+            lat={mapCoords?.lat}
+            lng={mapCoords?.lng}
+            onLocationSelect={(coords) => setMapCoords(coords)}
           />
         </div>
 

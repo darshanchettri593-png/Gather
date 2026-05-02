@@ -11,13 +11,26 @@ function getVibeLabel(vibe: string) {
   return vibe;
 }
 
+function getDistanceKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLng / 2) * Math.sin(dLng / 2);
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
 // ─── Featured Card ────────────────────────────────────────────────────────────
 
-function FeaturedEventCard({ event }: { event: any }) {
+function FeaturedEventCard({ event, userLocation }: { event: any; userLocation: { lat: number; lng: number } | null }) {
   const attendeeCount = event._count?.attendees || 0;
   const capacity = event.capacity || 0;
   const isFull = capacity > 0 && attendeeCount >= capacity;
   const spotsLeft = capacity > 0 ? capacity - attendeeCount : Infinity;
+  const distance = userLocation && event.latitude && event.longitude
+    ? getDistanceKm(userLocation.lat, userLocation.lng, event.latitude, event.longitude)
+    : null;
 
   return (
     <Link
@@ -110,32 +123,32 @@ function FeaturedEventCard({ event }: { event: any }) {
         </div>
 
         <div
-          className="flex items-center justify-between"
           style={{ padding: "12px 14px" }}
         >
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="flex items-center gap-[5px] shrink-0">
-              <CalendarDays size={13} color="#6B6B63" strokeWidth={1.8} />
-              <span style={{ fontSize: "13px", color: "#6B6B63" }}>
-                {format(new Date(event.event_datetime), "MMM d, h:mm a")}
-              </span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="flex items-center gap-[5px] shrink-0">
+                <CalendarDays size={13} color="#6B6B63" strokeWidth={1.8} />
+                <span style={{ fontSize: "13px", color: "#6B6B63" }}>
+                  {format(new Date(event.event_datetime), "MMM d, h:mm a")}
+                </span>
+              </div>
+              <div className="flex items-center gap-[5px] min-w-0">
+                <MapPin size={13} color="#6B6B63" strokeWidth={1.8} className="shrink-0" />
+                <span
+                  style={{
+                    fontSize: "13px",
+                    color: "#6B6B63",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    maxWidth: "120px",
+                  }}
+                >
+                  {event.location_text}
+                </span>
+              </div>
             </div>
-            <div className="flex items-center gap-[5px] min-w-0">
-              <MapPin size={13} color="#6B6B63" strokeWidth={1.8} className="shrink-0" />
-              <span
-                style={{
-                  fontSize: "13px",
-                  color: "#6B6B63",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                  maxWidth: "120px",
-                }}
-              >
-                {event.location_text}
-              </span>
-            </div>
-          </div>
           {isFull ? (
             <span
               style={{
@@ -175,6 +188,12 @@ function FeaturedEventCard({ event }: { event: any }) {
               {capacity > 0 ? `${attendeeCount}/${capacity} going` : `${attendeeCount} going`}
             </span>
           )}
+          </div>
+          {distance !== null && (
+            <span style={{ fontSize: "12px", color: "#6B6B63", display: "block", marginTop: "4px" }}>
+              {distance < 1 ? `${Math.round(distance * 1000)} m away` : `${distance.toFixed(1)} km away`}
+            </span>
+          )}
         </div>
       </div>
     </Link>
@@ -183,12 +202,15 @@ function FeaturedEventCard({ event }: { event: any }) {
 
 // ─── Compact Card ─────────────────────────────────────────────────────────────
 
-function CompactEventCard({ event }: { event: any }) {
+function CompactEventCard({ event, userLocation }: { event: any; userLocation: { lat: number; lng: number } | null }) {
   const attendeeCount = event._count?.attendees || 0;
   const capacity = event.capacity || 0;
   const isFull = capacity > 0 && attendeeCount >= capacity;
   const spotsLeft = capacity > 0 ? capacity - attendeeCount : Infinity;
   const vibeInitial = event.vibe ? event.vibe.charAt(0).toUpperCase() : "G";
+  const distance = userLocation && event.latitude && event.longitude
+    ? getDistanceKm(userLocation.lat, userLocation.lng, event.latitude, event.longitude)
+    : null;
 
   return (
     <Link
@@ -275,6 +297,11 @@ function CompactEventCard({ event }: { event: any }) {
           >
             {format(new Date(event.event_datetime), "MMM d")} · {event.location_text}
           </span>
+          {distance !== null && (
+            <span style={{ fontSize: "12px", color: "#6B6B63" }}>
+              {distance < 1 ? `${Math.round(distance * 1000)} m away` : `${distance.toFixed(1)} km away`}
+            </span>
+          )}
           <span style={{ fontSize: "12px", color: isFull ? "#FF3B30" : spotsLeft !== Infinity && spotsLeft <= 5 ? "#FF6B35" : "#6B6B63" }}>
             {isFull
               ? "FULL"
@@ -327,6 +354,15 @@ function FeedEmptyState({ onHost }: { onHost: () => void }) {
 export function EventFeedPage() {
   const navigate = useNavigate();
   const [vibeFilter, setVibeFilter] = useState<string>("All");
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+      () => {}
+    );
+  }, []);
 
   const { data: events, isLoading, error, refetch } = useEvents(vibeFilter);
 
@@ -455,9 +491,9 @@ export function EventFeedPage() {
       <div className="flex flex-col gap-[10px]" style={{ padding: "0 20px" }}>
         {events.map((event, index) =>
           index === 0 ? (
-            <FeaturedEventCard key={event.id} event={event} />
+            <FeaturedEventCard key={event.id} event={event} userLocation={userLocation} />
           ) : (
-            <CompactEventCard key={event.id} event={event} />
+            <CompactEventCard key={event.id} event={event} userLocation={userLocation} />
           )
         )}
       </div>
