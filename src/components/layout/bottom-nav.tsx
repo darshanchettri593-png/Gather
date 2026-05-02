@@ -16,6 +16,7 @@ export function BottomNav() {
   };
 
   const handleHostTap = () => {
+    navigator.vibrate(10);
     if (user) {
       navigate("/host");
     } else {
@@ -44,6 +45,7 @@ export function BottomNav() {
         {/* Explore */}
         <Link
           to="/"
+          onClick={() => navigator.vibrate(10)}
           className="flex flex-col items-center justify-center flex-1 h-full gap-[3px] transition-opacity active:opacity-60"
         >
           <Compass
@@ -68,6 +70,7 @@ export function BottomNav() {
         {/* Search */}
         <Link
           to="/search"
+          onClick={() => navigator.vibrate(10)}
           className="flex flex-col items-center justify-center flex-1 h-full gap-[3px] transition-opacity active:opacity-60"
         >
           <Search
@@ -120,6 +123,7 @@ export function BottomNav() {
         {/* Profile */}
         <Link
           to="/profile"
+          onClick={() => navigator.vibrate(10)}
           className="flex flex-col items-center justify-center flex-1 h-full gap-[3px] transition-opacity active:opacity-60"
         >
           <User
