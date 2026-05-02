@@ -62,7 +62,12 @@ export function useToggleRSVP() {
         const { error } = await supabase
           .from('attendees')
           .insert({ event_id: eventId, user_id: userId });
-        if (error) throw error;
+        if (error) {
+          if (error.message.includes('Event is full')) {
+            throw new Error('This event is full');
+          }
+          throw error;
+        }
       }
     },
     onMutate: async ({ eventId, userId, isAttending }) => {

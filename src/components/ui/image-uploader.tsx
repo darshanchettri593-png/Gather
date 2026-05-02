@@ -200,11 +200,29 @@ export function ImageUploader({
             </div>
           ) : (
             aspectRatio !== '1/1' ? (
-              <div className="flex flex-col items-center justify-center text-[#5A5A52] group-hover:text-[#9A9A8E] transition-colors">
-                <div className="w-12 h-12 rounded-full bg-[#2C2C2A] flex items-center justify-center mb-3 group-hover:scale-110 transition-transform border border-[#383836]">
-                  <Camera className="h-6 w-6" strokeWidth={2} />
+              <div className="flex flex-col items-center justify-center gap-4 px-5 w-full">
+                <div className="flex flex-col items-center text-[#5A5A52] group-hover:text-[#9A9A8E] transition-colors">
+                  <div className="w-12 h-12 rounded-full bg-[#2C2C2A] flex items-center justify-center mb-3 group-hover:scale-110 transition-transform border border-[#383836]">
+                    <Camera className="h-6 w-6" strokeWidth={2} />
+                  </div>
+                  <span className="text-[14px] font-bold uppercase tracking-widest">Add Cover Image</span>
                 </div>
-                <span className="text-[14px] font-bold uppercase tracking-widest">Add Cover Image</span>
+                <button
+                  onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
+                  style={{
+                    width: '100%',
+                    backgroundColor: '#FF6B35',
+                    color: 'white',
+                    borderRadius: '12px',
+                    padding: '14px',
+                    fontSize: '15px',
+                    fontWeight: 600,
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Choose Photo
+                </button>
               </div>
             ) : null
           )}
@@ -223,7 +241,9 @@ export function ImageUploader({
             position: 'fixed',
             inset: 0,
             zIndex: 200,
-            background: '#000000',
+            background: 'rgba(0,0,0,0.95)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
             display: 'flex',
             flexDirection: 'column',
           }}
@@ -231,42 +251,44 @@ export function ImageUploader({
           {/* Top bar */}
           <div
             style={{
-              height: '56px',
+              height: '64px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
               padding: '0 20px',
-              background: 'rgba(0,0,0,0.9)',
-              borderBottom: '1px solid #1C1C1A',
               flexShrink: 0,
+              borderBottom: '1px solid rgba(255,255,255,0.06)',
             }}
           >
             <button
               onClick={handleCropCancel}
               style={{
-                color: '#F0EEE9',
-                fontSize: '15px',
+                color: '#6B6B63',
+                fontSize: '16px',
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
                 padding: '8px 0',
+                minWidth: '64px',
               }}
             >
               Cancel
             </button>
             <span style={{ color: '#F0EEE9', fontSize: '17px', fontWeight: 600 }}>
-              {aspectRatio === '1/1' ? 'Crop Profile Photo' : 'Crop Cover Photo'}
+              Adjust Photo
             </span>
             <button
               onClick={handleCropComplete}
               style={{
-                color: '#FF6B35',
+                backgroundColor: '#FF6B35',
+                color: 'white',
                 fontSize: '15px',
                 fontWeight: 600,
-                background: 'none',
                 border: 'none',
+                borderRadius: '999px',
+                padding: '8px 20px',
                 cursor: 'pointer',
-                padding: '8px 0',
+                minWidth: '64px',
               }}
             >
               Done
@@ -280,8 +302,8 @@ export function ImageUploader({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              background: '#000',
               overflow: 'hidden',
+              maxHeight: 'calc(100vh - 140px)',
             }}
           >
             <ReactCrop
@@ -290,7 +312,8 @@ export function ImageUploader({
               onComplete={(c) => setCompletedCrop(c)}
               aspect={aspect}
               circularCrop={aspectRatio === '1/1'}
-              style={{ maxHeight: '70vh' }}
+              ruleOfThirds
+              style={{ borderRadius: aspectRatio === '1/1' ? '50%' : '8px' }}
             >
               <img
                 ref={imgRef}
@@ -298,27 +321,28 @@ export function ImageUploader({
                 alt="Crop"
                 onLoad={onImageLoad}
                 style={{
-                  maxHeight: '70vh',
-                  maxWidth: '100vw',
+                  maxHeight: 'calc(100vh - 140px)',
+                  width: '100%',
                   objectFit: 'contain',
+                  display: 'block',
                 }}
               />
             </ReactCrop>
           </div>
 
-          {/* Bottom info bar */}
+          {/* Bottom hint */}
           <div
             style={{
               height: '56px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              background: 'rgba(0,0,0,0.9)',
-              borderTop: '1px solid #1C1C1A',
               flexShrink: 0,
+              borderTop: '1px solid rgba(255,255,255,0.06)',
+              padding: '12px 24px',
             }}
           >
-            <span style={{ color: '#6B6B63', fontSize: '13px' }}>
+            <span style={{ color: '#6B6B63', fontSize: '13px', textAlign: 'center' }}>
               {aspectRatio === '1/1'
                 ? '1:1 • Crop to fit profile photo'
                 : '16:9 • Crop to fit event cover'}
