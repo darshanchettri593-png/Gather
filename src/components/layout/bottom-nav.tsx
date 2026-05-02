@@ -46,7 +46,9 @@ export function BottomNav() {
         <Link
           to="/"
           onClick={() => navigator.vibrate(10)}
+          onContextMenu={(e) => e.preventDefault()}
           className="flex flex-col items-center justify-center flex-1 h-full gap-[3px] transition-opacity active:opacity-60"
+          style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
         >
           <Compass
             size={22}
@@ -71,7 +73,9 @@ export function BottomNav() {
         <Link
           to="/search"
           onClick={() => navigator.vibrate(10)}
+          onContextMenu={(e) => e.preventDefault()}
           className="flex flex-col items-center justify-center flex-1 h-full gap-[3px] transition-opacity active:opacity-60"
+          style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
         >
           <Search
             size={22}
@@ -94,7 +98,9 @@ export function BottomNav() {
         {/* Host — pill button, no label */}
         <button
           onClick={handleHostTap}
+          onContextMenu={(e) => e.preventDefault()}
           className="flex flex-col items-center justify-center flex-1 h-full transition-opacity active:opacity-70"
+          style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
         >
           <div
             className="flex items-center justify-center"
@@ -124,7 +130,9 @@ export function BottomNav() {
         <Link
           to="/profile"
           onClick={() => navigator.vibrate(10)}
+          onContextMenu={(e) => e.preventDefault()}
           className="flex flex-col items-center justify-center flex-1 h-full gap-[3px] transition-opacity active:opacity-60"
+          style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
         >
           <User
             size={22}
