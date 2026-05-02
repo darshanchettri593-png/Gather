@@ -4,7 +4,7 @@ import {
   ArrowLeft, CalendarRange, MapPin, Check,
   Share2, AlertCircle, Clock, MoreVertical, Send, Users,
 } from "lucide-react";
-import { useEventDetail, useRSVPStatus, useToggleRSVP } from "@/lib/queries";
+import { useEventDetail, useRSVPStatus, useToggleRSVP, useAnnouncements, usePostAnnouncement, subscribeToAnnouncements } from "@/lib/queries";
 import { useDeleteEvent } from "@/hooks/useEvent";
 import { useAuth } from "@/lib/auth-context";
 import { RatingSection } from "@/components/rating-section";
@@ -45,6 +45,30 @@ export function EventDetailPage() {
       queryClient.invalidateQueries({ queryKey: ["messages", id] });
     });
   }, [id, queryClient]);
+
+  // ─── Announcements ───────────────────────────────────────────────────────────
+  const { data: announcements = [] } = useAnnouncements(id || "");
+  const { mutate: postAnnouncement, isPending: isPostingAnnouncement } = usePostAnnouncement();
+  const [announcementContent, setAnnouncementContent] = useState("");
+
+  useEffect(() => {
+    if (!id) return;
+    return subscribeToAnnouncements(id, () => {
+      queryClient.invalidateQueries({ queryKey: ["announcements", id] });
+    });
+  }, [id, queryClient]);
+
+  const handlePostAnnouncement = () => {
+    const content = announcementContent.trim();
+    if (!content || !user || !id || isPostingAnnouncement) return;
+    postAnnouncement(
+      { eventId: id, hostId: user.id, content },
+      {
+        onSuccess: () => { setAnnouncementContent(""); toast("Announcement sent!", "success"); },
+        onError: () => toast("Couldn't send announcement, try again", "error"),
+      }
+    );
+  };
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -608,6 +632,114 @@ export function EventDetailPage() {
             </div>
           )}
         </div>
+
+        {/* ── Announcements ────────────────────────────────────────────────────── */}
+        {(announcements.length > 0 || isHost) && (
+          <div style={{ paddingTop: "16px", borderTop: "1px solid #2A2A28", marginBottom: "16px" }}>
+            <h2 style={{ fontSize: "17px", fontWeight: 700, color: "#F0EEE9", marginBottom: "12px" }}>
+              📣 Announcements
+            </h2>
+
+            {announcements.length > 0 && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: isHost ? "16px" : "0" }}>
+                {announcements.map((ann: any) => (
+                  <div
+                    key={ann.id}
+                    style={{
+                      backgroundColor: "#242422",
+                      borderLeft: "3px solid #FF6B35",
+                      borderRadius: "12px",
+                      padding: "16px",
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                      <div
+                        style={{
+                          width: "24px", height: "24px", borderRadius: "50%",
+                          backgroundColor: "#FF6B35", overflow: "hidden", flexShrink: 0,
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                        }}
+                      >
+                        {ann.users?.avatar_url ? (
+                          <img src={ann.users.avatar_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        ) : (
+                          <span style={{ fontSize: "10px", fontWeight: 700, color: "white" }}>
+                            {(ann.users?.display_name || "H").charAt(0).toUpperCase()}
+                          </span>
+                        )}
+                      </div>
+                      <span
+                        style={{
+                          fontSize: "10px", fontWeight: 700, color: "#FF6B35",
+                          textTransform: "uppercase", letterSpacing: "0.08em",
+                          backgroundColor: "rgba(255,107,53,0.12)",
+                          border: "1px solid rgba(255,107,53,0.2)",
+                          borderRadius: "999px", padding: "2px 8px",
+                        }}
+                      >
+                        Host
+                      </span>
+                      <span style={{ fontSize: "13px", color: "#6B6B63", marginLeft: "auto" }}>
+                        {format(new Date(ann.created_at), "MMM d, h:mm a")}
+                      </span>
+                    </div>
+                    <p style={{ fontSize: "15px", color: "#F0EEE9", lineHeight: 1.5, whiteSpace: "pre-wrap", margin: 0 }}>
+                      {ann.content}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {isHost && (
+              <div>
+                <textarea
+                  value={announcementContent}
+                  onChange={(e) => setAnnouncementContent(e.target.value)}
+                  placeholder="Send an announcement to all attendees..."
+                  rows={3}
+                  style={{
+                    width: "100%",
+                    backgroundColor: "#1C1C1A",
+                    border: "1px solid #2A2A28",
+                    borderRadius: "12px",
+                    padding: "12px",
+                    fontSize: "15px",
+                    color: "#F0EEE9",
+                    resize: "none",
+                    outline: "none",
+                    lineHeight: 1.5,
+                    boxSizing: "border-box",
+                  }}
+                  className="placeholder:text-[#3D3D38]"
+                />
+                <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "4px", marginBottom: "8px" }}>
+                  <span style={{ fontSize: "13px", color: "#6B6B63" }}>
+                    {announcementContent.length}/300
+                  </span>
+                </div>
+                <button
+                  onClick={handlePostAnnouncement}
+                  disabled={!announcementContent.trim() || announcementContent.length > 300 || isPostingAnnouncement}
+                  style={{
+                    width: "100%",
+                    backgroundColor: "#FF6B35",
+                    color: "white",
+                    fontSize: "15px",
+                    fontWeight: 600,
+                    border: "none",
+                    borderRadius: "12px",
+                    padding: "14px",
+                    cursor: "pointer",
+                  }}
+                  className="disabled:opacity-40 transition-opacity active:opacity-70"
+                >
+                  {isPostingAnnouncement ? "Sending..." : "Send Announcement 📣"}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* ── Group Chat ───────────────────────────────────────────────────────── */}
         <div style={{ paddingTop: "16px", borderTop: "1px solid #2A2A28", marginBottom: "8px" }}>

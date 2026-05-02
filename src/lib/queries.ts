@@ -155,6 +155,52 @@ export function useLiveEventsSearch(query: string) {
   });
 }
 
+export function useAnnouncements(eventId: string) {
+  return useQuery({
+    queryKey: ['announcements', eventId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('announcements')
+        .select('*, users(display_name, avatar_url)')
+        .eq('event_id', eventId)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!eventId,
+  });
+}
+
+export function usePostAnnouncement() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ eventId, hostId, content }: { eventId: string; hostId: string; content: string }) => {
+      const { data, error } = await supabase
+        .from('announcements')
+        .insert({ event_id: eventId, host_id: hostId, content })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['announcements', variables.eventId] });
+    },
+  });
+}
+
+export function subscribeToAnnouncements(eventId: string, onNew: () => void) {
+  const channel = supabase
+    .channel(`announcements:${eventId}`)
+    .on(
+      'postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'announcements', filter: `event_id=eq.${eventId}` },
+      onNew
+    )
+    .subscribe();
+  return () => { supabase.removeChannel(channel); };
+}
+
 export function useLiveHostsSearch(query: string) {
   return useQuery({
     queryKey: ['search-hosts', query],
