@@ -1,297 +1,288 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router";
-import { Search, X, Clock, Activity, Palette, Users, BookOpen, Compass } from "lucide-react";
-import { getRecentSearches, saveRecentSearch, removeRecentSearch, clearRecentSearches } from "@/lib/searchHistory";
-import { useTrendingEvents, useLiveEventsSearch, useLiveHostsSearch } from "@/lib/queries";
-import { SectionHeader, SearchResultRow } from "@/components/ui/search-components";
+import { useNavigate, Link } from "react-router";
+import { Search, ArrowLeft, CalendarDays, MapPin } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
+import { format } from "date-fns";
 
-const PLACEHOLDERS = [
-  "Search events...",
-  "Try 'jam session'",
-  "Try 'hiking'",
-  "Try 'book club'",
-];
+function getVibeLabel(vibe: string) {
+  return vibe.charAt(0).toUpperCase() + vibe.slice(1);
+}
 
-// 2-col vibe grid — solid dark backgrounds, per-vibe icon color
-const VIBES = [
-  { name: "Move",    icon: Activity,  bg: "#1E1510", iconColor: "#FF6B35" },
-  { name: "Create",  icon: Palette,   bg: "#11101E", iconColor: "#7B7FFF" },
-  { name: "Hang",    icon: Users,     bg: "#1E1610", iconColor: "#FFB347" },
-  { name: "Learn",   icon: BookOpen,  bg: "#101519", iconColor: "#47C1D3" },
-  { name: "Explore", icon: Compass,   bg: "#101E12", iconColor: "#4CAF50" },
-];
+function SkeletonCard() {
+  return (
+    <div
+      style={{
+        backgroundColor: "#242422",
+        borderRadius: "16px",
+        overflow: "hidden",
+        display: "flex",
+        gap: "12px",
+        padding: "12px",
+      }}
+    >
+      <div
+        className="animate-pulse"
+        style={{ width: "80px", height: "80px", borderRadius: "10px", backgroundColor: "#2A2A28", flexShrink: 0 }}
+      />
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "8px", justifyContent: "center" }}>
+        <div className="animate-pulse" style={{ height: "10px", width: "35%", backgroundColor: "#2A2A28", borderRadius: "4px" }} />
+        <div className="animate-pulse" style={{ height: "15px", width: "80%", backgroundColor: "#2A2A28", borderRadius: "4px" }} />
+        <div className="animate-pulse" style={{ height: "12px", width: "55%", backgroundColor: "#2A2A28", borderRadius: "4px" }} />
+      </div>
+    </div>
+  );
+}
 
 export function SearchPage() {
   const navigate = useNavigate();
+  const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
-  const [placeholderIdx, setPlaceholderIdx] = useState(0);
-  const [recent, setRecent] = useState<string[]>([]);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const { data: trendingEvents } = useTrendingEvents();
-  const { data: searchEvents } = useLiveEventsSearch(debouncedQuery);
-  const { data: searchHosts } = useLiveHostsSearch(debouncedQuery);
-
-  const isTyping = query.length > 0;
 
   useEffect(() => {
-    setRecent(getRecentSearches());
-    if (inputRef.current) inputRef.current.focus();
+    inputRef.current?.focus();
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setPlaceholderIdx((i) => (i + 1) % PLACEHOLDERS.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    const handler = setTimeout(() => setDebouncedQuery(query), 200);
+    const handler = setTimeout(() => setDebouncedQuery(query), 300);
     return () => clearTimeout(handler);
   }, [query]);
 
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setQuery("");
-    };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, []);
+  const { data: results = [], isLoading } = useQuery({
+    queryKey: ["search-events-full", debouncedQuery],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("events")
+        .select("*, users(display_name, avatar_url)")
+        .gte("event_datetime", new Date().toISOString())
+        .or(
+          `title.ilike.%${debouncedQuery}%,location_text.ilike.%${debouncedQuery}%,district.ilike.%${debouncedQuery}%`
+        )
+        .order("event_datetime", { ascending: true })
+        .limit(20);
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: debouncedQuery.length >= 2,
+    staleTime: 0,
+  });
 
-  const handleClear = () => {
-    setQuery("");
-    inputRef.current?.focus();
-  };
-
-  const handleSearchSubmit = (q: string) => {
-    saveRecentSearch(q);
-    setRecent(getRecentSearches());
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleSearchSubmit(query);
-      e.currentTarget.blur();
-    }
-  };
-
-  const handleRecentClick = (term: string) => {
-    setQuery(term);
-    handleSearchSubmit(term);
-  };
-
-  const handleRemoveRecent = (e: React.MouseEvent, term: string) => {
-    e.stopPropagation();
-    removeRecentSearch(term);
-    setRecent(getRecentSearches());
-  };
-
-  const handleVibeClick = (vibeName: string) => {
-    navigate(`/?vibe=${vibeName.toLowerCase()}`);
-  };
+  const showEmpty = debouncedQuery.length >= 2 && !isLoading && results.length === 0;
+  const showResults = debouncedQuery.length >= 2 && !isLoading && results.length > 0;
+  const showLoading = debouncedQuery.length >= 2 && isLoading;
+  const showPrompt = query.length < 2;
 
   return (
     <div
       className="page-transition max-w-md mx-auto min-h-screen flex flex-col"
       style={{ backgroundColor: "#111110", paddingBottom: "80px" }}
     >
-      {/* Title row */}
-      <div style={{ padding: "20px 20px 12px" }}>
-        <h1 style={{ fontSize: "24px", fontWeight: 700, color: "#F0EEE9" }}>Search</h1>
-      </div>
+      {/* Header */}
+      <header
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 50,
+          height: "56px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "0 16px",
+          backgroundColor: "#111110",
+          borderBottom: "1px solid #2A2A28",
+          flexShrink: 0,
+        }}
+      >
+        <button
+          onClick={() => navigate(-1)}
+          className="active:opacity-60 transition-opacity"
+          style={{ width: "40px", height: "40px", display: "flex", alignItems: "center", justifyContent: "center" }}
+        >
+          <ArrowLeft size={22} color="#F0EEE9" strokeWidth={2} />
+        </button>
+        <span style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", fontSize: "17px", fontWeight: 600, color: "#F0EEE9" }}>
+          Search
+        </span>
+        <div style={{ width: "40px" }} />
+      </header>
 
-      {/* Search bar */}
-      <div style={{ margin: "0 20px 24px" }}>
+      {/* Search input — sticky below header */}
+      <div
+        style={{
+          position: "sticky",
+          top: "56px",
+          zIndex: 40,
+          backgroundColor: "#111110",
+          padding: "12px 16px",
+          borderBottom: "1px solid #2A2A28",
+          flexShrink: 0,
+        }}
+      >
         <div
-          className="flex items-center gap-[10px]"
           style={{
-            height: "48px",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
             backgroundColor: "#1C1C1A",
             border: "1px solid #2A2A28",
-            borderRadius: "14px",
-            padding: "0 16px",
+            borderRadius: "12px",
+            padding: "12px 16px",
           }}
         >
-          <Search size={18} color="#6B6B63" strokeWidth={1.8} style={{ flexShrink: 0 }} />
+          <Search size={16} color="#6B6B63" strokeWidth={2} style={{ flexShrink: 0 }} />
           <input
             ref={inputRef}
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={PLACEHOLDERS[placeholderIdx]}
-            className="flex-1 bg-transparent outline-none border-none"
+            placeholder="Search events..."
+            autoComplete="off"
             style={{
-              fontSize: "16px",
+              flex: 1,
+              backgroundColor: "transparent",
+              border: "none",
+              outline: "none",
+              fontSize: "15px",
               color: "#F0EEE9",
             }}
+            className="placeholder:text-[#3D3D38]"
           />
-          {isTyping && (
-            <button
-              onClick={handleClear}
-              className="active:opacity-60 transition-opacity"
-            >
-              <X size={18} color="#6B6B63" strokeWidth={2} />
-            </button>
-          )}
         </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1" style={{ padding: "0 20px" }}>
-        {!isTyping ? (
-          <div>
-            {/* Recent searches */}
-            {recent.length > 0 && (
-              <div style={{ marginBottom: "24px" }}>
-                <div className="flex items-center justify-between" style={{ marginBottom: "8px" }}>
-                  <span
-                    style={{
-                      fontSize: "11px",
-                      fontWeight: 600,
-                      color: "#6B6B63",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.1em",
-                    }}
-                  >
-                    RECENT
-                  </span>
-                  <button
-                    onClick={() => { clearRecentSearches(); setRecent([]); }}
-                    style={{ fontSize: "13px", color: "#FF6B35" }}
-                    className="active:opacity-60 transition-opacity"
-                  >
-                    Clear
-                  </button>
-                </div>
-                {recent.map((term, i) => (
+      <div style={{ flex: 1, padding: "16px 16px 0" }}>
+
+        {/* Prompt */}
+        {showPrompt && (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", paddingTop: "80px" }}>
+            <p style={{ fontSize: "15px", color: "#6B6B63", textAlign: "center", lineHeight: 1.5 }}>
+              Search for events by name, location or area.
+            </p>
+          </div>
+        )}
+
+        {/* Loading skeletons */}
+        {showLoading && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
+          </div>
+        )}
+
+        {/* No results */}
+        {showEmpty && (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", paddingTop: "80px" }}>
+            <p style={{ fontSize: "15px", color: "#6B6B63", textAlign: "center" }}>
+              No events found for '{debouncedQuery}'
+            </p>
+          </div>
+        )}
+
+        {/* Results */}
+        {showResults && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            {results.map((event: any) => (
+              <Link
+                key={event.id}
+                to={`/event/${event.id}`}
+                className="block active:opacity-90 transition-opacity"
+                style={{ textDecoration: "none" }}
+              >
+                <div
+                  style={{
+                    backgroundColor: "#242422",
+                    borderRadius: "16px",
+                    overflow: "hidden",
+                    display: "flex",
+                    gap: "12px",
+                    padding: "12px",
+                    border: "1px solid #2A2A28",
+                  }}
+                >
+                  {/* Cover image */}
                   <div
-                    key={term}
-                    onClick={() => handleRecentClick(term)}
-                    className="flex items-center gap-3 cursor-pointer active:opacity-60 transition-opacity"
                     style={{
-                      height: "48px",
-                      borderBottom: i < recent.length - 1 ? "1px solid #2A2A28" : "none",
+                      width: "80px",
+                      height: "80px",
+                      borderRadius: "10px",
+                      overflow: "hidden",
+                      flexShrink: 0,
+                      backgroundColor: "#1C1C1A",
                     }}
                   >
-                    <Clock size={14} color="#3D3D38" strokeWidth={1.8} />
-                    <span
-                      style={{ fontSize: "15px", color: "#6B6B63", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
-                    >
-                      {term}
-                    </span>
-                    <button
-                      onClick={(e) => handleRemoveRecent(e, term)}
-                      className="active:opacity-60"
-                    >
-                      <X size={14} color="#3D3D38" strokeWidth={2} />
-                    </button>
+                    {event.cover_image_url ? (
+                      <img
+                        src={event.cover_image_url}
+                        alt=""
+                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <span style={{ fontSize: "22px", fontWeight: 700, color: "#3D3D38" }}>
+                          {getVibeLabel(event.vibe || "").charAt(0)}
+                        </span>
+                      </div>
+                    )}
                   </div>
-                ))}
-              </div>
-            )}
 
-            {/* Browse by vibe */}
-            <div>
-              <span
-                style={{
-                  fontSize: "11px",
-                  fontWeight: 600,
-                  color: "#6B6B63",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.1em",
-                  display: "block",
-                  marginBottom: "12px",
-                }}
-              >
-                BROWSE BY VIBE
-              </span>
-
-              {/* 2-col grid — last card spans full width if count is odd */}
-              <div
-                className="grid grid-cols-2 gap-[10px]"
-                style={{ marginBottom: "24px" }}
-              >
-                {VIBES.map((v, index) => {
-                  const isLastOdd =
-                    index === VIBES.length - 1 && VIBES.length % 2 !== 0;
-                  return (
-                    <button
-                      key={v.name}
-                      onClick={() => handleVibeClick(v.name)}
-                      className="flex flex-col items-center justify-center active:opacity-80 transition-opacity"
+                  {/* Info */}
+                  <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: "4px", justifyContent: "center" }}>
+                    <span
                       style={{
-                        backgroundColor: v.bg,
-                        border: "1px solid #2A2A28",
-                        borderRadius: "16px",
-                        gridColumn: isLastOdd ? "span 2" : "span 1",
-                        aspectRatio: isLastOdd ? "unset" : "1 / 1",
-                        height: isLastOdd ? "100px" : undefined,
+                        fontSize: "10px",
+                        fontWeight: 700,
+                        color: "#FF6B35",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.06em",
                       }}
                     >
-                      <v.icon size={28} strokeWidth={1.8} color={v.iconColor} fill="none" />
-                      <span
-                        style={{
-                          fontSize: "14px",
-                          fontWeight: 600,
-                          color: "#F0EEE9",
-                          marginTop: "8px",
-                        }}
-                      >
-                        {v.name}
+                      {getVibeLabel(event.vibe || "")}
+                    </span>
+                    <h3
+                      style={{
+                        fontSize: "15px",
+                        fontWeight: 600,
+                        color: "#F0EEE9",
+                        lineHeight: 1.3,
+                        overflow: "hidden",
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        margin: 0,
+                      }}
+                    >
+                      {event.title}
+                    </h3>
+                    <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                      <CalendarDays size={11} color="#6B6B63" strokeWidth={1.8} />
+                      <span style={{ fontSize: "13px", color: "#6B6B63" }}>
+                        {format(new Date(event.event_datetime), "MMM d, h:mm a")}
                       </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div>
-            {/* Live results */}
-            {searchEvents?.length === 0 && searchHosts?.length === 0 ? (
-              <div
-                className="flex items-center justify-center"
-                style={{ paddingTop: "60px" }}
-              >
-                <p style={{ fontSize: "15px", color: "#6B6B63" }}>Nothing matched.</p>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-4">
-                {searchEvents && searchEvents.length > 0 && (
-                  <div>
-                    <SectionHeader title="Events" count={searchEvents.length} />
-                    <div className="flex flex-col gap-[10px]" style={{ marginTop: "8px" }}>
-                      {searchEvents.map((event) => (
-                        <SearchResultRow
-                          key={event.id}
-                          type="event"
-                          data={event}
-                          onClick={() => handleSearchSubmit(query)}
-                        />
-                      ))}
                     </div>
+                    {(event.district || event.location_text) && (
+                      <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                        <MapPin size={11} color="#6B6B63" strokeWidth={1.8} />
+                        <span
+                          style={{
+                            fontSize: "13px",
+                            color: "#6B6B63",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {event.district || event.location_text}
+                        </span>
+                      </div>
+                    )}
                   </div>
-                )}
-                {searchHosts && searchHosts.length > 0 && (
-                  <div>
-                    <SectionHeader title="People" count={searchHosts.length} />
-                    <div className="flex flex-col gap-[10px]" style={{ marginTop: "8px" }}>
-                      {searchHosts.map((host) => (
-                        <SearchResultRow
-                          key={host.id}
-                          type="user"
-                          data={host}
-                          onClick={() => handleSearchSubmit(query)}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
+                </div>
+              </Link>
+            ))}
           </div>
         )}
       </div>
