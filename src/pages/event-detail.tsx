@@ -53,7 +53,6 @@ export function EventDetailPage() {
   const handleSendMessage = () => {
     const content = chatInput.trim();
     if (!content || !user || !id || isSending) return;
-    console.log('[Chat] sending:', { eventId: id, userId: user?.id, content });
     setChatInput("");
     sendMessage({ eventId: id, userId: user.id, content });
   };
@@ -108,7 +107,13 @@ export function EventDetailPage() {
         { eventId: id as string, userId: user.id, isAttending: false },
         {
           onSuccess: () => toast("You're in!", "success"),
-          onError: () => toast("Couldn't update RSVP, try again", "error"),
+          onError: (error: any) => {
+            if (error.message.includes('This event is full')) {
+              toast('This event is full', 'error');
+            } else {
+              toast('Something went wrong. Try again.', 'error');
+            }
+          },
         }
       );
     }
@@ -138,7 +143,6 @@ export function EventDetailPage() {
           navigate("/");
         },
         onError: (err: any) => {
-          console.error("[DeleteEvent] Error:", err);
           toast("Couldn't delete event, try again", "error");
         },
       }

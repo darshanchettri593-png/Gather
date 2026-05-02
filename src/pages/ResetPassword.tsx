@@ -15,7 +15,6 @@ export default function ResetPassword() {
       if (error) throw error;
       navigate("/");
     } catch (error) {
-      console.error("Error updating password:", error);
       alert("Failed to update password. Please try again.");
     } finally {
       setLoading(false);

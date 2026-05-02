@@ -22,9 +22,6 @@ export function useEvents(vibeFilter: string) {
 
       const { data, error } = await query;
 
-      console.log('[useEvents] data:', data);
-      console.log('[useEvents] error:', error);
-
       if (error) throw error;
 
       return (data || []).map((d: any) => ({

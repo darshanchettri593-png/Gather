@@ -50,10 +50,7 @@ export function useSendMessage() {
         .insert({ event_id: eventId, user_id: userId, content: content.trim() })
         .select();
 
-      console.log('[Chat] insert result:', data, error);
-
       if (error) {
-        console.error('[Chat] RLS error:', error.message, error.code);
         throw new Error(error.message);
       }
       return data;

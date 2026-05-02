@@ -19,7 +19,6 @@ export function useEventRatings(eventId: string) {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      console.log('[Ratings] fetched for event', eventId, '→', data?.length, 'ratings');
       return data as EventRating[];
     },
     enabled: !!eventId,
@@ -68,7 +67,6 @@ export function useSubmitRating() {
       ratingValue: number;
       comment?: string;
     }) => {
-      console.log('[Rating] upsert', { eventId, raterId, raterType, ratingValue });
       const { data, error } = await supabase
         .from('event_ratings')
         .upsert(
@@ -94,6 +92,7 @@ export function useSubmitRating() {
       queryClient.invalidateQueries({ queryKey: ['ratingSummary'], exact: false });
       // Also refresh the event detail so attendee data stays in sync
       queryClient.invalidateQueries({ queryKey: ['event', variables.eventId], exact: false });
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
     },
   });
 }

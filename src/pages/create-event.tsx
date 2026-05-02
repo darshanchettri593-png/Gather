@@ -365,8 +365,8 @@ export function CreateEventPage() {
             </p>
           )}
           {!capacityError && (
-            <p style={{ fontSize: "12px", color: "#6B6B63", marginTop: "4px" }}>
-              How many people can join this gathering?
+            <p style={{ fontSize: '13px', color: '#6B6B63', marginTop: '6px' }}>
+              Default is 20 members. Max 10,000.
             </p>
           )}
         </div>

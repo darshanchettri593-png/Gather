@@ -7,8 +7,6 @@ export function useDeleteEvent() {
 
   return useMutation({
     mutationFn: async ({ eventId, coverImageUrl }: { eventId: string; coverImageUrl?: string | null }) => {
-      console.log('[DeleteEvent] Deleting event:', eventId);
-
       const { error } = await supabase.from('events').delete().eq('id', eventId);
       if (error) throw new Error(error.message);
 
@@ -16,10 +14,7 @@ export function useDeleteEvent() {
       if (coverImageUrl) {
         const path = coverImageUrl.split('/event-covers/')[1];
         if (path) {
-          console.log('[DeleteEvent] Removing cover image:', path);
-          await supabase.storage.from('event-covers').remove([path]).catch((err) =>
-            console.warn('[DeleteEvent] Storage cleanup failed (non-fatal):', err)
-          );
+          await supabase.storage.from('event-covers').remove([path]).catch(() => {});
         }
       }
     },
