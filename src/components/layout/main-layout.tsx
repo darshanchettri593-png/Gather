@@ -123,7 +123,7 @@ export function MainLayout() {
       )}
 
       <main
-        key={location.key}
+        key={location.pathname}
         className="tab-transition flex-1 w-full max-w-5xl mx-auto"
       >
         <Outlet />
