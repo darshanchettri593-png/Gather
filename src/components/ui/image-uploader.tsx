@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from 'react-dom';
 import type React from "react";
 import { Camera, X, Check, Loader2 } from "lucide-react";
 import imageCompression from "browser-image-compression";
@@ -235,7 +236,7 @@ export function ImageUploader({
         )}
       </div>
 
-      {cropImageUrl && (
+      {cropImageUrl && createPortal(
         <div
           style={{
             position: 'fixed',
@@ -346,7 +347,8 @@ export function ImageUploader({
                 : '16:9 • Crop to fit event cover'}
             </span>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
