@@ -19,6 +19,7 @@ export interface Event {
   description: string | null;
   cover_image_url: string | null;
   whatsapp_link: string | null;
+  capacity: number;
   created_at: string;
 
   // Joined properties for front-end

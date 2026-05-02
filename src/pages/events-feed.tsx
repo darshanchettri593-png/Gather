@@ -15,6 +15,9 @@ function getVibeLabel(vibe: string) {
 
 function FeaturedEventCard({ event }: { event: any }) {
   const attendeeCount = event._count?.attendees || 0;
+  const capacity = event.capacity || 0;
+  const isFull = capacity > 0 && attendeeCount >= capacity;
+  const spotsLeft = capacity > 0 ? capacity - attendeeCount : Infinity;
 
   return (
     <Link
@@ -133,9 +136,45 @@ function FeaturedEventCard({ event }: { event: any }) {
               </span>
             </div>
           </div>
-          <span style={{ fontSize: "13px", color: "#6B6B63", flexShrink: 0, marginLeft: "8px" }}>
-            {attendeeCount} going
-          </span>
+          {isFull ? (
+            <span
+              style={{
+                fontSize: "10px",
+                fontWeight: 700,
+                color: "#FF3B30",
+                textTransform: "uppercase",
+                backgroundColor: "rgba(255,59,48,0.15)",
+                border: "1px solid rgba(255,59,48,0.3)",
+                borderRadius: "999px",
+                padding: "3px 8px",
+                flexShrink: 0,
+                marginLeft: "8px",
+              }}
+            >
+              FULL
+            </span>
+          ) : spotsLeft !== Infinity && spotsLeft <= 5 ? (
+            <span
+              style={{
+                fontSize: "10px",
+                fontWeight: 700,
+                color: "#FF6B35",
+                textTransform: "uppercase",
+                backgroundColor: "rgba(255,107,53,0.15)",
+                border: "1px solid rgba(255,107,53,0.3)",
+                borderRadius: "999px",
+                padding: "3px 8px",
+                flexShrink: 0,
+                marginLeft: "8px",
+              }}
+            >
+              {spotsLeft} spots left
+            </span>
+          ) : (
+            <span style={{ fontSize: "13px", color: "#6B6B63", flexShrink: 0, marginLeft: "8px" }}>
+              {capacity > 0 ? `${attendeeCount}/${capacity} going` : `${attendeeCount} going`}
+            </span>
+          )}
         </div>
       </div>
     </Link>
@@ -146,6 +185,9 @@ function FeaturedEventCard({ event }: { event: any }) {
 
 function CompactEventCard({ event }: { event: any }) {
   const attendeeCount = event._count?.attendees || 0;
+  const capacity = event.capacity || 0;
+  const isFull = capacity > 0 && attendeeCount >= capacity;
+  const spotsLeft = capacity > 0 ? capacity - attendeeCount : Infinity;
   const vibeInitial = event.vibe ? event.vibe.charAt(0).toUpperCase() : "G";
 
   return (
@@ -233,8 +275,14 @@ function CompactEventCard({ event }: { event: any }) {
           >
             {format(new Date(event.event_datetime), "MMM d")} · {event.location_text}
           </span>
-          <span style={{ fontSize: "12px", color: "#6B6B63" }}>
-            {attendeeCount} going
+          <span style={{ fontSize: "12px", color: isFull ? "#FF3B30" : spotsLeft !== Infinity && spotsLeft <= 5 ? "#FF6B35" : "#6B6B63" }}>
+            {isFull
+              ? "FULL"
+              : spotsLeft !== Infinity && spotsLeft <= 5
+              ? `${spotsLeft} spots left`
+              : capacity > 0
+              ? `${attendeeCount}/${capacity} going`
+              : `${attendeeCount} going`}
           </span>
         </div>
       </div>

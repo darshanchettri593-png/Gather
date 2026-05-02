@@ -72,13 +72,15 @@ export function CreateEventPage() {
   const [endDate, setEndDate]            = useState("");
   const [endTime, setEndTime]            = useState("");
   const [endTimeError, setEndTimeError]  = useState("");
+  const [capacity, setCapacity]          = useState("");
+  const [capacityError, setCapacityError] = useState("");
 
   // Auto-set end date to start date when user picks a date
   useEffect(() => {
     if (date && !endDate) setEndDate(date);
   }, [date]);
 
-  const isFormValid = coverUrl && title && vibe && district && locationStr && date && time && endDate && endTime;
+  const isFormValid = coverUrl && title && vibe && district && locationStr && date && time && endDate && endTime && capacity;
 
   const createMutation = useMutation({
     mutationFn: async () => {
@@ -102,6 +104,7 @@ export function CreateEventPage() {
         end_datetime: endDT.toISOString(),
         cover_image_url: coverUrl || null,
         whatsapp_link: whatsappLink || null,
+        capacity: parseInt(capacity),
       }).select().single();
 
       if (error) throw new Error(error.message);
@@ -121,6 +124,15 @@ export function CreateEventPage() {
   const handleSubmit = () => {
     if (!isFormValid || createMutation.isPending || isUploadingImage) return;
     setEndTimeError("");
+    setCapacityError("");
+    if (!capacity || parseInt(capacity) < 1) {
+      setCapacityError("Please set a capacity");
+      return;
+    }
+    if (parseInt(capacity) > 10000) {
+      setCapacityError("Maximum capacity is 10,000");
+      return;
+    }
     if (date && time && endDate && endTime) {
       const startDT = new Date(`${date}T${time}`);
       const endDT = new Date(`${endDate}T${endTime}`);
@@ -333,6 +345,30 @@ export function CreateEventPage() {
             style={INPUT_STYLE}
             className="placeholder:text-[#3D3D38]"
           />
+        </div>
+
+        {/* Capacity */}
+        <div>
+          <label style={LABEL_STYLE}>Capacity</label>
+          <input
+            type="number"
+            placeholder="Max attendees"
+            min="1"
+            value={capacity}
+            onChange={(e) => { setCapacity(e.target.value); setCapacityError(""); }}
+            style={INPUT_STYLE}
+            className="placeholder:text-[#3D3D38]"
+          />
+          {capacityError && (
+            <p style={{ color: "#FF3B30", fontSize: "12px", marginTop: "4px" }}>
+              {capacityError}
+            </p>
+          )}
+          {!capacityError && (
+            <p style={{ fontSize: "12px", color: "#6B6B63", marginTop: "4px" }}>
+              How many people can join this gathering?
+            </p>
+          )}
         </div>
 
         {/* District pills */}

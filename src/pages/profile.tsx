@@ -131,7 +131,14 @@ function EventCard({ event, isPast }: { event: any; isPast: boolean }) {
             {format(new Date(event.event_datetime), "MMM d, h:mm a")}
           </span>
           <span style={{ fontSize: "12px", color: "#6B6B63" }}>
-            {event._count?.attendees || 0} attending
+            {(() => {
+              const count = event._count?.attendees || 0;
+              const cap = event.capacity || 0;
+              const full = cap > 0 && count >= cap;
+              if (full) return <span style={{ color: "#FF3B30" }}>FULL</span>;
+              if (cap > 0) return `${count}/${cap}`;
+              return `${count} attending`;
+            })()}
           </span>
           {isPast && ratingSummary && (
             <StarDisplay avg={ratingSummary.avg} count={ratingSummary.count} />

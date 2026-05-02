@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router";
 import {
   ArrowLeft, CalendarRange, MapPin, Check,
-  Share2, AlertCircle, Clock, MoreVertical, Send,
+  Share2, AlertCircle, Clock, MoreVertical, Send, Users,
 } from "lucide-react";
 import { useEventDetail, useRSVPStatus, useToggleRSVP } from "@/lib/queries";
 import { useDeleteEvent } from "@/hooks/useEvent";
@@ -203,6 +203,11 @@ export function EventDetailPage() {
   const overflowCount = Math.max(0, attendeesList.length - 5);
   const encodedLocation = encodeURIComponent(event.location_text || "");
   const hasAttended = !!user && attendeesList.some((att: any) => att.user?.id === user.id);
+  const attendeeCount = attendeesList.length;
+  const isFull = event.capacity > 0 && attendeeCount >= event.capacity;
+  const spotsLeft = event.capacity > 0 ? event.capacity - attendeeCount : Infinity;
+  const totalDots = Math.min(event.capacity || 0, 20);
+  const filledDots = Math.min(attendeeCount, totalDots);
 
   // ─── Page ────────────────────────────────────────────────────────────────────
   return (
@@ -346,8 +351,8 @@ export function EventDetailPage() {
           />
         )}
 
-        {/* Info grid — 3 columns */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        {/* Info grid — 4 columns */}
+        <div className="grid grid-cols-4 gap-2 mb-6">
           {/* Date */}
           <div className="flex flex-col items-center text-center">
             <div
@@ -408,10 +413,49 @@ export function EventDetailPage() {
               Free
             </span>
           </div>
+
+          {/* Capacity */}
+          {event.capacity > 0 && (
+            <div className="flex flex-col items-center text-center">
+              <div
+                className="flex items-center justify-center rounded-xl mb-2"
+                style={{ width: "44px", height: "44px", backgroundColor: "#242422", border: "1px solid #2A2A28" }}
+              >
+                <Users size={20} style={{ color: "#FF6B35" }} />
+              </div>
+              <span style={{ fontSize: "10px", color: "#6B6B63", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "2px", display: "block" }}>
+                Capacity
+              </span>
+              <span style={{ fontSize: "14px", fontWeight: 600, color: "#F0EEE9", lineHeight: 1.2 }}>
+                {attendeeCount}/{event.capacity}
+              </span>
+              <span style={{ fontSize: "11px", color: isFull ? "#FF3B30" : "#6B6B63" }}>
+                {isFull ? "Full" : `${spotsLeft} spot${spotsLeft !== 1 ? "s" : ""} left`}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Divider */}
         <div style={{ height: "1px", backgroundColor: "#2A2A28", marginBottom: "20px" }} />
+
+        {/* Gathering Pulse dots */}
+        {event.capacity > 0 && totalDots > 0 && (
+          <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", margin: "12px 0" }}>
+            {Array.from({ length: totalDots }).map((_, i) => (
+              <div
+                key={i}
+                style={{
+                  width: "8px",
+                  height: "8px",
+                  borderRadius: "50%",
+                  backgroundColor: i < filledDots ? "#FF6B35" : "#2A2A28",
+                  boxShadow: i < filledDots ? "0 0 6px rgba(255,107,53,0.5)" : "none",
+                }}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Location */}
         <div
@@ -718,59 +762,83 @@ export function EventDetailPage() {
         </div>
 
         {/* Right: CTA */}
-        {isPastEvent ? (
-          <button
-            disabled
-            style={{
-              height: "52px",
-              padding: "0 28px",
-              borderRadius: "999px",
-              backgroundColor: "#242422",
-              border: "1px solid #2A2A28",
-              color: "#6B6B63",
-              fontSize: "15px",
-              fontWeight: 600,
-              cursor: "not-allowed",
-            }}
-          >
-            Event Ended
-          </button>
-        ) : hasRSVPd ? (
-          <button
-            disabled={isRSVPPending}
-            onClick={handleRSVPClick}
-            className="flex items-center justify-center active:scale-[0.98] transition-all"
-            style={{
-              height: "52px",
-              padding: "0 28px",
-              borderRadius: "999px",
-              backgroundColor: "transparent",
-              border: "1px solid #FF6B35",
-              color: "#FF6B35",
-              fontSize: "15px",
-              fontWeight: 600,
-            }}
-          >
-            <Check className="h-4 w-4 mr-2" strokeWidth={2.5} />
-            You're Going
-          </button>
-        ) : (
-          <button
-            disabled={isRSVPPending}
-            onClick={handleRSVPClick}
-            className="text-white active:scale-[0.98] transition-all"
-            style={{
-              height: "52px",
-              padding: "0 32px",
-              borderRadius: "999px",
-              backgroundColor: "#FF6B35",
-              fontSize: "15px",
-              fontWeight: 600,
-            }}
-          >
-            I'm Going
-          </button>
-        )}
+        <div className="flex flex-col items-end gap-1">
+          {isPastEvent ? (
+            <button
+              disabled
+              style={{
+                height: "52px",
+                padding: "0 28px",
+                borderRadius: "999px",
+                backgroundColor: "#242422",
+                border: "1px solid #2A2A28",
+                color: "#6B6B63",
+                fontSize: "15px",
+                fontWeight: 600,
+                cursor: "not-allowed",
+              }}
+            >
+              Event Ended
+            </button>
+          ) : hasRSVPd ? (
+            <button
+              disabled={isRSVPPending}
+              onClick={handleRSVPClick}
+              className="flex items-center justify-center active:scale-[0.98] transition-all"
+              style={{
+                height: "52px",
+                padding: "0 28px",
+                borderRadius: "999px",
+                backgroundColor: "transparent",
+                border: "1px solid #FF6B35",
+                color: "#FF6B35",
+                fontSize: "15px",
+                fontWeight: 600,
+              }}
+            >
+              <Check className="h-4 w-4 mr-2" strokeWidth={2.5} />
+              You're Going
+            </button>
+          ) : isFull ? (
+            <button
+              disabled
+              style={{
+                height: "52px",
+                padding: "0 28px",
+                borderRadius: "999px",
+                backgroundColor: "#2A2A28",
+                border: "1px solid #2A2A28",
+                color: "#6B6B63",
+                fontSize: "15px",
+                fontWeight: 600,
+                cursor: "not-allowed",
+              }}
+            >
+              Full · {attendeeCount}/{event.capacity}
+            </button>
+          ) : (
+            <button
+              disabled={isRSVPPending}
+              onClick={handleRSVPClick}
+              className="text-white active:scale-[0.98] transition-all"
+              style={{
+                height: "52px",
+                padding: "0 32px",
+                borderRadius: "999px",
+                backgroundColor: "#FF6B35",
+                fontSize: "15px",
+                fontWeight: 600,
+              }}
+            >
+              I'm Going
+            </button>
+          )}
+          {!isPastEvent && !hasRSVPd && !isFull && spotsLeft !== Infinity && spotsLeft <= 5 && spotsLeft > 0 && (
+            <span style={{ fontSize: "13px", color: "#FF3B30", textAlign: "center" }}>
+              Only {spotsLeft} spot{spotsLeft !== 1 ? "s" : ""} left!
+            </span>
+          )}
+        </div>
       </div>
 
       {/* ── Cancel RSVP modal ─────────────────────────────────────────────────── */}
