@@ -246,16 +246,16 @@ export function ImageUploader({
             WebkitBackdropFilter: 'blur(12px)',
             display: 'flex',
             flexDirection: 'column',
+            height: '100dvh',
           }}
         >
           {/* Top bar */}
           <div
             style={{
-              height: '64px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              padding: '0 20px',
+              padding: '12px 16px',
               flexShrink: 0,
               borderBottom: '1px solid rgba(255,255,255,0.06)',
             }}
@@ -303,7 +303,7 @@ export function ImageUploader({
               alignItems: 'center',
               justifyContent: 'center',
               overflow: 'hidden',
-              maxHeight: 'calc(100vh - 140px)',
+              padding: '0 16px',
             }}
           >
             <ReactCrop
@@ -313,7 +313,7 @@ export function ImageUploader({
               aspect={aspect}
               circularCrop={aspectRatio === '1/1'}
               ruleOfThirds
-              style={{ borderRadius: aspectRatio === '1/1' ? '50%' : '8px' }}
+              style={{ maxHeight: '100%', maxWidth: '100%' }}
             >
               <img
                 ref={imgRef}
@@ -321,8 +321,8 @@ export function ImageUploader({
                 alt="Crop"
                 onLoad={onImageLoad}
                 style={{
-                  maxHeight: 'calc(100vh - 140px)',
-                  width: '100%',
+                  maxHeight: '100%',
+                  maxWidth: '100%',
                   objectFit: 'contain',
                   display: 'block',
                 }}
@@ -333,16 +333,13 @@ export function ImageUploader({
           {/* Bottom hint */}
           <div
             style={{
-              height: '56px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
               flexShrink: 0,
               borderTop: '1px solid rgba(255,255,255,0.06)',
               padding: '12px 24px',
+              textAlign: 'center',
             }}
           >
-            <span style={{ color: '#6B6B63', fontSize: '13px', textAlign: 'center' }}>
+            <span style={{ color: '#6B6B63', fontSize: '13px' }}>
               {aspectRatio === '1/1'
                 ? '1:1 • Crop to fit profile photo'
                 : '16:9 • Crop to fit event cover'}
