@@ -7,16 +7,24 @@ function hideSplash() {
   const splash = document.getElementById('splash-screen');
   if (!splash) return;
 
-  // Wait minimum 1.5s for the branding moment, then fade out
+  const alreadyShown = sessionStorage.getItem('gather_splash_shown');
+
+  if (alreadyShown) {
+    // Already shown this session — hide immediately
+    splash.style.display = 'none';
+    return;
+  }
+
+  // First time — show normally then hide
   setTimeout(() => {
     splash.classList.add('hiding');
     setTimeout(() => {
       splash.style.display = 'none';
+      sessionStorage.setItem('gather_splash_shown', '1');
     }, 400);
   }, 1500);
 }
 
-// Hide splash when React is ready
 hideSplash();
 
 createRoot(document.getElementById('root')!).render(
