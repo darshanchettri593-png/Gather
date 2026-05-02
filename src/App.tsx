@@ -8,6 +8,7 @@ import { ProfilePage } from "@/pages/profile";
 import { SearchPage } from "@/pages/search";
 import { SettingsPage } from "@/pages/settings";
 import { CommunityGuidelinesPage } from "@/pages/community-guidelines";
+import { PublicProfilePage } from "@/pages/profile-public";
 import ResetPassword from "@/pages/ResetPassword"; // REMOVED BRACKETS
 import { BrowserRouter, Navigate, Route, Routes } from "react-router"; // Reverted to react-router for v7 compatibility
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -35,6 +36,7 @@ export default function App() {
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/settings" element={<SettingsPage />} />
                 <Route path="/settings/community-guidelines" element={<CommunityGuidelinesPage />} />
+                <Route path="/user/:id" element={<PublicProfilePage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Route>
             </Routes>

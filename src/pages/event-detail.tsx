@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router";
+import { useParams, useNavigate, Link } from "react-router";
 import {
   ArrowLeft, CalendarRange, MapPin, Check,
   Share2, AlertCircle, Clock, MoreVertical, Send, Users,
@@ -531,9 +531,10 @@ export function EventDetailPage() {
         )}
 
         {/* Host */}
-        <div
-          className="flex items-center gap-3 mb-6 p-4 rounded-xl"
-          style={{ backgroundColor: "#242422", border: "1px solid #2A2A28" }}
+        <Link
+          to={`/user/${event.host_id}`}
+          className="flex items-center gap-3 mb-6 p-4 rounded-xl active:opacity-80 transition-opacity"
+          style={{ backgroundColor: "#242422", border: "1px solid #2A2A28", textDecoration: "none", display: "flex" }}
         >
           <div
             className="shrink-0 rounded-full overflow-hidden flex items-center justify-center text-white font-bold"
@@ -553,7 +554,7 @@ export function EventDetailPage() {
               {event.host?.display_name}
             </span>
           </div>
-        </div>
+        </Link>
 
         {/* Who's coming */}
         <div className="mb-6" style={{ paddingTop: "16px", borderTop: "1px solid #2A2A28" }}>
@@ -571,9 +572,10 @@ export function EventDetailPage() {
             <div className="flex items-center gap-3">
               <div className="flex -space-x-2">
                 {displayAttendees.map((att: any, i: number) => (
-                  <div
+                  <Link
                     key={att.id}
-                    className="rounded-full overflow-hidden flex items-center justify-center font-bold shrink-0"
+                    to={`/user/${att.user?.id}`}
+                    className="rounded-full overflow-hidden flex items-center justify-center font-bold shrink-0 active:opacity-70 transition-opacity"
                     style={{
                       width: "36px", height: "36px",
                       border: "2px solid #1C1C1A",
@@ -581,6 +583,7 @@ export function EventDetailPage() {
                       color: "#6B6B63",
                       fontSize: "12px",
                       zIndex: 10 - i,
+                      textDecoration: "none",
                     }}
                   >
                     {att.user?.avatar_url ? (
@@ -588,7 +591,7 @@ export function EventDetailPage() {
                     ) : (
                       <span>{att.user?.display_name?.charAt(0) || "?"}</span>
                     )}
-                  </div>
+                  </Link>
                 ))}
                 {overflowCount > 0 && (
                   <div
