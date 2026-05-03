@@ -6,12 +6,11 @@ import { useProfile } from "@/hooks/useUser";
 import { supabase } from "@/lib/supabase";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
-import { FLAT_LOCATIONS } from "@/lib/india-locations";
+import { INDIAN_STATES } from "@/lib/india-locations";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/toast";
 
-const LOCATIONS = ["Siliguri, West Bengal", ...FLAT_LOCATIONS.filter((l) => l !== "Siliguri, West Bengal")];
 
 export function SettingsPage() {
   const navigate = useNavigate();
@@ -491,9 +490,9 @@ export function SettingsPage() {
               <div style={{ width: "60px" }} />
             </div>
             <div className="flex-1 overflow-y-auto" style={{ padding: "8px 20px" }}>
-              {LOCATIONS.map((loc) => (
+              {INDIAN_STATES.map((state) => (
                 <button
-                  key={loc}
+                  key={state}
                   className="w-full text-left active:opacity-60 transition-opacity"
                   style={{
                     padding: "14px 0",
@@ -502,11 +501,12 @@ export function SettingsPage() {
                     borderBottom: "1px solid #2A2A28",
                   }}
                   onClick={() => {
-                    updateProfileMutation.mutate({ location: loc });
+                    localStorage.setItem('gather_state', state);
+                    updateProfileMutation.mutate({ location: state });
                     setShowLocationModal(false);
                   }}
                 >
-                  {loc}
+                  {state}
                 </button>
               ))}
             </div>
