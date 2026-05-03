@@ -397,10 +397,12 @@ export function ProfilePage() {
                     <span style={{ fontSize: "13px", color: "#6B6B63" }}>{age} years old</span>
                   )}
                 </div>
-                {profile?.location && (
+                {(localStorage.getItem('gather_city') || profile?.location) && (
                   <div className="flex items-center gap-[4px]">
                     <MapPin size={12} color="#6B6B63" strokeWidth={1.8} />
-                    <span style={{ fontSize: "13px", color: "#6B6B63" }}>{profile.location}</span>
+                    <span style={{ fontSize: "13px", color: "#6B6B63" }}>
+                      {localStorage.getItem('gather_city') || profile?.location}
+                    </span>
                   </div>
                 )}
                 {joinDate && (

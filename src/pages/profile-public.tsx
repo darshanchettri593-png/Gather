@@ -193,10 +193,12 @@ export function PublicProfilePage() {
               )}
             </div>
           )}
-          {user.location && (
+          {(localStorage.getItem('gather_city') || user.location) && (
             <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
               <MapPin size={12} color="#6B6B63" strokeWidth={1.8} />
-              <span style={{ fontSize: "13px", color: "#6B6B63" }}>{user.location}</span>
+              <span style={{ fontSize: "13px", color: "#6B6B63" }}>
+                {localStorage.getItem('gather_city') || user.location}
+              </span>
             </div>
           )}
           {joinDate && (

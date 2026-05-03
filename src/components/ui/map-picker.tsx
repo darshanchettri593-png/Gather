@@ -47,7 +47,11 @@ export function MapPicker({ mode, lat, lng, onLocationSelect }: MapPickerProps) 
       attributionControl: false,
     });
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '© CartoDB',
+      subdomains: 'abcd',
+      maxZoom: 19,
+    }).addTo(map);
 
     mapRef.current = map;
 

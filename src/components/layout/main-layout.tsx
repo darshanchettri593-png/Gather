@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { Outlet, useLocation, useNavigate } from "react-router";
-import { MapPin, ChevronDown } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { AuthModal } from "@/components/auth-modal";
 import { BottomNav } from "./bottom-nav";
 import { useProfile } from "@/hooks/useUser";
 import { ProfileGate } from "@/components/ProfileGate";
+import { supabase } from "@/lib/supabase";
 
 export function MainLayout() {
   const { user, openAuthModal } = useAuth();
@@ -36,6 +37,9 @@ export function MainLayout() {
         localStorage.setItem('gather_city', city);
         localStorage.setItem('gather_lat', String(pos.coords.latitude));
         localStorage.setItem('gather_lng', String(pos.coords.longitude));
+        if (user) {
+          supabase.from('users').update({ location: city }).eq('id', user.id);
+        }
       } catch {
         // Keep existing value
       }
@@ -87,11 +91,6 @@ export function MainLayout() {
               >
                 {headerState}
               </span>
-              <ChevronDown
-                size={14}
-                strokeWidth={2}
-                style={{ color: "#6B6B63", flexShrink: 0 }}
-              />
             </div>
 
             {/* RIGHT: avatar or sign-in */}
