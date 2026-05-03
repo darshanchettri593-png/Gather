@@ -320,6 +320,9 @@ export function AuthModal() {
           </button>
 
           <div className="text-center" style={{ paddingTop: "4px" }}>
+            <p style={{ fontSize: '12px', color: '#6B6B63', textAlign: 'center', marginBottom: '8px' }}>
+              Enter your email above first, then tap forgot password
+            </p>
             <button
               type="button"
               onClick={handleForgotPassword}
@@ -391,10 +394,12 @@ export function AuthModal() {
 
 function friendlyError(message: string): string {
   if (!message) return "Something went wrong";
-  if (message.includes("Invalid login credentials")) return "Wrong email or password";
-  if (message.includes("Email not confirmed")) return "Please confirm your email first";
+  if (message.includes("Invalid login credentials")) return "Wrong email or password. Try again.";
+  if (message.includes("invalid")) return "Wrong email or password. Try again.";
+  if (message.includes("API key") || message.includes("api")) return "Wrong email or password. Try again.";
+  if (message.includes("Email not confirmed")) return "Please confirm your email first.";
   if (message.includes("User already registered")) return "An account with this email already exists — try signing in";
   if (message.includes("Password should be")) return "Password must be at least 8 characters";
   if (message.includes("Unable to validate email")) return "Enter a valid email address";
-  return message;
+  return "Something went wrong. Try again.";
 }
