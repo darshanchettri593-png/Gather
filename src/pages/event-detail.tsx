@@ -746,7 +746,7 @@ export function EventDetailPage() {
           </div>
         )}
 
-        {(isPastEvent || isLive) && hasRSVPd && user?.id !== event.host_id && (
+        {(isPastEvent || isLive) && hasRSVPd && (
           <CheckInCard
             eventId={event.id}
             userId={user.id}
