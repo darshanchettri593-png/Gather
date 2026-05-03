@@ -435,41 +435,45 @@ export function CreateEventPage() {
           <div>
             <p style={{ fontSize: '13px', color: '#6B6B63', marginBottom: '8px' }}>Age Range</p>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <input
-                type="number"
-                value={minAge}
-                onChange={(e) => setMinAge(e.target.value)}
-                min={18}
-                max={99}
-                style={{
-                  flex: 1,
-                  backgroundColor: '#1C1C1A',
-                  border: '1px solid #2A2A28',
-                  borderRadius: '12px',
-                  padding: '12px 16px',
-                  fontSize: '15px',
-                  color: '#F0EEE9',
-                  textAlign: 'center',
-                }}
-              />
+              {/* Min age stepper */}
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#1C1C1A', border: '1px solid #2A2A28', borderRadius: '12px', padding: '8px 12px' }}>
+                <button
+                  type="button"
+                  onClick={() => setMinAge(String(Math.max(18, parseInt(minAge) - 1)))}
+                  style={{ color: '#FF6B35', fontSize: '20px', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: '0 8px' }}
+                >
+                  −
+                </button>
+                <span style={{ color: '#F0EEE9', fontSize: '16px', fontWeight: 600 }}>{minAge}</span>
+                <button
+                  type="button"
+                  onClick={() => setMinAge(String(Math.min(parseInt(maxAge) - 1, parseInt(minAge) + 1)))}
+                  style={{ color: '#FF6B35', fontSize: '20px', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: '0 8px' }}
+                >
+                  +
+                </button>
+              </div>
+
               <span style={{ color: '#6B6B63', fontSize: '14px' }}>to</span>
-              <input
-                type="number"
-                value={maxAge}
-                onChange={(e) => setMaxAge(e.target.value)}
-                min={18}
-                max={99}
-                style={{
-                  flex: 1,
-                  backgroundColor: '#1C1C1A',
-                  border: '1px solid #2A2A28',
-                  borderRadius: '12px',
-                  padding: '12px 16px',
-                  fontSize: '15px',
-                  color: '#F0EEE9',
-                  textAlign: 'center',
-                }}
-              />
+
+              {/* Max age stepper */}
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#1C1C1A', border: '1px solid #2A2A28', borderRadius: '12px', padding: '8px 12px' }}>
+                <button
+                  type="button"
+                  onClick={() => setMaxAge(String(Math.max(parseInt(minAge) + 1, parseInt(maxAge) - 1)))}
+                  style={{ color: '#FF6B35', fontSize: '20px', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: '0 8px' }}
+                >
+                  −
+                </button>
+                <span style={{ color: '#F0EEE9', fontSize: '16px', fontWeight: 600 }}>{maxAge}</span>
+                <button
+                  type="button"
+                  onClick={() => setMaxAge(String(Math.min(99, parseInt(maxAge) + 1)))}
+                  style={{ color: '#FF6B35', fontSize: '20px', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: '0 8px' }}
+                >
+                  +
+                </button>
+              </div>
             </div>
             <p style={{ fontSize: '13px', color: '#6B6B63', marginTop: '6px' }}>
               Default is open to all ages 18+
