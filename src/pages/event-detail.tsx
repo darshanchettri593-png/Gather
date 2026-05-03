@@ -264,7 +264,7 @@ export function EventDetailPage() {
 
   // ─── Page ────────────────────────────────────────────────────────────────────
   return (
-    <div className="relative min-h-screen" style={{ backgroundColor: "#111110", paddingBottom: "100px" }}>
+    <div className="relative min-h-screen" style={{ backgroundColor: "#111110", paddingBottom: "180px" }}>
 
       {/* ── Hero image — 320px, no title overlay ─────────────────────────────── */}
       <div className="relative w-full" style={{ height: "320px" }}>
