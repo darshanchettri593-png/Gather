@@ -127,7 +127,7 @@ export function ImageUploader({
       const objectUrl = URL.createObjectURL(croppedFile);
       setPreviewUrl(objectUrl);
 
-      const options = { maxSizeMB: 2, maxWidthOrHeight: 1200, useWebWorker: true, fileType: 'image/jpeg' };
+      const options = { maxSizeMB: 2, maxWidthOrHeight: 1200, useWebWorker: true, fileType: 'image/jpeg', exifOrientation: -1 };
       const compressedFile = await imageCompression(croppedFile, options);
       const fileName = `${folder}/${crypto.randomUUID()}.jpg`;
 
