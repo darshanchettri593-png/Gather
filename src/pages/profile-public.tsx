@@ -18,7 +18,7 @@ export function PublicProfilePage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("users")
-        .select("id, display_name, avatar_url, location, created_at, date_of_birth, gender")
+        .select("id, display_name, avatar_url, location, created_at, date_of_birth, gender, bio")
         .eq("id", id!)
         .single();
       if (error) throw error;
@@ -195,6 +195,11 @@ export function PublicProfilePage() {
                 <span style={{ fontSize: "13px", color: "#6B6B63" }}>{age} years old</span>
               )}
             </div>
+          )}
+          {(user as any).bio && (
+            <p style={{ fontSize: '14px', color: '#6B6B63', textAlign: 'center', marginTop: '6px', padding: '0 24px', lineHeight: 1.5 }}>
+              {(user as any).bio}
+            </p>
           )}
           {(localStorage.getItem('gather_city') || user.location) && (
             <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>

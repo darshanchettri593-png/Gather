@@ -309,29 +309,48 @@ export function SettingsPage() {
           </div>
           {typeof Notification !== 'undefined' && (
             <div
-              onClick={async () => {
-                if (notifStatus === 'granted') return;
-                await subscribeToPush(user!.id, supabase);
-                setNotifStatus(Notification.permission);
-              }}
               style={{
                 padding: '16px 20px',
                 borderBottom: '1px solid #2A2A28',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                cursor: notifStatus === 'granted' ? 'default' : 'pointer',
               }}
             >
               <div>
                 <p style={{ fontSize: '15px', color: '#F0EEE9', marginBottom: '2px' }}>Event Reminders</p>
                 <p style={{ fontSize: '13px', color: '#6B6B63' }}>
-                  {notifStatus === 'granted' ? 'Notifications enabled ✓' : 'Get reminded 24h before events'}
+                  {notifStatus === 'granted' ? "You'll be reminded 24h before events" : 'Get reminded 24h before events'}
                 </p>
               </div>
-              {notifStatus !== 'granted' && (
-                <span style={{ fontSize: '14px', color: '#FF6B35', fontWeight: 600 }}>Enable</span>
-              )}
+              <div
+                onClick={async () => {
+                  if (notifStatus === 'granted') return;
+                  await subscribeToPush(user!.id, supabase);
+                  setNotifStatus(Notification.permission);
+                }}
+                style={{
+                  width: '48px',
+                  height: '28px',
+                  borderRadius: '999px',
+                  backgroundColor: notifStatus === 'granted' ? '#34C759' : '#3D3D38',
+                  position: 'relative',
+                  cursor: notifStatus === 'granted' ? 'default' : 'pointer',
+                  transition: 'background-color 0.2s',
+                  flexShrink: 0,
+                }}
+              >
+                <div style={{
+                  position: 'absolute',
+                  top: '3px',
+                  left: notifStatus === 'granted' ? '23px' : '3px',
+                  width: '22px',
+                  height: '22px',
+                  borderRadius: '50%',
+                  backgroundColor: 'white',
+                  transition: 'left 0.2s',
+                }} />
+              </div>
             </div>
           )}
           <Separator />

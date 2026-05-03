@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import { format } from "date-fns";
 import { Settings as SettingsIcon, MapPin, CalendarDays, Users, User as UserIcon } from "lucide-react";
@@ -158,6 +158,9 @@ export function ProfilePage() {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<"hosting" | "joined">("hosting");
   const [showPastEvents, setShowPastEvents] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editName, setEditName] = useState(profile?.display_name || '');
+  const [editBio, setEditBio] = useState((profile as any)?.bio || '');
 
   const { data: userEvents, isLoading: isEventsLoading } = useUserEvents();
   const { data: profile, isLoading: isProfileLoading } = useProfile();
@@ -179,6 +182,13 @@ export function ProfilePage() {
   });
 
   const isLoading = isEventsLoading || isProfileLoading;
+
+  useEffect(() => {
+    if (profile) {
+      setEditName((profile as any).display_name || '');
+      setEditBio((profile as any).bio || '');
+    }
+  }, [profile]);
 
   const { liveEvents, upcomingEvents, pastEvents } = useMemo(() => {
     const rawEvents = activeTab === "hosting" ? userEvents?.hosted : userEvents?.joined;
@@ -306,13 +316,21 @@ export function ProfilePage() {
         style={{ padding: "20px 20px 0" }}
       >
         <h1 style={{ fontSize: "24px", fontWeight: 700, color: "#F0EEE9" }}>Profile</h1>
-        <button
-          onClick={() => navigate("/settings")}
-          className="active:opacity-60 transition-opacity"
-          style={{ color: "#6B6B63" }}
-        >
-          <SettingsIcon size={22} strokeWidth={1.8} />
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowEditModal(true)}
+            style={{ fontSize: '14px', fontWeight: 600, color: '#FF6B35', background: 'none', border: 'none', cursor: 'pointer' }}
+          >
+            Edit
+          </button>
+          <button
+            onClick={() => navigate("/settings")}
+            className="active:opacity-60 transition-opacity"
+            style={{ color: "#6B6B63" }}
+          >
+            <SettingsIcon size={22} strokeWidth={1.8} />
+          </button>
+        </div>
       </div>
 
       {isLoading ? (
@@ -414,6 +432,12 @@ export function ProfilePage() {
                 )}
               </div>
             </div>
+
+            {(profile as any)?.bio && (
+              <p style={{ fontSize: '14px', color: '#6B6B63', textAlign: 'center', marginTop: '6px', padding: '0 16px', lineHeight: 1.5 }}>
+                {(profile as any).bio}
+              </p>
+            )}
 
             {/* Separator */}
             <div style={{ height: "1px", backgroundColor: "#2A2A28", margin: "16px 0" }} />
@@ -662,6 +686,98 @@ export function ProfilePage() {
             )}
           </div>
         </>
+      )}
+
+      {showEditModal && (
+        <div
+          style={{ position: 'fixed', inset: 0, zIndex: 300, backgroundColor: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'flex-end' }}
+          onClick={() => setShowEditModal(false)}
+        >
+          <div
+            style={{ width: '100%', backgroundColor: '#1C1C1A', borderRadius: '24px 24px 0 0', padding: '32px 24px 48px' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#F0EEE9', marginBottom: '24px' }}>Edit Profile</h3>
+
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
+              <ImageUploader
+                bucket="avatars"
+                folder="avatars"
+                defaultImage={profile?.avatar_url}
+                aspectRatio="1/1"
+                showCameraBadge
+                onUploadSuccess={async (url) => {
+                  await supabase.from('users').update({ avatar_url: url }).eq('id', user!.id);
+                  queryClient.invalidateQueries({ queryKey: ['profile'] });
+                }}
+              />
+            </div>
+
+            <p style={{ fontSize: '11px', fontWeight: 600, color: '#6B6B63', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px' }}>Display Name</p>
+            <input
+              type="text"
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+              maxLength={30}
+              style={{
+                width: '100%',
+                backgroundColor: '#242422',
+                border: '1px solid #2A2A28',
+                borderRadius: '12px',
+                padding: '14px 16px',
+                fontSize: '15px',
+                color: '#F0EEE9',
+                marginBottom: '16px',
+                boxSizing: 'border-box',
+              }}
+            />
+
+            <p style={{ fontSize: '11px', fontWeight: 600, color: '#6B6B63', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px' }}>Bio</p>
+            <textarea
+              value={editBio}
+              onChange={(e) => setEditBio(e.target.value.slice(0, 150))}
+              placeholder="Tell people about yourself..."
+              rows={3}
+              style={{
+                width: '100%',
+                backgroundColor: '#242422',
+                border: '1px solid #2A2A28',
+                borderRadius: '12px',
+                padding: '14px 16px',
+                fontSize: '15px',
+                color: '#F0EEE9',
+                marginBottom: '4px',
+                boxSizing: 'border-box',
+                resize: 'none',
+                fontFamily: 'inherit',
+              }}
+            />
+            <p style={{ fontSize: '12px', color: editBio.length >= 140 ? '#FF3B30' : '#6B6B63', textAlign: 'right', marginBottom: '20px' }}>
+              {editBio.length}/150
+            </p>
+
+            <button
+              onClick={async () => {
+                await supabase.from('users').update({ display_name: editName, bio: editBio }).eq('id', user!.id);
+                queryClient.invalidateQueries({ queryKey: ['profile'] });
+                setShowEditModal(false);
+              }}
+              style={{
+                width: '100%',
+                backgroundColor: '#FF6B35',
+                color: 'white',
+                border: 'none',
+                borderRadius: '999px',
+                padding: '16px',
+                fontSize: '16px',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              Save Changes
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
