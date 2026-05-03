@@ -882,7 +882,7 @@ export function EventDetailPage() {
             ) : (
               messages.map((msg) => {
                 const isOwn = msg.user_id === user?.id;
-                const initial = (msg.user?.display_name || "?").charAt(0).toUpperCase();
+                const initial = (msg.users?.display_name || "A").charAt(0).toUpperCase();
                 return (
                   <div
                     key={msg.id}
@@ -905,9 +905,13 @@ export function EventDetailPage() {
                         border: isOwn ? "none" : "1px solid #2A2A28",
                       }}
                     >
-                      {msg.user?.avatar_url ? (
-                        <img src={msg.user.avatar_url} alt="" className="w-full h-full object-cover" />
-                      ) : initial}
+                      {msg.users?.avatar_url ? (
+                        <img src={msg.users.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ) : (
+                        <span style={{ fontSize: '13px', fontWeight: 600, color: '#F0EEE9' }}>
+                          {(msg.users?.display_name || 'A').charAt(0).toUpperCase()}
+                        </span>
+                      )}
                     </div>
                     <div
                       style={{
@@ -920,7 +924,7 @@ export function EventDetailPage() {
                       <div className="flex items-baseline gap-2">
                         {!isOwn && (
                           <span style={{ fontSize: "13px", fontWeight: 600, color: "#F0EEE9" }}>
-                            {msg.user?.display_name || "Guest"}
+                            {msg.users?.display_name || 'Anonymous'}
                           </span>
                         )}
                         <span style={{ fontSize: "11px", color: "#6B6B63" }}>
