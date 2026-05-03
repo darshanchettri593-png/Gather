@@ -34,6 +34,49 @@ export function MapPicker({ mode, lat, lng, onLocationSelect }: MapPickerProps) 
   const DEFAULT_LAT = 26.7271;
   const DEFAULT_LNG = 88.3953;
 
+  const gIcon = L.divIcon({
+    className: '',
+    html: `
+      <div style="
+        width: 36px;
+        height: 44px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      ">
+        <div style="
+          width: 36px;
+          height: 36px;
+          background: #FF6B35;
+          border-radius: 50% 50% 50% 0;
+          transform: rotate(-45deg);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 4px 12px rgba(255,107,53,0.5);
+        ">
+          <span style="
+            transform: rotate(45deg);
+            color: white;
+            font-size: 16px;
+            font-weight: 800;
+            font-family: -apple-system, sans-serif;
+            line-height: 1;
+          ">G</span>
+        </div>
+        <div style="
+          width: 2px;
+          height: 8px;
+          background: #FF6B35;
+          margin-top: 0;
+        "></div>
+      </div>
+    `,
+    iconSize: [36, 44],
+    iconAnchor: [18, 44],
+    popupAnchor: [0, -44],
+  });
+
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
@@ -56,7 +99,7 @@ export function MapPicker({ mode, lat, lng, onLocationSelect }: MapPickerProps) 
     mapRef.current = map;
 
     if (mode === 'view' && lat && lng) {
-      const marker = L.marker([lat, lng]).addTo(map);
+      const marker = L.marker([lat, lng], { icon: gIcon }).addTo(map);
       markerRef.current = marker;
     }
 
@@ -66,7 +109,7 @@ export function MapPicker({ mode, lat, lng, onLocationSelect }: MapPickerProps) 
         if (markerRef.current) {
           markerRef.current.setLatLng([clickLat, clickLng]);
         } else {
-          const marker = L.marker([clickLat, clickLng], { draggable: true }).addTo(map);
+          const marker = L.marker([clickLat, clickLng], { icon: gIcon, draggable: true }).addTo(map);
           marker.on('dragend', () => {
             const pos = marker.getLatLng();
             onLocationSelect?.({ lat: pos.lat, lng: pos.lng });
@@ -97,7 +140,7 @@ export function MapPicker({ mode, lat, lng, onLocationSelect }: MapPickerProps) 
         if (markerRef.current) {
           markerRef.current.setLatLng([gpsLat, gpsLng]);
         } else {
-          const marker = L.marker([gpsLat, gpsLng], { draggable: true }).addTo(map);
+          const marker = L.marker([gpsLat, gpsLng], { icon: gIcon, draggable: true }).addTo(map);
           marker.on('dragend', () => {
             const p = marker.getLatLng();
             onLocationSelect?.({ lat: p.lat, lng: p.lng });
@@ -135,7 +178,7 @@ export function MapPicker({ mode, lat, lng, onLocationSelect }: MapPickerProps) 
       if (markerRef.current) {
         markerRef.current.setLatLng([parseFloat(searchLat), parseFloat(searchLng)]);
       } else {
-        const marker = L.marker([parseFloat(searchLat), parseFloat(searchLng)], { draggable: true }).addTo(map);
+        const marker = L.marker([parseFloat(searchLat), parseFloat(searchLng)], { icon: gIcon, draggable: true }).addTo(map);
         marker.on('dragend', () => {
           const p = marker.getLatLng();
           onLocationSelect?.({ lat: p.lat, lng: p.lng });

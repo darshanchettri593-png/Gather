@@ -356,7 +356,10 @@ export function EventFeedPage() {
   const [vibeFilter, setVibeFilter] = useState<string>("All");
   const [userLat, setUserLat] = useState<number | null>(null);
   const [userLng, setUserLng] = useState<number | null>(null);
-  const [radiusKm, setRadiusKm] = useState(25);
+  const [radiusKm, setRadiusKm] = useState(() => {
+    const saved = localStorage.getItem('gather_radius');
+    return saved ? parseInt(saved) : 25;
+  });
   const [showFilter, setShowFilter] = useState(false);
 
   useEffect(() => {
@@ -625,7 +628,11 @@ export function EventFeedPage() {
               max={120}
               step={5}
               value={radiusKm}
-              onChange={(e) => setRadiusKm(parseInt(e.target.value))}
+              onChange={(e) => {
+                const val = parseInt(e.target.value);
+                setRadiusKm(val);
+                localStorage.setItem('gather_radius', String(val));
+              }}
               style={{ width: '100%', accentColor: '#FF6B35' }}
             />
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}>
