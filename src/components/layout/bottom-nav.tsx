@@ -16,7 +16,7 @@ export function BottomNav() {
   };
 
   const handleHostTap = () => {
-    navigator.vibrate(10);
+    navigator.vibrate?.(10);
     if (user) {
       navigate("/host");
     } else {
@@ -45,7 +45,7 @@ export function BottomNav() {
         {/* Explore */}
         <Link
           to="/"
-          onClick={() => navigator.vibrate(10)}
+          onClick={() => navigator.vibrate?.(10)}
           onContextMenu={(e) => e.preventDefault()}
           className="flex flex-col items-center justify-center flex-1 h-full gap-[3px] transition-opacity active:opacity-60"
           style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
@@ -72,7 +72,7 @@ export function BottomNav() {
         {/* Search */}
         <Link
           to="/search"
-          onClick={() => navigator.vibrate(10)}
+          onClick={() => navigator.vibrate?.(10)}
           onContextMenu={(e) => e.preventDefault()}
           className="flex flex-col items-center justify-center flex-1 h-full gap-[3px] transition-opacity active:opacity-60"
           style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
@@ -100,7 +100,16 @@ export function BottomNav() {
           onClick={handleHostTap}
           onContextMenu={(e) => e.preventDefault()}
           className="flex flex-col items-center justify-center flex-1 h-full transition-opacity active:opacity-70"
-          style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
+          style={{
+            WebkitTouchCallout: 'none',
+            WebkitUserSelect: 'none',
+            userSelect: 'none',
+            position: 'relative',
+            zIndex: 100,
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+          }}
         >
           <div
             className="flex items-center justify-center"
@@ -129,7 +138,7 @@ export function BottomNav() {
         {/* Profile */}
         <Link
           to="/profile"
-          onClick={() => navigator.vibrate(10)}
+          onClick={() => navigator.vibrate?.(10)}
           onContextMenu={(e) => e.preventDefault()}
           className="flex flex-col items-center justify-center flex-1 h-full gap-[3px] transition-opacity active:opacity-60"
           style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
