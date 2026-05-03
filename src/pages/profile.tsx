@@ -159,8 +159,8 @@ export function ProfilePage() {
   const [activeTab, setActiveTab] = useState<"hosting" | "joined">("hosting");
   const [showPastEvents, setShowPastEvents] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [editName, setEditName] = useState(profile?.display_name || '');
-  const [editBio, setEditBio] = useState((profile as any)?.bio || '');
+  const [editName, setEditName] = useState('');
+  const [editBio, setEditBio] = useState('');
 
   const { data: userEvents, isLoading: isEventsLoading } = useUserEvents();
   const { data: profile, isLoading: isProfileLoading } = useProfile();
