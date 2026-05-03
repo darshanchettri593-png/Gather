@@ -77,6 +77,9 @@ export function CreateEventPage() {
   const [capacity, setCapacity]          = useState("");
   const [capacityError, setCapacityError] = useState("");
   const [mapCoords, setMapCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [minAge, setMinAge] = useState('18');
+  const [maxAge, setMaxAge] = useState('60');
+  const [genderFilter, setGenderFilter] = useState('All');
 
   // Auto-set end date to start date when user picks a date
   useEffect(() => {
@@ -110,6 +113,9 @@ export function CreateEventPage() {
         capacity: parseInt(capacity),
         latitude: mapCoords?.lat ?? null,
         longitude: mapCoords?.lng ?? null,
+        min_age: parseInt(minAge),
+        max_age: parseInt(maxAge),
+        gender_filter: genderFilter,
       }).select().single();
 
       if (error) {
@@ -390,6 +396,85 @@ export function CreateEventPage() {
               Default is 20 members. Max 10,000.
             </p>
           )}
+        </div>
+
+        {/* WHO CAN JOIN */}
+        <div style={{ marginBottom: '28px' }}>
+          <label style={{ fontSize: '11px', fontWeight: 600, color: '#6B6B63', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '12px' }}>
+            Who Can Join
+          </label>
+
+          {/* Gender filter */}
+          <div style={{ marginBottom: '12px' }}>
+            <p style={{ fontSize: '13px', color: '#6B6B63', marginBottom: '8px' }}>Gender</p>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              {['All', 'Male', 'Female', 'LGBTQ+'].map((g) => (
+                <button
+                  key={g}
+                  type="button"
+                  onClick={() => setGenderFilter(g)}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '999px',
+                    fontSize: '14px',
+                    fontWeight: 500,
+                    border: '1px solid',
+                    borderColor: genderFilter === g ? '#FF6B35' : '#2A2A28',
+                    backgroundColor: genderFilter === g ? '#FF6B35' : '#242422',
+                    color: genderFilter === g ? 'white' : '#F0EEE9',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {g}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Age range */}
+          <div>
+            <p style={{ fontSize: '13px', color: '#6B6B63', marginBottom: '8px' }}>Age Range</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <input
+                type="number"
+                value={minAge}
+                onChange={(e) => setMinAge(e.target.value)}
+                min={18}
+                max={99}
+                style={{
+                  flex: 1,
+                  backgroundColor: '#1C1C1A',
+                  border: '1px solid #2A2A28',
+                  borderRadius: '12px',
+                  padding: '12px 16px',
+                  fontSize: '15px',
+                  color: '#F0EEE9',
+                  textAlign: 'center',
+                }}
+              />
+              <span style={{ color: '#6B6B63', fontSize: '14px' }}>to</span>
+              <input
+                type="number"
+                value={maxAge}
+                onChange={(e) => setMaxAge(e.target.value)}
+                min={18}
+                max={99}
+                style={{
+                  flex: 1,
+                  backgroundColor: '#1C1C1A',
+                  border: '1px solid #2A2A28',
+                  borderRadius: '12px',
+                  padding: '12px 16px',
+                  fontSize: '15px',
+                  color: '#F0EEE9',
+                  textAlign: 'center',
+                }}
+              />
+            </div>
+            <p style={{ fontSize: '13px', color: '#6B6B63', marginTop: '6px' }}>
+              Default is open to all ages 18+
+            </p>
+          </div>
         </div>
 
         {/* District pills */}

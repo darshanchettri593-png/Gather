@@ -58,6 +58,34 @@ export function useToggleRSVP() {
           .eq('user_id', userId);
         if (error) throw error;
       } else {
+        // Fetch event restrictions and user profile
+        const { data: event } = await supabase
+          .from('events')
+          .select('min_age, max_age, gender_filter')
+          .eq('id', eventId)
+          .single();
+
+        const { data: userProfile } = await supabase
+          .from('users')
+          .select('date_of_birth, gender')
+          .eq('id', userId)
+          .single();
+
+        if (event && userProfile) {
+          // Check gender
+          if (event.gender_filter !== 'All' && userProfile.gender !== event.gender_filter) {
+            throw new Error(`This event is for ${event.gender_filter} only`);
+          }
+
+          // Check age
+          if (userProfile.date_of_birth) {
+            const age = Math.floor((Date.now() - new Date(userProfile.date_of_birth).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+            if (age < event.min_age || age > event.max_age) {
+              throw new Error(`This event is for ages ${event.min_age}–${event.max_age} only`);
+            }
+          }
+        }
+
         // RSVP
         const { error } = await supabase
           .from('attendees')
