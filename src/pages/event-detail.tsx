@@ -248,6 +248,7 @@ export function EventDetailPage() {
 
   // ─── Derived values ──────────────────────────────────────────────────────────
   const isPastEvent = new Date(event.event_datetime) < new Date();
+  const isLive = !!event.end_datetime && new Date(event.event_datetime) <= new Date() && new Date(event.end_datetime) > new Date();
   const attendeesList = event.attendees || [];
   const displayAttendees = attendeesList.slice(0, 5);
   const overflowCount = Math.max(0, attendeesList.length - 5);
@@ -745,7 +746,7 @@ export function EventDetailPage() {
           </div>
         )}
 
-        {isPastEvent && hasRSVPd && user && (
+        {(isPastEvent || isLive) && hasRSVPd && user?.id !== event.host_id && (
           <CheckInCard
             eventId={event.id}
             userId={user.id}

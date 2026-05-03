@@ -8,7 +8,6 @@ export interface Message {
   content: string;
   created_at: string;
   user: {
-    id: string;
     display_name: string | null;
     avatar_url: string | null;
   } | null;
@@ -20,13 +19,14 @@ export function useMessages(eventId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('messages')
-        .select('*, user:users!user_id(id, display_name, avatar_url)')
+        .select('*, users(display_name, avatar_url)')
         .eq('event_id', eventId)
         .order('created_at', { ascending: true });
       if (error) throw error;
       return data;
     },
     enabled: !!eventId,
+    refetchInterval: 3000,
   });
 }
 
@@ -70,19 +70,16 @@ export function subscribeToMessages(eventId: string, queryClient: any) {
         filter: `event_id=eq.${eventId}`,
       },
       async (payload) => {
-        // Fetch the new message with user data
         const { data: newMessage } = await supabase
           .from('messages')
-          .select('*, user:users!user_id(id, display_name, avatar_url)')
+          .select('*, users(display_name, avatar_url)')
           .eq('id', payload.new.id)
           .single();
 
         if (!newMessage) return;
 
-        // Append directly to cache — no refetch needed
         queryClient.setQueryData(['messages', eventId], (old: any[]) => {
           if (!old) return [newMessage];
-          // Avoid duplicates
           if (old.find((m: any) => m.id === newMessage.id)) return old;
           return [...old, newMessage];
         });
