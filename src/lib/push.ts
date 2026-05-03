@@ -13,10 +13,16 @@ function urlBase64ToUint8Array(base64String: string) {
 
 export async function subscribeToPush(userId: string, supabase: any) {
   try {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      console.log('Push not supported');
+      return;
+    }
 
     const registration = await navigator.serviceWorker.ready;
+    console.log('SW ready:', registration);
+
     const permission = await Notification.requestPermission();
+    console.log('Permission:', permission);
     if (permission !== 'granted') return;
 
     const subscription = await registration.pushManager.subscribe({
@@ -24,12 +30,17 @@ export async function subscribeToPush(userId: string, supabase: any) {
       applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
     });
 
-    await supabase.from('push_subscriptions').upsert({
+    console.log('Subscription:', subscription);
+
+    const { error } = await supabase.from('push_subscriptions').upsert({
       user_id: userId,
       subscription: subscription.toJSON(),
     }, { onConflict: 'user_id' });
 
+    if (error) console.error('Supabase upsert error:', error);
+    else console.log('Push subscription saved successfully');
+
   } catch (err) {
-    // Push subscription failed silently
+    console.error('Push subscription failed:', err);
   }
 }
