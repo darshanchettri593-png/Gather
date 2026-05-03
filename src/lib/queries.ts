@@ -232,6 +232,32 @@ export function subscribeToAnnouncements(eventId: string, onNew: () => void) {
   return () => { supabase.removeChannel(channel); };
 }
 
+export function useUpdateEvent() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ eventId, updates }: {
+      eventId: string;
+      updates: {
+        cover_image_url?: string;
+        description?: string;
+        capacity?: number;
+        min_age?: number;
+        max_age?: number;
+        gender_filter?: string;
+      }
+    }) => {
+      const { error } = await supabase
+        .from('events')
+        .update(updates)
+        .eq('id', eventId);
+      if (error) throw error;
+    },
+    onSuccess: (_, { eventId }) => {
+      queryClient.invalidateQueries({ queryKey: ['event', eventId] });
+    },
+  });
+}
+
 export function useCheckIn() {
   const queryClient = useQueryClient();
   return useMutation({

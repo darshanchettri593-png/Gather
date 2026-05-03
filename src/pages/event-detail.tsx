@@ -4,7 +4,8 @@ import {
   ArrowLeft, CalendarRange, MapPin, Check,
   Share2, AlertCircle, Clock, MoreVertical, Send, Users,
 } from "lucide-react";
-import { useEventDetail, useRSVPStatus, useToggleRSVP, useAnnouncements, usePostAnnouncement, subscribeToAnnouncements, useFollowStatus, useFollowerCount, useToggleFollow } from "@/lib/queries";
+import { useEventDetail, useRSVPStatus, useToggleRSVP, useAnnouncements, usePostAnnouncement, subscribeToAnnouncements, useFollowStatus, useFollowerCount, useToggleFollow, useUpdateEvent } from "@/lib/queries";
+import { ImageUploader } from "@/components/ui/image-uploader";
 import { useDeleteEvent } from "@/hooks/useEvent";
 import { useAuth } from "@/lib/auth-context";
 import { RatingSection } from "@/components/rating-section";
@@ -34,6 +35,14 @@ export function EventDetailPage() {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editCover, setEditCover] = useState('');
+  const [editDescription, setEditDescription] = useState(event?.description || '');
+  const [editCapacity, setEditCapacity] = useState(String((event as any)?.capacity || 20));
+  const [editGenderFilter, setEditGenderFilter] = useState((event as any)?.gender_filter || 'All');
+  const [editMinAge, setEditMinAge] = useState((event as any)?.min_age || 18);
+  const [editMaxAge, setEditMaxAge] = useState((event as any)?.max_age || 60);
+  const updateEvent = useUpdateEvent();
 
   // ─── Chat ────────────────────────────────────────────────────────────────────
   const queryClient = useQueryClient();
@@ -346,6 +355,13 @@ export function EventDetailPage() {
                         border: "1px solid #2A2A28",
                       }}
                     >
+                      <button
+                        onClick={() => { setIsMenuOpen(false); setShowEditModal(true); }}
+                        style={{ display: 'block', width: '100%', padding: '14px 20px', textAlign: 'left', backgroundColor: 'transparent', border: 'none', color: '#F0EEE9', fontSize: '15px', cursor: 'pointer' }}
+                        className="active:bg-[#2A2A28] transition-colors"
+                      >
+                        ✏️ Edit Event
+                      </button>
                       <button
                         onClick={() => { setIsMenuOpen(false); setIsDeleteModalOpen(true); }}
                         className="w-full flex items-center px-4 py-3 text-left active:bg-[#2A2A28] transition-colors"
@@ -1153,6 +1169,145 @@ export function EventDetailPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* ── Edit event modal ──────────────────────────────────────────────────── */}
+      {showEditModal && (
+        <div
+          style={{ position: 'fixed', inset: 0, zIndex: 300, backgroundColor: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'flex-end' }}
+          onClick={() => setShowEditModal(false)}
+        >
+          <div
+            style={{ width: '100%', backgroundColor: '#1C1C1A', borderRadius: '24px 24px 0 0', padding: '32px 24px 100px', maxHeight: '85vh', overflowY: 'auto' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#F0EEE9', marginBottom: '6px' }}>Edit Event</h3>
+            <p style={{ fontSize: '13px', color: '#6B6B63', marginBottom: '24px' }}>Title, date and location cannot be changed.</p>
+
+            <p style={{ fontSize: '11px', fontWeight: 600, color: '#6B6B63', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>Cover Photo</p>
+            <div style={{ marginBottom: '20px' }}>
+              <ImageUploader
+                bucket="event-covers"
+                folder="events"
+                defaultImage={event.cover_image_url}
+                aspectRatio="16/9"
+                onUploadSuccess={(url) => setEditCover(url)}
+              />
+            </div>
+
+            <p style={{ fontSize: '11px', fontWeight: 600, color: '#6B6B63', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>Description</p>
+            <textarea
+              value={editDescription}
+              onChange={(e) => setEditDescription(e.target.value)}
+              placeholder="Tell people what to expect..."
+              rows={4}
+              style={{
+                width: '100%',
+                backgroundColor: '#242422',
+                border: '1px solid #2A2A28',
+                borderRadius: '12px',
+                padding: '14px 16px',
+                fontSize: '15px',
+                color: '#F0EEE9',
+                marginBottom: '20px',
+                boxSizing: 'border-box',
+                resize: 'none',
+                fontFamily: 'inherit',
+              }}
+            />
+
+            <p style={{ fontSize: '11px', fontWeight: 600, color: '#6B6B63', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>Capacity</p>
+            <input
+              type="number"
+              value={editCapacity}
+              onChange={(e) => setEditCapacity(e.target.value)}
+              min={1}
+              max={10000}
+              style={{
+                width: '100%',
+                backgroundColor: '#242422',
+                border: '1px solid #2A2A28',
+                borderRadius: '12px',
+                padding: '14px 16px',
+                fontSize: '15px',
+                color: '#F0EEE9',
+                marginBottom: '6px',
+                boxSizing: 'border-box',
+              }}
+            />
+            <p style={{ fontSize: '13px', color: '#6B6B63', marginBottom: '20px' }}>Current: {event.capacity} spots</p>
+
+            <p style={{ fontSize: '11px', fontWeight: 600, color: '#6B6B63', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>Gender</p>
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
+              {['All', 'Male', 'Female', 'LGBTQ+'].map((g) => (
+                <button
+                  key={g}
+                  type="button"
+                  onClick={() => setEditGenderFilter(g)}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '999px',
+                    fontSize: '14px',
+                    fontWeight: 500,
+                    border: '1px solid',
+                    borderColor: editGenderFilter === g ? '#FF6B35' : '#2A2A28',
+                    backgroundColor: editGenderFilter === g ? '#FF6B35' : '#242422',
+                    color: editGenderFilter === g ? 'white' : '#F0EEE9',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {g}
+                </button>
+              ))}
+            </div>
+
+            <p style={{ fontSize: '11px', fontWeight: 600, color: '#6B6B63', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>Age Range</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#242422', border: '1px solid #2A2A28', borderRadius: '12px', padding: '8px 12px' }}>
+                <button type="button" onClick={() => setEditMinAge(a => Math.max(18, a - 1))} style={{ color: '#FF6B35', fontSize: '20px', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: '0 8px' }}>−</button>
+                <span style={{ color: '#F0EEE9', fontSize: '16px', fontWeight: 600 }}>{editMinAge}</span>
+                <button type="button" onClick={() => setEditMinAge(a => Math.min(editMaxAge - 1, a + 1))} style={{ color: '#FF6B35', fontSize: '20px', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: '0 8px' }}>+</button>
+              </div>
+              <span style={{ color: '#6B6B63', fontSize: '14px' }}>to</span>
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#242422', border: '1px solid #2A2A28', borderRadius: '12px', padding: '8px 12px' }}>
+                <button type="button" onClick={() => setEditMaxAge(a => Math.max(editMinAge + 1, a - 1))} style={{ color: '#FF6B35', fontSize: '20px', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: '0 8px' }}>−</button>
+                <span style={{ color: '#F0EEE9', fontSize: '16px', fontWeight: 600 }}>{editMaxAge}</span>
+                <button type="button" onClick={() => setEditMaxAge(a => Math.min(99, a + 1))} style={{ color: '#FF6B35', fontSize: '20px', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: '0 8px' }}>+</button>
+              </div>
+            </div>
+
+            <button
+              onClick={async () => {
+                await updateEvent.mutateAsync({
+                  eventId: event.id,
+                  updates: {
+                    cover_image_url: editCover || event.cover_image_url || undefined,
+                    description: sanitizeText(editDescription),
+                    capacity: parseInt(editCapacity),
+                    min_age: editMinAge,
+                    max_age: editMaxAge,
+                    gender_filter: editGenderFilter,
+                  }
+                });
+                setShowEditModal(false);
+              }}
+              disabled={updateEvent.isPending}
+              style={{
+                width: '100%',
+                backgroundColor: '#FF6B35',
+                color: 'white',
+                border: 'none',
+                borderRadius: '999px',
+                padding: '16px',
+                fontSize: '16px',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              {updateEvent.isPending ? 'Saving...' : 'Save Changes'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
