@@ -261,9 +261,11 @@ export function SettingsPage() {
               <span style={{ fontSize: "16px", color: "#F0EEE9" }}>Name</span>
               <input
                 type="text"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                onBlur={() => updateProfileMutation.mutate({ display_name: displayName })}
+                defaultValue={displayName}
+                onBlur={(e) => {
+                  setDisplayName(e.target.value);
+                  updateProfileMutation.mutate({ display_name: e.target.value });
+                }}
                 placeholder="Your name"
                 className="text-right bg-transparent outline-none flex-1 ml-4"
                 style={{ fontSize: "16px", color: "#6B6B63" }}

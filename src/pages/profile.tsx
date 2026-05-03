@@ -694,7 +694,7 @@ export function ProfilePage() {
           onClick={() => setShowEditModal(false)}
         >
           <div
-            style={{ width: '100%', backgroundColor: '#1C1C1A', borderRadius: '24px 24px 0 0', padding: '32px 24px 48px' }}
+            style={{ width: '100%', backgroundColor: '#1C1C1A', borderRadius: '24px 24px 0 0', padding: '32px 24px 100px' }}
             onClick={e => e.stopPropagation()}
           >
             <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#F0EEE9', marginBottom: '24px' }}>Edit Profile</h3>
