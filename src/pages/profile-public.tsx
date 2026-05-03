@@ -1,5 +1,6 @@
 import { useParams, useNavigate, Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useFollowerCount } from "@/lib/queries";
 import { supabase } from "@/lib/supabase";
 import { format } from "date-fns";
 import { ArrowLeft, MapPin, CalendarDays } from "lucide-react";
@@ -40,6 +41,8 @@ export function PublicProfilePage() {
     },
     enabled: !!id,
   });
+
+  const { data: followerCount } = useFollowerCount(id || "");
 
   const { data: stats } = useQuery({
     queryKey: ["public-user-stats", id],
@@ -209,7 +212,7 @@ export function PublicProfilePage() {
         </div>
 
         {/* Stats row */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px", marginBottom: "32px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "8px", marginBottom: "32px" }}>
           <div style={{ backgroundColor: "#242422", borderRadius: "12px", padding: "12px", textAlign: "center", border: "1px solid #2A2A28" }}>
             <span style={{ fontSize: "18px", fontWeight: 700, color: "#F0EEE9", display: "block" }}>
               {stats?.hostedCount ?? "—"}
@@ -232,6 +235,14 @@ export function PublicProfilePage() {
             </span>
             <span style={{ fontSize: "11px", color: "#6B6B63", marginTop: "2px", display: "block" }}>
               Rating
+            </span>
+          </div>
+          <div style={{ flex: 1, backgroundColor: '#242422', borderRadius: '12px', padding: '12px', textAlign: 'center', border: '1px solid #2A2A28' }}>
+            <span style={{ fontSize: "18px", fontWeight: 700, color: "#F0EEE9", display: "block" }}>
+              {followerCount || 0}
+            </span>
+            <span style={{ fontSize: "11px", color: "#6B6B63", marginTop: "2px", display: "block", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+              Followers
             </span>
           </div>
         </div>

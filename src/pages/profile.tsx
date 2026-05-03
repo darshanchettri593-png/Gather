@@ -9,6 +9,7 @@ import { ImageUploader } from "@/components/ui/image-uploader";
 import { supabase } from "@/lib/supabase";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEventRatingSummary, useProfileRatings } from "@/hooks/useRatings";
+import { useFollowerCount } from "@/lib/queries";
 import { StarDisplay } from "@/components/rating-section";
 import { LiveBadge } from "@/components/ui/live-badge";
 import { getEventStatus } from "@/lib/event-status";
@@ -161,6 +162,7 @@ export function ProfilePage() {
   const { data: userEvents, isLoading: isEventsLoading } = useUserEvents();
   const { data: profile, isLoading: isProfileLoading } = useProfile();
   const { data: profileRatings } = useProfileRatings(user?.id);
+  const { data: followerCount } = useFollowerCount(user?.id || "");
 
   const updateAvatarMutation = useMutation({
     mutationFn: async (url: string) => {
@@ -452,6 +454,25 @@ export function ProfilePage() {
                   }}
                 >
                   Joined
+                </span>
+              </div>
+              {/* Divider */}
+              <div style={{ width: "1px", backgroundColor: "#2A2A28" }} />
+              <div className="flex-1 flex flex-col items-center text-center">
+                <span style={{ fontSize: "22px", fontWeight: 700, color: "#F0EEE9" }}>
+                  {followerCount || 0}
+                </span>
+                <span
+                  style={{
+                    fontSize: "10px",
+                    fontWeight: 600,
+                    color: "#6B6B63",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.08em",
+                    marginTop: "2px",
+                  }}
+                >
+                  Followers
                 </span>
               </div>
             </div>

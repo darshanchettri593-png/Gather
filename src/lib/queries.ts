@@ -229,6 +229,56 @@ export function subscribeToAnnouncements(eventId: string, onNew: () => void) {
   return () => { supabase.removeChannel(channel); };
 }
 
+export function useFollowStatus(followingId: string, followerId?: string) {
+  return useQuery({
+    queryKey: ['follow', followingId, followerId],
+    queryFn: async () => {
+      if (!followerId) return false;
+      const { data } = await supabase
+        .from('follows')
+        .select('id')
+        .eq('follower_id', followerId)
+        .eq('following_id', followingId)
+        .single();
+      return !!data;
+    },
+    enabled: !!followerId && !!followingId,
+  });
+}
+
+export function useToggleFollow() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ followingId, followerId, isFollowing }: { followingId: string; followerId: string; isFollowing: boolean }) => {
+      if (isFollowing) {
+        await supabase.from('follows').delete()
+          .eq('follower_id', followerId)
+          .eq('following_id', followingId);
+      } else {
+        await supabase.from('follows').insert({ follower_id: followerId, following_id: followingId });
+      }
+    },
+    onSuccess: (_, { followingId, followerId }) => {
+      queryClient.invalidateQueries({ queryKey: ['follow', followingId, followerId] });
+      queryClient.invalidateQueries({ queryKey: ['followers', followingId] });
+    },
+  });
+}
+
+export function useFollowerCount(userId: string) {
+  return useQuery({
+    queryKey: ['followers', userId],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from('follows')
+        .select('*', { count: 'exact', head: true })
+        .eq('following_id', userId);
+      return count || 0;
+    },
+    enabled: !!userId,
+  });
+}
+
 export function useLiveHostsSearch(query: string) {
   return useQuery({
     queryKey: ['search-hosts', query],

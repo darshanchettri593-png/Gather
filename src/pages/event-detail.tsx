@@ -4,7 +4,7 @@ import {
   ArrowLeft, CalendarRange, MapPin, Check,
   Share2, AlertCircle, Clock, MoreVertical, Send, Users,
 } from "lucide-react";
-import { useEventDetail, useRSVPStatus, useToggleRSVP, useAnnouncements, usePostAnnouncement, subscribeToAnnouncements } from "@/lib/queries";
+import { useEventDetail, useRSVPStatus, useToggleRSVP, useAnnouncements, usePostAnnouncement, subscribeToAnnouncements, useFollowStatus, useFollowerCount, useToggleFollow } from "@/lib/queries";
 import { useDeleteEvent } from "@/hooks/useEvent";
 import { useAuth } from "@/lib/auth-context";
 import { RatingSection } from "@/components/rating-section";
@@ -84,6 +84,16 @@ export function EventDetailPage() {
   };
 
   const isHost = !!user && !!event && user.id === event.host_id;
+
+  const { data: isFollowing } = useFollowStatus(event?.host_id || "", user?.id);
+  const { data: followerCount } = useFollowerCount(event?.host_id || "");
+  const toggleFollow = useToggleFollow();
+
+  const handleFollow = () => {
+    if (!user) { openAuthModal('Sign in to follow hosts', '/'); return; }
+    if (!event) return;
+    toggleFollow.mutate({ followingId: event.host_id, followerId: user.id, isFollowing: !!isFollowing });
+  };
 
   useEffect(() => {
     if (user && id) {
@@ -607,14 +617,39 @@ export function EventDetailPage() {
               <span style={{ fontSize: "16px" }}>{event.host?.display_name?.charAt(0) || "?"}</span>
             )}
           </div>
-          <div>
+          <div className="flex-1 min-w-0">
             <span style={{ fontSize: "10px", color: "#6B6B63", textTransform: "uppercase", letterSpacing: "0.08em", display: "block" }}>
               Hosted by
             </span>
             <span style={{ fontSize: "15px", fontWeight: 600, color: "#F0EEE9" }}>
               {event.host?.display_name}
             </span>
+            {followerCount != null && followerCount > 0 && (
+              <span style={{ fontSize: "12px", color: "#6B6B63", display: "block", marginTop: "2px" }}>
+                {followerCount} follower{followerCount !== 1 ? 's' : ''}
+              </span>
+            )}
           </div>
+          {user?.id !== event.host_id && (
+            <button
+              onClick={(e) => { e.preventDefault(); handleFollow(); }}
+              disabled={toggleFollow.isPending}
+              style={{
+                padding: '8px 20px',
+                borderRadius: '999px',
+                fontSize: '14px',
+                fontWeight: 600,
+                border: '1px solid',
+                borderColor: isFollowing ? '#2A2A28' : '#FF6B35',
+                backgroundColor: isFollowing ? '#242422' : 'transparent',
+                color: isFollowing ? '#6B6B63' : '#FF6B35',
+                cursor: 'pointer',
+                flexShrink: 0,
+              }}
+            >
+              {isFollowing ? 'Following' : 'Follow'}
+            </button>
+          )}
         </Link>
 
         {/* Who's coming */}
