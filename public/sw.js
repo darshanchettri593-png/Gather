@@ -1,27 +1,64 @@
 import { precacheAndRoute } from 'workbox-precaching';
 
-// Workbox injects precache manifest here
 precacheAndRoute(self.__WB_MANIFEST);
 
-// Push notification handler
 self.addEventListener('push', (event) => {
   if (!event.data) return;
+
   const data = event.data.json();
+
+  const options = {
+    body: data.body,
+    icon: '/icons/icon-192.png',
+    badge: '/icons/icon-72.png',
+    image: data.image || undefined,
+    data: { url: data.url || '/' },
+    vibrate: [50, 100, 50],
+    silent: false,
+    requireInteraction: false,
+    actions: data.actions || [],
+    tag: data.tag || 'gather-notification',
+    renotify: true,
+    timestamp: Date.now(),
+  };
+
   event.waitUntil(
-    self.registration.showNotification(data.title, {
-      body: data.body,
-      icon: '/icons/icon-192.png',
-      badge: '/icons/icon-192.png',
-      data: data.url || '/',
-      vibrate: [100, 50, 100],
+    self.registration.showNotification(data.title, options)
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+
+  const url = event.notification.data?.url || '/';
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      // If app is already open, focus it and navigate
+      for (const client of clientList) {
+        if (client.url.includes(self.location.origin) && 'focus' in client) {
+          client.focus();
+          client.navigate(url);
+          return;
+        }
+      }
+      // Otherwise open new window
+      if (clients.openWindow) {
+        return clients.openWindow(url);
+      }
     })
   );
 });
 
-// Notification click handler
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
+self.addEventListener('pushsubscriptionchange', (event) => {
   event.waitUntil(
-    clients.openWindow(event.notification.data || '/')
+    self.registration.pushManager.subscribe(event.oldSubscription.options)
+      .then((subscription) => {
+        // Re-subscribe silently
+        return fetch('/api/update-subscription', {
+          method: 'POST',
+          body: JSON.stringify(subscription),
+        });
+      })
   );
 });
