@@ -17,7 +17,7 @@ export function PublicProfilePage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("users")
-        .select("id, display_name, avatar_url, location, created_at")
+        .select("id, display_name, avatar_url, location, created_at, date_of_birth, gender")
         .eq("id", id!)
         .single();
       if (error) throw error;
@@ -114,6 +114,17 @@ export function PublicProfilePage() {
   const joinDate = user.created_at ? format(new Date(user.created_at), "MMMM yyyy") : null;
   const initial = (user.display_name || "?").charAt(0).toUpperCase();
 
+  const calcAge = (dob: string) => {
+    const birth = new Date(dob);
+    const now = new Date();
+    let age = now.getFullYear() - birth.getFullYear();
+    const m = now.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && now.getDate() < birth.getDate())) age--;
+    return age;
+  };
+  const age = (user as any).date_of_birth ? calcAge((user as any).date_of_birth) : null;
+  const gender = (user as any).gender ?? null;
+
   return (
     <div style={{ backgroundColor: "#111110", minHeight: "100vh", paddingBottom: "80px" }}>
 
@@ -170,6 +181,18 @@ export function PublicProfilePage() {
           <span style={{ fontSize: "20px", fontWeight: 700, color: "#F0EEE9", marginBottom: "4px" }}>
             {user.display_name || "Anonymous"}
           </span>
+          {(gender || age !== null) && (
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap", justifyContent: "center", marginTop: "4px" }}>
+              {gender && (
+                <span style={{ fontSize: "13px", color: "#F0EEE9", backgroundColor: "#242422", border: "1px solid #2A2A28", borderRadius: "999px", padding: "2px 10px" }}>
+                  {gender}
+                </span>
+              )}
+              {age !== null && (
+                <span style={{ fontSize: "13px", color: "#6B6B63" }}>{age} years old</span>
+              )}
+            </div>
+          )}
           {user.location && (
             <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
               <MapPin size={12} color="#6B6B63" strokeWidth={1.8} />

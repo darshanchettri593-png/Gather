@@ -5,10 +5,11 @@ import { MapPin, ChevronDown } from "lucide-react";
 import { AuthModal } from "@/components/auth-modal";
 import { BottomNav } from "./bottom-nav";
 import { useProfile } from "@/hooks/useUser";
+import { ProfileGate } from "@/components/ProfileGate";
 
 export function MainLayout() {
   const { user, openAuthModal } = useAuth();
-  const { data: profile } = useProfile();
+  const { data: profile, isLoading: profileLoading } = useProfile();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -130,6 +131,9 @@ export function MainLayout() {
 
       {!isEventDetail && <BottomNav />}
       <AuthModal />
+      {!!user && !profileLoading && !!profile && (!profile.date_of_birth || !profile.gender) && (
+        <ProfileGate />
+      )}
     </div>
   );
 }

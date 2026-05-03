@@ -205,6 +205,16 @@ export function ProfilePage() {
 
   const joinDate = user?.created_at ? format(new Date(user.created_at), "MMMM yyyy") : "";
 
+  const calcAge = (dob: string) => {
+    const birth = new Date(dob);
+    const now = new Date();
+    let age = now.getFullYear() - birth.getFullYear();
+    const m = now.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && now.getDate() < birth.getDate())) age--;
+    return age;
+  };
+  const age = profile?.date_of_birth ? calcAge(profile.date_of_birth) : null;
+
   // ─── Unauthenticated ─────────────────────────────────────────────────────────
 
   if (!user) {
@@ -377,6 +387,16 @@ export function ProfilePage() {
                 >
                   {profile?.display_name || user?.email?.split("@")[0]}
                 </span>
+                <div className="flex items-center gap-[6px] flex-wrap">
+                  {profile?.gender && (
+                    <span style={{ fontSize: "13px", color: "#F0EEE9", backgroundColor: "#242422", border: "1px solid #2A2A28", borderRadius: "999px", padding: "2px 10px" }}>
+                      {profile.gender}
+                    </span>
+                  )}
+                  {age !== null && (
+                    <span style={{ fontSize: "13px", color: "#6B6B63" }}>{age} years old</span>
+                  )}
+                </div>
                 {profile?.location && (
                   <div className="flex items-center gap-[4px]">
                     <MapPin size={12} color="#6B6B63" strokeWidth={1.8} />
