@@ -136,6 +136,8 @@ export function EventDetailPage() {
           onError: (error: any) => {
             if (error.message.includes('This event is full')) {
               toast('This event is full', 'error');
+            } else if (error.message.includes('only')) {
+              toast(error.message, 'error');
             } else {
               toast('Something went wrong. Try again.', 'error');
             }
@@ -465,6 +467,28 @@ export function EventDetailPage() {
             </div>
           )}
         </div>
+
+        {(event.gender_filter !== 'All' || event.min_age !== 18 || event.max_age !== 60) && (
+          <div style={{
+            backgroundColor: '#242422',
+            borderRadius: '12px',
+            padding: '12px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            marginTop: '8px',
+          }}>
+            <span style={{ fontSize: '16px' }}>👥</span>
+            <div>
+              <p style={{ fontSize: '11px', fontWeight: 600, color: '#6B6B63', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '2px' }}>
+                Who Can Join
+              </p>
+              <p style={{ fontSize: '14px', color: '#F0EEE9', fontWeight: 500 }}>
+                {event.gender_filter !== 'All' ? event.gender_filter : 'All genders'} · Ages {event.min_age}–{event.max_age}
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Divider */}
         <div style={{ height: "1px", backgroundColor: "#2A2A28", marginBottom: "20px" }} />
