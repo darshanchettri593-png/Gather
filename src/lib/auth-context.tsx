@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
+import { subscribeToPush } from "./push";
 
 interface AuthContextType {
   session: Session | null;
@@ -69,6 +70,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const handlePostLoginAction = (session: Session | null) => {
     if (!session) return;
+
+    if (session.user) {
+      subscribeToPush(session.user.id, supabase);
+    }
 
     const pendingHostIntent = localStorage.getItem("pending_host_intent");
     if (pendingHostIntent) {

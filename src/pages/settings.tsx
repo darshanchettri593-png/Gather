@@ -6,6 +6,7 @@ import { useProfile } from "@/hooks/useUser";
 import { supabase } from "@/lib/supabase";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
+import { subscribeToPush } from "@/lib/push";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/toast";
@@ -19,6 +20,9 @@ export function SettingsPage() {
 
   const [displayName, setDisplayName] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [notifStatus, setNotifStatus] = useState<NotificationPermission>(
+    typeof Notification !== 'undefined' ? Notification.permission : 'default'
+  );
   const [deleteEmailConfirm, setDeleteEmailConfirm] = useState("");
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -304,14 +308,22 @@ export function SettingsPage() {
             </p>
           </div>
           <div
-            className="flex items-center justify-between"
-            style={{ minHeight: "52px", padding: "0 16px" }}
+            style={{ padding: '16px 20px', borderBottom: '1px solid #2A2A28', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: notifStatus === 'granted' ? 'default' : 'pointer' }}
+            onClick={async () => {
+              if (notifStatus === 'granted' || !user) return;
+              await subscribeToPush(user.id, supabase);
+              setNotifStatus(typeof Notification !== 'undefined' ? Notification.permission : 'default');
+            }}
           >
-            <span style={{ fontSize: "16px", color: "#F0EEE9" }}>Notifications</span>
-            <Switch
-              defaultChecked
-              className="data-[state=checked]:bg-[#FF6B35] data-[state=unchecked]:bg-[#2A2A28]"
-            />
+            <div>
+              <p style={{ fontSize: '15px', color: '#F0EEE9', margin: 0 }}>Event Reminders</p>
+              <p style={{ fontSize: '13px', color: '#6B6B63', margin: '2px 0 0' }}>
+                {notifStatus === 'granted' ? 'Notifications enabled ✓' : 'Get reminded 24h before events'}
+              </p>
+            </div>
+            {notifStatus !== 'granted' && (
+              <span style={{ fontSize: '14px', color: '#FF6B35', fontWeight: 600 }}>Enable</span>
+            )}
           </div>
           <Separator />
           <div
