@@ -327,7 +327,14 @@ export function SettingsPage() {
               </div>
               <div
                 onClick={async () => {
-                  if (notifStatus === 'granted') return;
+                  if (notifStatus === 'granted') {
+                    alert('To disable notifications, go to your browser settings and block notifications for this site.');
+                    return;
+                  }
+                  if (notifStatus === 'denied') {
+                    alert('Notifications are blocked. Please allow notifications in your browser/phone settings first, then try again.');
+                    return;
+                  }
                   await subscribeToPush(user!.id, supabase);
                   setNotifStatus(Notification.permission);
                 }}
