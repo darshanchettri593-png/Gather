@@ -17,6 +17,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Countdown } from "@/components/ui/countdown";
 import { formatDuration } from "@/lib/event-status";
 import { MapPicker } from "@/components/ui/map-picker";
+import { sanitizeText } from "@/lib/sanitize";
 
 export function EventDetailPage() {
   const { id } = useParams();
@@ -79,7 +80,7 @@ export function EventDetailPage() {
     const content = chatInput.trim();
     if (!content || !user || !id || isSending) return;
     setChatInput("");
-    sendMessage({ eventId: id, userId: user.id, content });
+    sendMessage({ eventId: id, userId: user.id, content: sanitizeText(content) });
   };
 
   const isHost = !!user && !!event && user.id === event.host_id;

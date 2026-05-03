@@ -8,6 +8,7 @@ import { supabase } from "@/lib/supabase";
 import { EventVibe } from "@/types";
 import { useToast } from "@/components/ui/toast";
 import { MapPicker } from "@/components/ui/map-picker";
+import { sanitizeText } from "@/lib/sanitize";
 
 const VIBES: { id: EventVibe; label: string; helper: string }[] = [
   { id: "move",    label: "Move",    helper: "Running, gym, hiking, yoga, sports, anything active" },
@@ -97,11 +98,11 @@ export function CreateEventPage() {
 
       const { data, error } = await supabase.from("events").insert({
         host_id: user.id,
-        title,
+        title: sanitizeText(title),
         vibe,
         district,
-        location_text: locationStr,
-        description: description || null,
+        location_text: sanitizeText(locationStr),
+        description: description ? sanitizeText(description) : null,
         event_datetime: eventDateTime.toISOString(),
         end_datetime: endDT.toISOString(),
         cover_image_url: coverUrl || null,
@@ -111,7 +112,12 @@ export function CreateEventPage() {
         longitude: mapCoords?.lng ?? null,
       }).select().single();
 
-      if (error) throw new Error(error.message);
+      if (error) {
+        if (error.message.includes('You already have an active event')) {
+          throw new Error('You already have an active event running. End it before hosting a new one.');
+        }
+        throw new Error(error.message);
+      }
       return data;
     },
     onSuccess: (data) => {
