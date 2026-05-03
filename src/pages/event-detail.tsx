@@ -542,19 +542,13 @@ export function EventDetailPage() {
           style={{ backgroundColor: "#242422", border: "1px solid #2A2A28" }}
         >
           <MapPin size={16} strokeWidth={1.8} style={{ color: "#FF6B35", marginTop: "2px", flexShrink: 0 }} />
-          <div className="flex flex-col">
-            <span style={{ fontSize: "15px", color: "#F0EEE9", fontWeight: 500 }}>
+          <div>
+            <p style={{ fontSize: '11px', fontWeight: 600, color: '#6B6B63', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>
+              Address
+            </p>
+            <p style={{ fontSize: '15px', color: '#F0EEE9', fontWeight: 500 }}>
               {event.location_text}
-            </span>
-            <a
-              href={`https://www.google.com/maps/search/?api=1&query=${encodedLocation}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ fontSize: "13px", color: "#FF6B35", marginTop: "4px", fontWeight: 600 }}
-              className="hover:underline"
-            >
-              Open in Maps
-            </a>
+            </p>
           </div>
         </div>
 
