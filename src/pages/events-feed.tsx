@@ -354,14 +354,18 @@ function FeedEmptyState({ onHost }: { onHost: () => void }) {
 export function EventFeedPage() {
   const navigate = useNavigate();
   const [vibeFilter, setVibeFilter] = useState<string>("All");
-  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [userLat, setUserLat] = useState<number | null>(null);
+  const [userLng, setUserLng] = useState<number | null>(null);
+  const [radiusKm, setRadiusKm] = useState(25);
+  const [showFilter, setShowFilter] = useState(false);
 
   useEffect(() => {
-    if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(
-      (pos) => setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-      () => {}
-    );
+    const lat = localStorage.getItem('gather_lat');
+    const lng = localStorage.getItem('gather_lng');
+    if (lat && lng) {
+      setUserLat(parseFloat(lat));
+      setUserLng(parseFloat(lng));
+    }
   }, []);
 
   const { data: events, isLoading, error, refetch } = useEvents(vibeFilter);
@@ -408,6 +412,21 @@ export function EventFeedPage() {
   useEffect(() => {
     if (isRefreshing) setPullProgress(50);
   }, [isRefreshing]);
+
+  // ─── Distance filter ─────────────────────────────────────────────────────────
+
+  const filteredEvents = events?.filter(event => {
+    if (!userLat || !userLng) return true;
+    if (!event.latitude || !event.longitude) return false;
+    return getDistanceKm(userLat, userLng, event.latitude, event.longitude) <= radiusKm;
+  }).sort((a, b) => {
+    if (!userLat || !userLng) return 0;
+    const distA = getDistanceKm(userLat, userLng, a.latitude!, a.longitude!);
+    const distB = getDistanceKm(userLat, userLng, b.latitude!, b.longitude!);
+    return distA - distB;
+  });
+
+  const userLocation = userLat && userLng ? { lat: userLat, lng: userLng } : null;
 
   // ─── Render content ──────────────────────────────────────────────────────────
 
@@ -483,13 +502,13 @@ export function EventFeedPage() {
       );
     }
 
-    if (!events || events.length === 0) {
+    if (!filteredEvents || filteredEvents.length === 0) {
       return <FeedEmptyState onHost={() => navigate("/host")} />;
     }
 
     return (
       <div className="flex flex-col gap-[10px]" style={{ padding: "0 20px" }}>
-        {events.map((event, index) =>
+        {filteredEvents.map((event, index) =>
           index === 0 ? (
             <FeaturedEventCard key={event.id} event={event} userLocation={userLocation} />
           ) : (
@@ -552,8 +571,8 @@ export function EventFeedPage() {
         ))}
       </div>
 
-      {/* Section label */}
-      <div style={{ padding: "0 20px 8px" }}>
+      {/* Section label + distance filter button */}
+      <div style={{ padding: "0 20px 8px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <span
           style={{
             fontSize: "11px",
@@ -565,9 +584,75 @@ export function EventFeedPage() {
         >
           UPCOMING GATHERINGS
         </span>
+        <button
+          onClick={() => setShowFilter(true)}
+          style={{
+            backgroundColor: '#242422',
+            border: '1px solid #2A2A28',
+            borderRadius: '999px',
+            padding: '6px 14px',
+            fontSize: '13px',
+            color: userLat ? '#FF6B35' : '#F0EEE9',
+            fontWeight: 500,
+            cursor: 'pointer',
+          }}
+        >
+          📍 {radiusKm} km
+        </button>
       </div>
 
       {renderContent()}
+
+      {/* Distance filter bottom sheet */}
+      {showFilter && (
+        <div
+          style={{ position: 'fixed', inset: 0, zIndex: 300, backgroundColor: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'flex-end' }}
+          onClick={() => setShowFilter(false)}
+        >
+          <div
+            style={{ width: '100%', backgroundColor: '#1C1C1A', borderRadius: '24px 24px 0 0', padding: '32px 24px 48px' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#F0EEE9', marginBottom: '8px' }}>
+              Distance
+            </h3>
+            <p style={{ fontSize: '13px', color: '#6B6B63', marginBottom: '24px' }}>
+              Show events within {radiusKm} km of your location
+            </p>
+            <input
+              type="range"
+              min={25}
+              max={120}
+              step={5}
+              value={radiusKm}
+              onChange={(e) => setRadiusKm(parseInt(e.target.value))}
+              style={{ width: '100%', accentColor: '#FF6B35' }}
+            />
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}>
+              <span style={{ fontSize: '13px', color: '#6B6B63' }}>25 km</span>
+              <span style={{ fontSize: '15px', fontWeight: 600, color: '#FF6B35' }}>{radiusKm} km</span>
+              <span style={{ fontSize: '13px', color: '#6B6B63' }}>120 km</span>
+            </div>
+            <button
+              onClick={() => setShowFilter(false)}
+              style={{
+                width: '100%',
+                marginTop: '24px',
+                backgroundColor: '#FF6B35',
+                color: 'white',
+                border: 'none',
+                borderRadius: '999px',
+                padding: '16px',
+                fontSize: '16px',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              Show Events
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

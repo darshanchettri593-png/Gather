@@ -15,15 +15,33 @@ export function MainLayout() {
   const navigate = useNavigate();
 
   const [headerState, setHeaderState] = useState(
-    () => localStorage.getItem("gather_state") || "West Bengal"
+    () => localStorage.getItem("gather_city") || localStorage.getItem("gather_state") || "India"
   );
 
   useEffect(() => {
-    const handleStorage = () => {
-      setHeaderState(localStorage.getItem("gather_state") || "West Bengal");
-    };
-    window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
+    const cached = localStorage.getItem('gather_city');
+    if (cached) {
+      setHeaderState(cached);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`
+        );
+        const data = await res.json();
+        const city = data.address.city || data.address.town || data.address.village || data.address.county || 'India';
+        setHeaderState(city);
+        localStorage.setItem('gather_city', city);
+        localStorage.setItem('gather_lat', String(pos.coords.latitude));
+        localStorage.setItem('gather_lng', String(pos.coords.longitude));
+      } catch {
+        // Keep existing value
+      }
+    }, () => {
+      // GPS denied — keep existing value
+    });
   }, []);
 
   const isSettings  = location.pathname.startsWith("/settings");
@@ -53,10 +71,7 @@ export function MainLayout() {
             style={{ padding: "0 20px" }}
           >
             {/* LEFT: state location — opens state picker */}
-            <button
-              className="flex items-center gap-[6px] active:opacity-60 transition-opacity"
-              onClick={() => window.dispatchEvent(new CustomEvent("gather:open-city-picker"))}
-            >
+            <div className="flex items-center gap-[6px]">
               <MapPin
                 size={16}
                 strokeWidth={2}
@@ -77,7 +92,7 @@ export function MainLayout() {
                 strokeWidth={2}
                 style={{ color: "#6B6B63", flexShrink: 0 }}
               />
-            </button>
+            </div>
 
             {/* RIGHT: avatar or sign-in */}
             {!user ? (

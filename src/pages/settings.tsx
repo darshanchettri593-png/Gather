@@ -6,7 +6,6 @@ import { useProfile } from "@/hooks/useUser";
 import { supabase } from "@/lib/supabase";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
-import { INDIAN_STATES } from "@/lib/india-locations";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/toast";
@@ -19,7 +18,6 @@ export function SettingsPage() {
   const queryClient = useQueryClient();
 
   const [displayName, setDisplayName] = useState("");
-  const [showLocationModal, setShowLocationModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteEmailConfirm, setDeleteEmailConfirm] = useState("");
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -299,13 +297,12 @@ export function SettingsPage() {
         {/* PREFERENCES */}
         <SectionLabel>Preferences</SectionLabel>
         <GroupCard>
-          <Row
-            label="Location"
-            value={profile?.location || "Select location"}
-            hasChevron
-            onClick={() => setShowLocationModal(true)}
-          />
-          <Separator />
+          <div style={{ padding: '16px 20px', borderBottom: '1px solid #2A2A28' }}>
+            <p style={{ fontSize: '15px', color: '#F0EEE9', marginBottom: '4px' }}>Location</p>
+            <p style={{ fontSize: '13px', color: '#6B6B63' }}>
+              Detected automatically from your GPS
+            </p>
+          </div>
           <div
             className="flex items-center justify-between"
             style={{ minHeight: "52px", padding: "0 16px" }}
@@ -456,63 +453,6 @@ export function SettingsPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Location modal */}
-      {showLocationModal && (
-        <div
-          className="fixed inset-0 z-[100] flex justify-center items-end sm:items-center"
-          style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
-        >
-          <div
-            className="w-full max-w-md flex flex-col"
-            style={{
-              height: "80vh",
-              backgroundColor: "#1C1C1A",
-              borderRadius: "20px 20px 0 0",
-            }}
-          >
-            <div
-              className="flex items-center justify-between"
-              style={{
-                padding: "16px 20px",
-                borderBottom: "1px solid #2A2A28",
-              }}
-            >
-              <button
-                onClick={() => setShowLocationModal(false)}
-                style={{ fontSize: "16px", fontWeight: 500, color: "#FF6B35" }}
-                className="active:opacity-60 transition-opacity"
-              >
-                Cancel
-              </button>
-              <span style={{ fontSize: "17px", fontWeight: 600, color: "#F0EEE9" }}>
-                Select Location
-              </span>
-              <div style={{ width: "60px" }} />
-            </div>
-            <div className="flex-1 overflow-y-auto" style={{ padding: "8px 20px" }}>
-              {INDIAN_STATES.map((state) => (
-                <button
-                  key={state}
-                  className="w-full text-left active:opacity-60 transition-opacity"
-                  style={{
-                    padding: "14px 0",
-                    fontSize: "16px",
-                    color: "#F0EEE9",
-                    borderBottom: "1px solid #2A2A28",
-                  }}
-                  onClick={() => {
-                    localStorage.setItem('gather_state', state);
-                    updateProfileMutation.mutate({ location: state });
-                    setShowLocationModal(false);
-                  }}
-                >
-                  {state}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
