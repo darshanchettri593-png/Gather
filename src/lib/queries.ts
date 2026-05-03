@@ -12,6 +12,9 @@ export function useEventDetail(eventId: string) {
           host:users!host_id (id, display_name, avatar_url),
           attendees (
             id,
+            user_id,
+            checked_in,
+            no_show,
             user:users!user_id (id, display_name, avatar_url)
           )
         `)
@@ -227,6 +230,27 @@ export function subscribeToAnnouncements(eventId: string, onNew: () => void) {
     )
     .subscribe();
   return () => { supabase.removeChannel(channel); };
+}
+
+export function useCheckIn() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ eventId, userId, checkedIn }: { eventId: string; userId: string; checkedIn: boolean }) => {
+      const { error } = await supabase
+        .from('attendees')
+        .update({
+          checked_in: checkedIn,
+          no_show: !checkedIn,
+        })
+        .eq('event_id', eventId)
+        .eq('user_id', userId);
+      if (error) throw error;
+    },
+    onSuccess: (_, { eventId, userId }) => {
+      queryClient.invalidateQueries({ queryKey: ['rsvp', eventId, userId] });
+      queryClient.invalidateQueries({ queryKey: ['event', eventId] });
+    },
+  });
 }
 
 export function useFollowStatus(followingId: string, followerId?: string) {

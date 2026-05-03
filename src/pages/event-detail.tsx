@@ -18,6 +18,7 @@ import { Countdown } from "@/components/ui/countdown";
 import { formatDuration } from "@/lib/event-status";
 import { MapPicker } from "@/components/ui/map-picker";
 import { sanitizeText } from "@/lib/sanitize";
+import { CheckInCard } from "@/components/CheckInCard";
 
 export function EventDetailPage() {
   const { id } = useParams();
@@ -704,6 +705,45 @@ export function EventDetailPage() {
             </div>
           )}
         </div>
+
+        {/* ── Check-in (host stats + attendee prompt) ──────────────────────────── */}
+        {isHost && isPastEvent && (
+          <div style={{
+            backgroundColor: '#242422',
+            borderRadius: '16px',
+            padding: '16px 20px',
+            marginBottom: '16px',
+            display: 'flex',
+            gap: '16px',
+          }}>
+            <div style={{ textAlign: 'center', flex: 1 }}>
+              <p style={{ fontSize: '22px', fontWeight: 700, color: '#34C759', margin: 0 }}>
+                {attendeesList.filter((a: any) => a.checked_in).length}
+              </p>
+              <p style={{ fontSize: '11px', color: '#6B6B63', textTransform: 'uppercase', margin: '4px 0 0' }}>Showed Up</p>
+            </div>
+            <div style={{ textAlign: 'center', flex: 1 }}>
+              <p style={{ fontSize: '22px', fontWeight: 700, color: '#FF3B30', margin: 0 }}>
+                {attendeesList.filter((a: any) => a.no_show).length}
+              </p>
+              <p style={{ fontSize: '11px', color: '#6B6B63', textTransform: 'uppercase', margin: '4px 0 0' }}>No Show</p>
+            </div>
+            <div style={{ textAlign: 'center', flex: 1 }}>
+              <p style={{ fontSize: '22px', fontWeight: 700, color: '#6B6B63', margin: 0 }}>
+                {attendeesList.filter((a: any) => !a.checked_in && !a.no_show).length}
+              </p>
+              <p style={{ fontSize: '11px', color: '#6B6B63', textTransform: 'uppercase', margin: '4px 0 0' }}>Pending</p>
+            </div>
+          </div>
+        )}
+
+        {isPastEvent && hasRSVPd && user && (
+          <CheckInCard
+            eventId={event.id}
+            userId={user.id}
+            attendee={attendeesList.find((a: any) => a.user_id === user.id)}
+          />
+        )}
 
         {/* ── Announcements ────────────────────────────────────────────────────── */}
         {(announcements.length > 0 || isHost) && (
