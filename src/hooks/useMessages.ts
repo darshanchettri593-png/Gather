@@ -1,6 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 export interface Message {
   id: string;
@@ -18,18 +17,16 @@ export interface Message {
 export function useMessages(eventId: string) {
   return useQuery({
     queryKey: ['messages', eventId],
-    enabled: !!eventId,
-    staleTime: 0,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('messages')
         .select('*, user:users!user_id(id, display_name, avatar_url)')
         .eq('event_id', eventId)
         .order('created_at', { ascending: true });
-
-      if (error) throw new Error(error.message);
-      return (data || []) as Message[];
+      if (error) throw error;
+      return data;
     },
+    enabled: !!eventId,
   });
 }
 
@@ -61,9 +58,7 @@ export function useSendMessage() {
   });
 }
 
-// Call inside the component that mounts the chat section.
-// Returns a cleanup function — call it in useEffect's return.
-export function subscribeToMessages(eventId: string, onNew: () => void) {
+export function subscribeToMessages(eventId: string, queryClient: any) {
   const channel = supabase
     .channel(`messages:${eventId}`)
     .on(
@@ -74,7 +69,24 @@ export function subscribeToMessages(eventId: string, onNew: () => void) {
         table: 'messages',
         filter: `event_id=eq.${eventId}`,
       },
-      onNew
+      async (payload) => {
+        // Fetch the new message with user data
+        const { data: newMessage } = await supabase
+          .from('messages')
+          .select('*, user:users!user_id(id, display_name, avatar_url)')
+          .eq('id', payload.new.id)
+          .single();
+
+        if (!newMessage) return;
+
+        // Append directly to cache — no refetch needed
+        queryClient.setQueryData(['messages', eventId], (old: any[]) => {
+          if (!old) return [newMessage];
+          // Avoid duplicates
+          if (old.find((m: any) => m.id === newMessage.id)) return old;
+          return [...old, newMessage];
+        });
+      }
     )
     .subscribe();
 

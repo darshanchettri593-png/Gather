@@ -44,9 +44,7 @@ export function EventDetailPage() {
 
   useEffect(() => {
     if (!id) return;
-    return subscribeToMessages(id, () => {
-      queryClient.invalidateQueries({ queryKey: ["messages", id] });
-    });
+    return subscribeToMessages(id, queryClient);
   }, [id, queryClient]);
 
   // ─── Announcements ───────────────────────────────────────────────────────────
