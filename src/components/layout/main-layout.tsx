@@ -10,6 +10,7 @@ import { ProfileGate } from "@/components/ProfileGate";
 export function MainLayout() {
   const { user, openAuthModal } = useAuth();
   const { data: profile, isLoading: profileLoading } = useProfile();
+  const [profileComplete, setProfileComplete] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -131,8 +132,8 @@ export function MainLayout() {
 
       {!isEventDetail && <BottomNav />}
       <AuthModal />
-      {!!user && !profileLoading && !!profile && (!profile.date_of_birth || !profile.gender) && (
-        <ProfileGate />
+      {!!user && !profileLoading && !!profile && (!profile.date_of_birth || !profile.gender) && !profileComplete && (
+        <ProfileGate onComplete={() => setProfileComplete(true)} />
       )}
     </div>
   );
