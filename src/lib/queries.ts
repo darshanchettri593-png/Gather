@@ -103,7 +103,7 @@ export function useToggleRSVP() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_SERVICE_KEY}`,
           },
           body: JSON.stringify({
             record: { event_id: eventId, user_id: userId }
@@ -226,7 +226,7 @@ export function usePostAnnouncement() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_SERVICE_KEY}`,
         },
         body: JSON.stringify({
           record: { event_id: eventId, content: content, host_id: hostId }
@@ -330,7 +330,7 @@ export function useToggleFollow() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_SERVICE_KEY}`,
           },
           body: JSON.stringify({
             record: { follower_id: followerId, following_id: followingId }
