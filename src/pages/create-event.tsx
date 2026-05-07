@@ -308,40 +308,40 @@ export function CreateEventPage() {
         {/* Date + Time */}
         <div>
           <label style={LABEL_STYLE}>Date & Time</label>
-          <div className="grid grid-cols-2 gap-3">
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              style={{ ...INPUT_STYLE, colorScheme: "dark" }}
-            />
-            <input
-              type="time"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-              style={{ ...INPUT_STYLE, colorScheme: "dark" }}
-            />
-          </div>
+          <label style={{ ...LABEL_STYLE, marginBottom: "6px" }}>Date</label>
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            style={{ ...INPUT_STYLE, colorScheme: "dark" }}
+          />
+          <label style={{ ...LABEL_STYLE, marginTop: "16px", marginBottom: "6px" }}>Time</label>
+          <input
+            type="time"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+            style={{ ...INPUT_STYLE, colorScheme: "dark" }}
+          />
         </div>
 
         {/* Ends (date + time) */}
         <div>
           <label style={LABEL_STYLE}>Ends</label>
-          <div className="grid grid-cols-2 gap-3">
-            <input
-              type="date"
-              value={endDate}
-              min={date}
-              onChange={(e) => { setEndDate(e.target.value); setEndTimeError(""); }}
-              style={{ ...INPUT_STYLE, colorScheme: "dark" }}
-            />
-            <input
-              type="time"
-              value={endTime}
-              onChange={(e) => { setEndTime(e.target.value); setEndTimeError(""); }}
-              style={{ ...INPUT_STYLE, colorScheme: "dark" }}
-            />
-          </div>
+          <label style={{ ...LABEL_STYLE, marginBottom: "6px" }}>Date</label>
+          <input
+            type="date"
+            value={endDate}
+            min={date}
+            onChange={(e) => { setEndDate(e.target.value); setEndTimeError(""); }}
+            style={{ ...INPUT_STYLE, colorScheme: "dark" }}
+          />
+          <label style={{ ...LABEL_STYLE, marginTop: "16px", marginBottom: "6px" }}>Time</label>
+          <input
+            type="time"
+            value={endTime}
+            onChange={(e) => { setEndTime(e.target.value); setEndTimeError(""); }}
+            style={{ ...INPUT_STYLE, colorScheme: "dark" }}
+          />
           {endTimeError && (
             <p style={{ color: "#FF3B30", fontSize: "12px", marginTop: "4px" }}>
               {endTimeError}
