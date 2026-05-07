@@ -305,17 +305,20 @@ export function CreateEventPage() {
           )}
         </div>
 
-        {/* Date + Time */}
+        {/* Date & Time */}
         <div>
           <label style={LABEL_STYLE}>Date & Time</label>
-          <label style={{ ...LABEL_STYLE, marginBottom: "6px" }}>Date</label>
           <input
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
             style={{ ...INPUT_STYLE, colorScheme: "dark" }}
           />
-          <label style={{ ...LABEL_STYLE, marginTop: "16px", marginBottom: "6px" }}>Time</label>
+        </div>
+
+        {/* Time */}
+        <div>
+          <label style={LABEL_STYLE}>Time</label>
           <input
             type="time"
             value={time}
@@ -324,10 +327,9 @@ export function CreateEventPage() {
           />
         </div>
 
-        {/* Ends (date + time) */}
+        {/* Ends */}
         <div>
           <label style={LABEL_STYLE}>Ends</label>
-          <label style={{ ...LABEL_STYLE, marginBottom: "6px" }}>Date</label>
           <input
             type="date"
             value={endDate}
@@ -335,7 +337,11 @@ export function CreateEventPage() {
             onChange={(e) => { setEndDate(e.target.value); setEndTimeError(""); }}
             style={{ ...INPUT_STYLE, colorScheme: "dark" }}
           />
-          <label style={{ ...LABEL_STYLE, marginTop: "16px", marginBottom: "6px" }}>Time</label>
+        </div>
+
+        {/* Ends Time */}
+        <div>
+          <label style={LABEL_STYLE}>Ends Time</label>
           <input
             type="time"
             value={endTime}
