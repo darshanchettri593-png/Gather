@@ -19,7 +19,7 @@ export function CheckInCard({ eventId, userId, attendee }: CheckInCardProps) {
         textAlign: 'center',
         marginBottom: '24px',
         position: 'relative',
-        zIndex: 10,
+        zIndex: 50,
       }}>
         <p style={{ fontSize: '24px', marginBottom: '4px' }}>✅</p>
         <p style={{ fontSize: '16px', fontWeight: 600, color: '#34C759' }}>You showed up!</p>
@@ -38,7 +38,7 @@ export function CheckInCard({ eventId, userId, attendee }: CheckInCardProps) {
         textAlign: 'center',
         marginBottom: '24px',
         position: 'relative',
-        zIndex: 10,
+        zIndex: 50,
       }}>
         <p style={{ fontSize: '24px', marginBottom: '4px' }}>😔</p>
         <p style={{ fontSize: '16px', fontWeight: 600, color: '#6B6B63' }}>You missed this one</p>
@@ -55,7 +55,7 @@ export function CheckInCard({ eventId, userId, attendee }: CheckInCardProps) {
       padding: '20px',
       marginBottom: '24px',
       position: 'relative',
-      zIndex: 10,
+      zIndex: 50,
     }}>
       <p style={{ fontSize: '18px', fontWeight: 700, color: '#F0EEE9', marginBottom: '4px' }}>
         Did you show up? 👋
@@ -78,7 +78,7 @@ export function CheckInCard({ eventId, userId, attendee }: CheckInCardProps) {
             fontWeight: 600,
             cursor: 'pointer',
             position: 'relative',
-            zIndex: 10,
+            zIndex: 50,
           }}
         >
           Yes, I was there 🙌
@@ -97,7 +97,7 @@ export function CheckInCard({ eventId, userId, attendee }: CheckInCardProps) {
             fontWeight: 600,
             cursor: 'pointer',
             position: 'relative',
-            zIndex: 10,
+            zIndex: 50,
           }}
         >
           No, I missed it
