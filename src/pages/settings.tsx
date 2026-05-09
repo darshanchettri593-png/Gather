@@ -388,7 +388,7 @@ export function SettingsPage() {
           <Separator />
           <Row label="Privacy policy" hasChevron />
           <Separator />
-          <Row label="Terms of service" hasChevron />
+          <Row label="Terms of service" hasChevron onClick={() => navigate("/terms")} />
           <Separator />
           <Row label="App version" value="1.0.0" />
         </GroupCard>
