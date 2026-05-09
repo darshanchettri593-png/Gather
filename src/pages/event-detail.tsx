@@ -68,6 +68,13 @@ export function EventDetailPage() {
     });
   }, [id, queryClient]);
 
+  useEffect(() => {
+    if (!isMenuOpen) return;
+    const close = () => setIsMenuOpen(false);
+    window.addEventListener('scroll', close, true);
+    return () => window.removeEventListener('scroll', close, true);
+  }, [isMenuOpen]);
+
   const handlePostAnnouncement = () => {
     const content = announcementContent.trim();
     if (!content || !user || !id || isPostingAnnouncement) return;
@@ -347,7 +354,7 @@ export function EventDetailPage() {
                 </button>
                 {isMenuOpen && (
                   <>
-                    <div className="fixed inset-0 z-[90]" onClick={() => setIsMenuOpen(false)} />
+                    <div className="fixed inset-0 z-[90]" onClick={() => setIsMenuOpen(false)} onTouchStart={() => setIsMenuOpen(false)} />
                     <div
                       className="absolute z-[100] rounded-xl overflow-hidden"
                       style={{
