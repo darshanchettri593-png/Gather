@@ -72,7 +72,7 @@ export function CreateEventPage() {
   const [endDate, setEndDate]                 = useState("");
   const [endTime, setEndTime]                 = useState("");
   const [endTimeError, setEndTimeError]       = useState("");
-  const [capacity, setCapacity]               = useState("");
+  const [capacity, setCapacity]               = useState("20");
   const [capacityError, setCapacityError]     = useState("");
   const [mapCoords, setMapCoords]             = useState<{ lat: number; lng: number } | null>(null);
   const [minAge, setMinAge]                   = useState('18');
@@ -336,15 +336,18 @@ export function CreateEventPage() {
                     onChange={(e) => setDate(e.target.value)}
                     style={{
                       width: "100%",
-                      fontSize: "15px",
+                      height: "48px",
+                      fontSize: "16px",
+                      fontWeight: 600,
                       color: "#F0EEE9",
                       backgroundColor: "#242422",
                       border: "1px solid #2A2A28",
                       borderRadius: "10px",
-                      padding: "10px",
+                      padding: "0 12px",
                       outline: "none",
                       colorScheme: "dark",
                       boxSizing: "border-box",
+                      WebkitTextFillColor: "#F0EEE9",
                     }}
                   />
                 </div>
@@ -356,15 +359,18 @@ export function CreateEventPage() {
                     onChange={(e) => setTime(e.target.value)}
                     style={{
                       width: "100%",
-                      fontSize: "15px",
+                      height: "48px",
+                      fontSize: "16px",
+                      fontWeight: 600,
                       color: "#F0EEE9",
                       backgroundColor: "#242422",
                       border: "1px solid #2A2A28",
                       borderRadius: "10px",
-                      padding: "10px",
+                      padding: "0 12px",
                       outline: "none",
                       colorScheme: "dark",
                       boxSizing: "border-box",
+                      WebkitTextFillColor: "#F0EEE9",
                     }}
                   />
                 </div>
@@ -401,15 +407,18 @@ export function CreateEventPage() {
                     onChange={(e) => { setEndDate(e.target.value); setEndTimeError(""); }}
                     style={{
                       width: "100%",
-                      fontSize: "15px",
+                      height: "48px",
+                      fontSize: "16px",
+                      fontWeight: 600,
                       color: "#F0EEE9",
                       backgroundColor: "#242422",
                       border: "1px solid #2A2A28",
                       borderRadius: "10px",
-                      padding: "10px",
+                      padding: "0 12px",
                       outline: "none",
                       colorScheme: "dark",
                       boxSizing: "border-box",
+                      WebkitTextFillColor: "#F0EEE9",
                     }}
                   />
                 </div>
@@ -421,15 +430,18 @@ export function CreateEventPage() {
                     onChange={(e) => { setEndTime(e.target.value); setEndTimeError(""); }}
                     style={{
                       width: "100%",
-                      fontSize: "15px",
+                      height: "48px",
+                      fontSize: "16px",
+                      fontWeight: 600,
                       color: "#F0EEE9",
                       backgroundColor: "#242422",
                       border: "1px solid #2A2A28",
                       borderRadius: "10px",
-                      padding: "10px",
+                      padding: "0 12px",
                       outline: "none",
                       colorScheme: "dark",
                       boxSizing: "border-box",
+                      WebkitTextFillColor: "#F0EEE9",
                     }}
                   />
                 </div>
@@ -668,9 +680,10 @@ export function CreateEventPage() {
                     onChange={(e) => { setCapacity(e.target.value); setCapacityError(""); }}
                     style={{
                       width: "56px",
-                      fontSize: "18px",
+                      fontSize: "20px",
                       fontWeight: 700,
                       color: "#F0EEE9",
+                      WebkitTextFillColor: "#F0EEE9",
                       backgroundColor: "transparent",
                       border: "none",
                       outline: "none",
