@@ -7,7 +7,7 @@ import { CreateEventPage } from "@/pages/create-event";
 import { ProfilePage } from "@/pages/profile";
 import { SearchPage } from "@/pages/search";
 import { SettingsPage } from "@/pages/settings";
-import { CommunityGuidelinesPage } from "@/pages/community-guidelines";
+import GuidelinesPage from "@/pages/guidelines";
 import TermsPage from './pages/terms';
 import PrivacyPage from './pages/privacy';
 import { PublicProfilePage } from "@/pages/profile-public";
@@ -37,7 +37,7 @@ export default function App() {
                 <Route path="/event/:id" element={<EventDetailPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/settings" element={<SettingsPage />} />
-                <Route path="/settings/community-guidelines" element={<CommunityGuidelinesPage />} />
+                <Route path="/guidelines" element={<GuidelinesPage />} />
                 <Route path="/terms" element={<TermsPage />} />
                 <Route path="/privacy" element={<PrivacyPage />} />
                 <Route path="/user/:id" element={<PublicProfilePage />} />
