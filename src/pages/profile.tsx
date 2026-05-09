@@ -7,7 +7,7 @@ import { useUserEvents, useProfile } from "@/hooks/useUser";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import { supabase } from "@/lib/supabase";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEventRatingSummary, useProfileRatings } from "@/hooks/useRatings";
 import { useFollowerCount, useIsVerifiedHost } from "@/lib/queries";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
@@ -160,6 +160,7 @@ export function ProfilePage() {
   const [activeTab, setActiveTab] = useState<"hosting" | "joined">("hosting");
   const [showPastEvents, setShowPastEvents] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showVerifySheet, setShowVerifySheet] = useState(false);
   const [editName, setEditName] = useState('');
   const [editBio, setEditBio] = useState('');
 
@@ -168,6 +169,57 @@ export function ProfilePage() {
   const { data: profileRatings } = useProfileRatings(user?.id);
   const { data: isVerified } = useIsVerifiedHost(user?.id);
   const { data: followerCount } = useFollowerCount(user?.id || "");
+  const { data: verifyProgress } = useQuery({
+    queryKey: ['verify-progress', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+
+      const { data: userData } = await supabase
+        .from('users')
+        .select('created_at')
+        .eq('id', user.id)
+        .single();
+
+      const accountAgeDays = userData
+        ? Math.floor((Date.now() - new Date(userData.created_at).getTime()) / (1000 * 60 * 60 * 24))
+        : 0;
+
+      const { data: events } = await supabase
+        .from('events')
+        .select('id')
+        .eq('host_id', user.id);
+
+      const eventCount = events?.length || 0;
+      const eventIds = events?.map(e => e.id) || [];
+
+      const { data: ratings } = await supabase
+        .from('event_ratings')
+        .select('rating_value')
+        .in('event_id', eventIds)
+        .eq('rater_type', 'attendee');
+
+      const avgRating = ratings && ratings.length > 0
+        ? ratings.reduce((sum, r) => sum + r.rating_value, 0) / ratings.length
+        : 0;
+
+      const { data: attendees } = await supabase
+        .from('attendees')
+        .select('checked_in, no_show')
+        .in('event_id', eventIds.length > 0 ? eventIds : ['none']);
+
+      const resolved = attendees?.filter(a => a.checked_in || a.no_show) || [];
+      const checkedIn = attendees?.filter(a => a.checked_in) || [];
+      const checkinRate = resolved.length > 0 ? checkedIn.length / resolved.length : 0;
+
+      return {
+        accountAgeDays,
+        eventCount,
+        avgRating: Math.round(avgRating * 10) / 10,
+        checkinRate: Math.round(checkinRate * 100),
+      };
+    },
+    enabled: !!user?.id,
+  });
 
   const updateAvatarMutation = useMutation({
     mutationFn: async (url: string) => {
@@ -403,11 +455,26 @@ export function ProfilePage() {
 
               {/* Name / location / joined */}
               <div className="flex flex-col gap-[4px] min-w-0">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ fontSize: "20px", fontWeight: 700, color: "#F0EEE9" }} className="line-clamp-1">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '20px', fontWeight: 700, color: '#F0EEE9' }}>
                     {profile?.display_name || user?.email?.split("@")[0]}
                   </span>
-                  {isVerified && <VerifiedBadge size={18} />}
+                  <button
+                    onClick={() => setShowVerifySheet(true)}
+                    style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                  >
+                    {isVerified ? (
+                      <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
+                        <circle cx="8" cy="8" r="8" fill="#FF6B35" />
+                        <path d="M4.5 8L7 10.5L11.5 5.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    ) : (
+                      <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
+                        <circle cx="8" cy="8" r="7" stroke="#3D3D38" strokeWidth="1.5" strokeDasharray="3 2"/>
+                        <path d="M4.5 8L7 10.5L11.5 5.5" stroke="#3D3D38" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    )}
+                  </button>
                 </div>
                 <div className="flex items-center gap-[6px] flex-wrap">
                   {profile?.gender && (
@@ -748,6 +815,113 @@ export function ProfilePage() {
             >
               Save Changes
             </button>
+          </div>
+        </div>
+      )}
+
+      {showVerifySheet && (
+        <div
+          style={{ position: 'fixed', inset: 0, zIndex: 200, backgroundColor: 'rgba(0,0,0,0.6)' }}
+          onClick={() => setShowVerifySheet(false)}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              backgroundColor: '#1C1C1A',
+              borderRadius: '20px 20px 0 0',
+              padding: '24px 20px 48px',
+            }}
+          >
+            {/* Handle */}
+            <div style={{ width: '36px', height: '4px', backgroundColor: '#2A2A28', borderRadius: '2px', margin: '0 auto 24px' }} />
+
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+              {isVerified ? (
+                <svg width="28" height="28" viewBox="0 0 16 16" fill="none">
+                  <circle cx="8" cy="8" r="8" fill="#FF6B35" />
+                  <path d="M4.5 8L7 10.5L11.5 5.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              ) : (
+                <svg width="28" height="28" viewBox="0 0 16 16" fill="none">
+                  <circle cx="8" cy="8" r="7" stroke="#3D3D38" strokeWidth="1.5" strokeDasharray="3 2"/>
+                  <path d="M4.5 8L7 10.5L11.5 5.5" stroke="#3D3D38" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              )}
+              <div>
+                <p style={{ fontSize: '17px', fontWeight: 700, color: '#F0EEE9', margin: 0 }}>
+                  {isVerified ? 'Verified Host' : 'Verification in Progress'}
+                </p>
+                <p style={{ fontSize: '13px', color: '#6B6B63', margin: '2px 0 0' }}>
+                  {isVerified ? 'You meet all criteria' : 'Meet all 4 criteria to get verified'}
+                </p>
+              </div>
+            </div>
+
+            <div style={{ height: '1px', backgroundColor: '#2A2A28', margin: '20px 0' }} />
+
+            {/* Criteria list */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {[
+                {
+                  label: '7 or more events hosted',
+                  detail: `You have hosted ${verifyProgress?.eventCount || 0} events`,
+                  done: (verifyProgress?.eventCount || 0) >= 7,
+                },
+                {
+                  label: '4.0+ average rating',
+                  detail: `Your rating is ${verifyProgress?.avgRating || 0}`,
+                  done: (verifyProgress?.avgRating || 0) >= 4.0,
+                },
+                {
+                  label: '70%+ check-in rate',
+                  detail: `Your check-in rate is ${verifyProgress?.checkinRate || 0}%`,
+                  done: (verifyProgress?.checkinRate || 0) >= 70,
+                },
+                {
+                  label: 'Account 30+ days old',
+                  detail: `Your account is ${verifyProgress?.accountAgeDays || 0} days old`,
+                  done: (verifyProgress?.accountAgeDays || 0) >= 30,
+                },
+              ].map((item, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                  <div style={{
+                    width: '24px', height: '24px', borderRadius: '50%', flexShrink: 0,
+                    backgroundColor: item.done ? '#FF6B35' : '#242422',
+                    border: item.done ? 'none' : '1px solid #2A2A28',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    {item.done ? (
+                      <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                        <path d="M1 4l3 3 5-6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    ) : (
+                      <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#3D3D38' }} />
+                    )}
+                  </div>
+                  <div>
+                    <p style={{ fontSize: '14px', fontWeight: 600, color: item.done ? '#F0EEE9' : '#6B6B63', margin: 0 }}>
+                      {item.label}
+                    </p>
+                    <p style={{ fontSize: '12px', color: '#6B6B63', margin: '2px 0 0' }}>
+                      {item.detail}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {isVerified && (
+              <div style={{ marginTop: '24px', backgroundColor: 'rgba(255,107,53,0.1)', border: '1px solid rgba(255,107,53,0.25)', borderRadius: '12px', padding: '14px', textAlign: 'center' }}>
+                <p style={{ fontSize: '13px', color: '#FF6B35', fontWeight: 600, margin: 0 }}>
+                  🎉 You are a Verified Host on Gather
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}
