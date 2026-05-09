@@ -327,8 +327,8 @@ export function CreateEventPage() {
                   Starts
                 </span>
               </div>
-              <div style={{ display: "flex", gap: "12px" }}>
-                <div style={{ flex: 1 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                <div>
                   <label style={LABEL}>Date</label>
                   <input
                     type="date"
@@ -348,7 +348,7 @@ export function CreateEventPage() {
                     }}
                   />
                 </div>
-                <div style={{ flex: 1 }}>
+                <div>
                   <label style={LABEL}>Time</label>
                   <input
                     type="time"
@@ -391,8 +391,8 @@ export function CreateEventPage() {
                   Ends
                 </span>
               </div>
-              <div style={{ display: "flex", gap: "12px" }}>
-                <div style={{ flex: 1 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                <div>
                   <label style={LABEL}>Date</label>
                   <input
                     type="date"
@@ -413,7 +413,7 @@ export function CreateEventPage() {
                     }}
                   />
                 </div>
-                <div style={{ flex: 1 }}>
+                <div>
                   <label style={LABEL}>Time</label>
                   <input
                     type="time"
@@ -459,10 +459,10 @@ export function CreateEventPage() {
 
             {/* Location text input */}
             <div>
-              <label style={LABEL}>Location</label>
+              <label style={LABEL}>Address</label>
               <input
                 type="text"
-                placeholder="Where's it happening?"
+                placeholder="Street, area or venue name"
                 maxLength={120}
                 value={locationStr}
                 onChange={(e) => setLocationStr(e.target.value)}
@@ -478,34 +478,6 @@ export function CreateEventPage() {
                 }}
                 className="placeholder:text-[#3D3D38]"
               />
-            </div>
-
-            {/* District pills */}
-            <div>
-              <label style={LABEL}>District</label>
-              <div className="flex gap-2 overflow-x-auto no-scrollbar">
-                {DISTRICTS.map((d) => (
-                  <button
-                    key={d}
-                    type="button"
-                    onClick={() => setDistrict(d)}
-                    className="flex-shrink-0 transition-opacity active:opacity-70"
-                    style={{
-                      height: "32px",
-                      padding: "0 14px",
-                      borderRadius: "999px",
-                      fontSize: "13px",
-                      fontWeight: district === d ? 600 : 400,
-                      backgroundColor: district === d ? "#FF6B35" : "#1C1C1A",
-                      color: district === d ? "white" : "#6B6B63",
-                      border: district === d ? "none" : "1px solid #2A2A28",
-                      cursor: "pointer",
-                    }}
-                  >
-                    {d}
-                  </button>
-                ))}
-              </div>
             </div>
 
             {/* Map pin */}
