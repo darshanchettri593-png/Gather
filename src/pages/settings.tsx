@@ -386,7 +386,7 @@ export function SettingsPage() {
             onClick={() => navigate("/settings/community-guidelines")}
           />
           <Separator />
-          <Row label="Privacy policy" hasChevron />
+          <Row label="Privacy policy" hasChevron onClick={() => navigate("/privacy")} />
           <Separator />
           <Row label="Terms of service" hasChevron onClick={() => navigate("/terms")} />
           <Separator />

@@ -9,6 +9,7 @@ import { SearchPage } from "@/pages/search";
 import { SettingsPage } from "@/pages/settings";
 import { CommunityGuidelinesPage } from "@/pages/community-guidelines";
 import TermsPage from './pages/terms';
+import PrivacyPage from './pages/privacy';
 import { PublicProfilePage } from "@/pages/profile-public";
 import ResetPassword from "@/pages/ResetPassword"; // REMOVED BRACKETS
 import { BrowserRouter, Navigate, Route, Routes } from "react-router"; // Reverted to react-router for v7 compatibility
@@ -38,6 +39,7 @@ export default function App() {
                 <Route path="/settings" element={<SettingsPage />} />
                 <Route path="/settings/community-guidelines" element={<CommunityGuidelinesPage />} />
                 <Route path="/terms" element={<TermsPage />} />
+                <Route path="/privacy" element={<PrivacyPage />} />
                 <Route path="/user/:id" element={<PublicProfilePage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Route>
