@@ -282,19 +282,26 @@ export function useCheckIn() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ eventId, userId, checkedIn }: { eventId: string; userId: string; checkedIn: boolean }) => {
-      const { error } = await supabase
+      console.log('CheckIn firing:', { eventId, userId, checkedIn });
+      const { data, error } = await supabase
         .from('attendees')
         .update({
           checked_in: checkedIn,
           no_show: !checkedIn,
         })
         .eq('event_id', eventId)
-        .eq('user_id', userId);
+        .eq('user_id', userId)
+        .select();
+      console.log('CheckIn result:', { data, error });
       if (error) throw error;
     },
     onSuccess: (_, { eventId, userId }) => {
+      console.log('CheckIn success');
       queryClient.invalidateQueries({ queryKey: ['rsvp', eventId, userId] });
       queryClient.invalidateQueries({ queryKey: ['event', eventId] });
+    },
+    onError: (error) => {
+      console.error('CheckIn failed:', error);
     },
   });
 }
