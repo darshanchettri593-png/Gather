@@ -504,8 +504,8 @@ export function ProfilePage() {
             {/* Ratings section */}
             {profileRatings && profileRatings.overall.count > 0 ? (
               <div style={{ borderTop: "1px solid #2A2A28", marginTop: "16px", paddingTop: "16px" }}>
-                {/* Overall */}
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
+                {/* Overall (host rating only) */}
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                   <span style={{ fontSize: "28px", fontWeight: 700, color: "#F0EEE9" }}>
                     {profileRatings.overall.avg}
                   </span>
@@ -521,36 +521,6 @@ export function ProfilePage() {
                   <span style={{ fontSize: "13px", color: "#6B6B63" }}>
                     {profileRatings.overall.count} rating{profileRatings.overall.count !== 1 ? "s" : ""}
                   </span>
-                </div>
-
-                {/* Breakdown cards */}
-                <div style={{ display: "flex", gap: "12px" }}>
-                  {profileRatings.asHost.count > 0 && (
-                    <div style={{ flex: 1, background: "#242422", border: "1px solid #2A2A28", borderRadius: "10px", padding: "10px 12px" }}>
-                      <p style={{ fontSize: "10px", color: "#6B6B63", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600, margin: "0 0 4px" }}>
-                        As Host
-                      </p>
-                      <p style={{ fontSize: "18px", fontWeight: 700, color: "#FF6B35", margin: 0 }}>
-                        {profileRatings.asHost.avg} ⭐
-                      </p>
-                      <p style={{ fontSize: "11px", color: "#6B6B63", margin: "2px 0 0" }}>
-                        {profileRatings.asHost.count} ratings
-                      </p>
-                    </div>
-                  )}
-                  {profileRatings.asAttendee.count > 0 && (
-                    <div style={{ flex: 1, background: "#242422", border: "1px solid #2A2A28", borderRadius: "10px", padding: "10px 12px" }}>
-                      <p style={{ fontSize: "10px", color: "#6B6B63", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600, margin: "0 0 4px" }}>
-                        As Attendee
-                      </p>
-                      <p style={{ fontSize: "18px", fontWeight: 700, color: "#FF6B35", margin: 0 }}>
-                        {profileRatings.asAttendee.avg} ⭐
-                      </p>
-                      <p style={{ fontSize: "11px", color: "#6B6B63", margin: "2px 0 0" }}>
-                        {profileRatings.asAttendee.count} ratings
-                      </p>
-                    </div>
-                  )}
                 </div>
               </div>
             ) : (

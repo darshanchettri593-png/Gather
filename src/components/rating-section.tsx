@@ -203,13 +203,12 @@ export function RatingSection({
 
   const [isEditing, setIsEditing] = useState(false);
 
-  const canRate = !!user && (hasAttended || isHost);
+  const canRate = !!user && hasAttended && !isHost;
   const hasRated = !!myRating;
   const showForm = canRate && (!hasRated || isEditing);
 
   const attendeeRatings = ratings.filter((r) => r.rater_type === "attendee");
-  const hostRatings = ratings.filter((r) => r.rater_type === "host");
-  const totalRatings = ratings.length;
+  const totalRatings = attendeeRatings.length;
 
   const handleSubmit = (ratingValue: number, comment: string) => {
     if (!user || ratingValue === 0) return;
@@ -286,22 +285,6 @@ export function RatingSection({
           )}
           <div className="flex flex-col">
             {attendeeRatings.map((r) => (
-              <RatingItem key={r.id} rating={r} />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ── Host's note ──────────────────────────────────────────────────────── */}
-      {hostRatings.length > 0 && (
-        <div className={attendeeRatings.length > 0 ? "mt-8" : ""}>
-          {(attendeeRatings.length > 0 || !isHost) && (
-            <p className="text-[11px] text-[#5A5A52] uppercase tracking-[0.1em] font-bold mb-3">
-              Host's note
-            </p>
-          )}
-          <div className="flex flex-col">
-            {hostRatings.map((r) => (
               <RatingItem key={r.id} rating={r} />
             ))}
           </div>

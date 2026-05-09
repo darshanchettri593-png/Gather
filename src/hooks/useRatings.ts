@@ -156,29 +156,16 @@ export function useProfileRatings(userId: string | undefined) {
             .eq('rater_type', 'attendee')
         : { data: [] as { rating_value: number }[] };
 
-      // Ratings received AS ATTENDEE — host rated this user
-      const { data: asAttendeeRaw } = await supabase
-        .from('event_ratings')
-        .select('rating_value')
-        .eq('rater_id', userId)
-        .eq('rater_type', 'host');
-
       const asHost = asHostRaw || [];
-      const asAttendee = asAttendeeRaw || [];
-      const all = [...asHost, ...asAttendee];
 
       return {
         asHost: {
           avg: calcAvg(asHost),
           count: asHost.length,
         },
-        asAttendee: {
-          avg: calcAvg(asAttendee),
-          count: asAttendee.length,
-        },
         overall: {
-          avg: calcAvg(all),
-          count: all.length,
+          avg: calcAvg(asHost),
+          count: asHost.length,
         },
       };
     },

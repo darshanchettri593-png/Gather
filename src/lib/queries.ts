@@ -293,6 +293,7 @@ export function useCheckIn() {
         .eq('user_id', userId)
         .select();
       console.log('CheckIn result:', { data, error });
+      console.log('Rows updated:', data?.length, 'eventId:', eventId, 'userId:', userId);
       if (error) throw error;
     },
     onSuccess: (_, { eventId, userId }) => {
