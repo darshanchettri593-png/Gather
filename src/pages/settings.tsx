@@ -177,14 +177,14 @@ export function SettingsPage() {
   return (
     <div
       className="page-transition w-full min-h-screen"
-      style={{ backgroundColor: "#000000" }}
+      style={{ backgroundColor: "#0A0A0A" }}
     >
       {/* Header */}
       <header
         className="sticky top-0 z-50 flex items-center justify-between"
         style={{
           height: "56px",
-          backgroundColor: "#000000",
+          backgroundColor: "#0A0A0A",
           borderBottom: "1px solid #2A2A28",
           padding: "0 4px",
         }}

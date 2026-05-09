@@ -10,7 +10,7 @@
   --animate-shimmer: shimmer 1.5s infinite linear;
 
   /* Gather v2 design tokens */
-  --color-g-bg: #000000;
+  --color-g-bg: #0A0A0A;
   --color-g-surface: #1C1C1A;
   --color-g-surface-2: #242422;
   --color-g-border: #2A2A28;
@@ -71,7 +71,7 @@
 }
 
 :root {
-  --bg-primary: #000000;
+  --bg-primary: #0A0A0A;
   --bg-surface: #1C1C1A;
   --bg-surface-2: #242422;
   --bg-surface-3: #2A2A28;
@@ -128,7 +128,7 @@
 
   html,
   body {
-    background: #000000;
+    background: #0A0A0A;
     color: #F0EEE9;
     touch-action: pan-x pan-y;
     -webkit-text-size-adjust: 100%;
