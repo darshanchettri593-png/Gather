@@ -1111,6 +1111,23 @@ export function EventDetailPage() {
             >
               Event Ended
             </button>
+          ) : isLive && !hasRSVPd ? (
+            <button
+              disabled
+              style={{
+                height: "52px",
+                padding: "0 28px",
+                borderRadius: "999px",
+                backgroundColor: "#242422",
+                border: "1px solid #2A2A28",
+                color: "#6B6B63",
+                fontSize: "15px",
+                fontWeight: 600,
+                cursor: "not-allowed",
+              }}
+            >
+              Event in Progress
+            </button>
           ) : hasRSVPd ? (
             <button
               disabled={isRSVPPending}

@@ -327,49 +327,47 @@ export function CreateEventPage() {
                   Starts
                 </span>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <div style={{ width: '100%' }}>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+                <div style={{ flex: 1 }}>
                   <label style={{ fontSize: '11px', fontWeight: 700, color: '#6B6B63', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '6px' }}>Date</label>
                   <input
                     type="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
                     style={{
-                      display: 'block',
                       width: '100%',
                       height: '48px',
-                      fontSize: '16px',
+                      fontSize: '15px',
                       fontWeight: 500,
                       color: '#F0EEE9',
                       WebkitTextFillColor: '#F0EEE9',
                       backgroundColor: '#242422',
                       border: '1px solid #2A2A28',
                       borderRadius: '10px',
-                      padding: '0 14px',
+                      padding: '0 10px',
                       outline: 'none',
                       colorScheme: 'dark',
                       boxSizing: 'border-box',
                     }}
                   />
                 </div>
-                <div style={{ width: '100%' }}>
+                <div style={{ flex: 1 }}>
                   <label style={{ fontSize: '11px', fontWeight: 700, color: '#6B6B63', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '6px' }}>Time</label>
                   <input
                     type="time"
                     value={time}
                     onChange={(e) => setTime(e.target.value)}
                     style={{
-                      display: 'block',
                       width: '100%',
                       height: '48px',
-                      fontSize: '16px',
+                      fontSize: '15px',
                       fontWeight: 500,
                       color: '#F0EEE9',
                       WebkitTextFillColor: '#F0EEE9',
                       backgroundColor: '#242422',
                       border: '1px solid #2A2A28',
                       borderRadius: '10px',
-                      padding: '0 14px',
+                      padding: '0 10px',
                       outline: 'none',
                       colorScheme: 'dark',
                       boxSizing: 'border-box',
@@ -399,8 +397,8 @@ export function CreateEventPage() {
                   Ends
                 </span>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <div style={{ width: '100%' }}>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+                <div style={{ flex: 1 }}>
                   <label style={{ fontSize: '11px', fontWeight: 700, color: '#6B6B63', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '6px' }}>Date</label>
                   <input
                     type="date"
@@ -408,41 +406,39 @@ export function CreateEventPage() {
                     min={date}
                     onChange={(e) => { setEndDate(e.target.value); setEndTimeError(""); }}
                     style={{
-                      display: 'block',
                       width: '100%',
                       height: '48px',
-                      fontSize: '16px',
+                      fontSize: '15px',
                       fontWeight: 500,
                       color: '#F0EEE9',
                       WebkitTextFillColor: '#F0EEE9',
                       backgroundColor: '#242422',
                       border: '1px solid #2A2A28',
                       borderRadius: '10px',
-                      padding: '0 14px',
+                      padding: '0 10px',
                       outline: 'none',
                       colorScheme: 'dark',
                       boxSizing: 'border-box',
                     }}
                   />
                 </div>
-                <div style={{ width: '100%' }}>
+                <div style={{ flex: 1 }}>
                   <label style={{ fontSize: '11px', fontWeight: 700, color: '#6B6B63', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '6px' }}>Time</label>
                   <input
                     type="time"
                     value={endTime}
                     onChange={(e) => { setEndTime(e.target.value); setEndTimeError(""); }}
                     style={{
-                      display: 'block',
                       width: '100%',
                       height: '48px',
-                      fontSize: '16px',
+                      fontSize: '15px',
                       fontWeight: 500,
                       color: '#F0EEE9',
                       WebkitTextFillColor: '#F0EEE9',
                       backgroundColor: '#242422',
                       border: '1px solid #2A2A28',
                       borderRadius: '10px',
-                      padding: '0 14px',
+                      padding: '0 10px',
                       outline: 'none',
                       colorScheme: 'dark',
                       boxSizing: 'border-box',
