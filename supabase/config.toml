@@ -1,0 +1,8 @@
+[functions.notify-host-rsvp]
+verify_jwt = false
+
+[functions.notify-announcement]
+verify_jwt = false
+
+[functions.notify-new-follower]
+verify_jwt = false
