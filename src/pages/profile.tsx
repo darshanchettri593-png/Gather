@@ -833,7 +833,7 @@ export function ProfilePage() {
               right: 0,
               backgroundColor: '#1C1C1A',
               borderRadius: '20px 20px 0 0',
-              padding: '24px 20px 48px',
+              padding: '24px 20px calc(100px + env(safe-area-inset-bottom, 0px))',
             }}
           >
             {/* Handle */}
