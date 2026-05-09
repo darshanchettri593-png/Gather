@@ -795,10 +795,25 @@ export function ProfilePage() {
           onClick={() => setShowEditModal(false)}
         >
           <div
-            style={{ width: '100%', backgroundColor: '#1C1C1A', borderRadius: '24px 24px 0 0', padding: '32px 24px 100px', maxHeight: '90vh', overflowY: 'auto' }}
+            style={{ width: '100%', backgroundColor: '#1C1C1A', borderRadius: '24px 24px 0 0', maxHeight: '90vh', overflowY: 'auto', paddingBottom: '40px' }}
             onClick={e => e.stopPropagation()}
           >
-            <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#F0EEE9', marginBottom: '24px' }}>Edit Profile</h3>
+            {/* Sticky header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px 14px', position: 'sticky', top: 0, backgroundColor: '#1C1C1A', zIndex: 10 }}>
+              <span style={{ fontSize: '17px', fontWeight: 700, color: '#F0EEE9' }}>Edit Profile</span>
+              <button
+                onClick={async () => {
+                  await supabase.from('users').update({ display_name: editName, bio: editBio, instagram: editInstagram || null, twitter: editTwitter || null, facebook: editFacebook || null }).eq('id', user!.id);
+                  queryClient.invalidateQueries({ queryKey: ['profile'] });
+                  setShowEditModal(false);
+                }}
+                style={{ fontSize: '15px', fontWeight: 600, color: '#FF6B35', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0' }}
+              >
+                Done
+              </button>
+            </div>
+            <div style={{ height: '1px', backgroundColor: '#2A2A28', marginBottom: '24px' }} />
+            <div style={{ padding: '0 24px' }}>
 
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
               <ImageUploader
@@ -896,26 +911,7 @@ export function ProfilePage() {
               />
             </div>
 
-            <button
-              onClick={async () => {
-                await supabase.from('users').update({ display_name: editName, bio: editBio, instagram: editInstagram || null, twitter: editTwitter || null, facebook: editFacebook || null }).eq('id', user!.id);
-                queryClient.invalidateQueries({ queryKey: ['profile'] });
-                setShowEditModal(false);
-              }}
-              style={{
-                width: '100%',
-                backgroundColor: '#FF6B35',
-                color: 'white',
-                border: 'none',
-                borderRadius: '999px',
-                padding: '16px',
-                fontSize: '16px',
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}
-            >
-              Save Changes
-            </button>
+            </div>
           </div>
         </div>
       )}
