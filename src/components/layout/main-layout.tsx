@@ -57,7 +57,7 @@ export function MainLayout() {
   return (
     <div
       className={`flex min-h-screen flex-col ${isEventDetail ? "pb-0" : "pb-[64px]"}`}
-      style={{ backgroundColor: "#0A0A0A" }}
+      style={{ backgroundColor: "#111110" }}
     >
       {!hideHeader && (
         <header

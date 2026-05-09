@@ -4,7 +4,7 @@ export default function PrivacyPage() {
   const navigate = useNavigate();
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#0A0A0A', color: '#F0EEE9' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: '#111110', color: '#F0EEE9' }}>
       <div style={{ position: 'sticky', top: 0, zIndex: 50, backgroundColor: '#1C1C1A', borderBottom: '1px solid #2A2A28', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
         <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', color: '#F0EEE9', fontSize: '20px', cursor: 'pointer', padding: '0' }}>←</button>
         <h1 style={{ fontSize: '17px', fontWeight: 700, color: '#F0EEE9', margin: 0 }}>Privacy Policy</h1>

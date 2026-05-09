@@ -205,7 +205,7 @@ export function EventDetailPage() {
   // ─── Loading skeleton ────────────────────────────────────────────────────────
   if (isLoading) {
     return (
-      <div className="relative min-h-screen pb-[100px]" style={{ backgroundColor: "#0A0A0A" }}>
+      <div className="relative min-h-screen pb-[100px]" style={{ backgroundColor: "#111110" }}>
         <div className="w-full animate-pulse" style={{ height: "320px", backgroundColor: "#1C1C1A" }} />
         <div style={{ backgroundColor: "#1C1C1A", borderRadius: "24px 24px 0 0", marginTop: "-24px", padding: "24px 20px" }}>
           <div className="h-4 w-24 rounded animate-pulse mb-4" style={{ backgroundColor: "#242422" }} />
@@ -228,7 +228,7 @@ export function EventDetailPage() {
   // ─── Error / not found ───────────────────────────────────────────────────────
   if (error || !event) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen px-4 text-center" style={{ backgroundColor: "#0A0A0A" }}>
+      <div className="flex flex-col items-center justify-center min-h-screen px-4 text-center" style={{ backgroundColor: "#111110" }}>
         <AlertCircle size={48} strokeWidth={1.5} style={{ color: "#3D3D38", marginBottom: "16px" }} />
         <h3 style={{ fontSize: "20px", fontWeight: 600, color: "#F0EEE9", marginBottom: "8px" }}>Event not found</h3>
         <p style={{ fontSize: "14px", color: "#6B6B63", marginBottom: "24px", maxWidth: "280px" }}>
@@ -271,7 +271,7 @@ export function EventDetailPage() {
 
   // ─── Page ────────────────────────────────────────────────────────────────────
   return (
-    <div className="relative min-h-screen" style={{ backgroundColor: "#0A0A0A", paddingBottom: "180px" }}>
+    <div className="relative min-h-screen" style={{ backgroundColor: "#111110", paddingBottom: "180px" }}>
 
       {/* ── Hero image — 320px, no title overlay ─────────────────────────────── */}
       <div className="relative w-full" style={{ height: "320px" }}>

@@ -166,7 +166,7 @@ export function SearchPage() {
   return (
     <div
       className="page-transition max-w-md mx-auto min-h-screen flex flex-col"
-      style={{ backgroundColor: "#0A0A0A", paddingBottom: "80px" }}
+      style={{ backgroundColor: "#111110", paddingBottom: "80px" }}
     >
       {/* Header */}
       <header
@@ -179,7 +179,7 @@ export function SearchPage() {
           alignItems: "center",
           justifyContent: "space-between",
           padding: "0 16px",
-          backgroundColor: "#0A0A0A",
+          backgroundColor: "#111110",
           borderBottom: "1px solid #2A2A28",
           flexShrink: 0,
         }}
@@ -203,7 +203,7 @@ export function SearchPage() {
           position: "sticky",
           top: "56px",
           zIndex: 40,
-          backgroundColor: "#0A0A0A",
+          backgroundColor: "#111110",
           padding: "12px 16px",
           borderBottom: "1px solid #2A2A28",
           flexShrink: 0,
