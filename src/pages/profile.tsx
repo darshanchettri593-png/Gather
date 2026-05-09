@@ -233,7 +233,7 @@ export function ProfilePage() {
     return (
       <div
         className="page-transition max-w-md mx-auto min-h-screen flex flex-col"
-        style={{ backgroundColor: "#111110", paddingBottom: "80px" }}
+        style={{ backgroundColor: "#000000", paddingBottom: "80px" }}
       >
         {/* Header row */}
         <div
@@ -308,7 +308,7 @@ export function ProfilePage() {
   return (
     <div
       className="page-transition max-w-md mx-auto min-h-screen flex flex-col"
-      style={{ backgroundColor: "#111110", paddingBottom: "80px" }}
+      style={{ backgroundColor: "#000000", paddingBottom: "80px" }}
     >
       {/* Header row — no background, no border */}
       <div
@@ -558,7 +558,7 @@ export function ProfilePage() {
           </div>
 
           {/* Tab content */}
-          <div style={{ padding: "16px 20px", backgroundColor: "#111110" }}>
+          <div style={{ padding: "16px 20px", backgroundColor: "#000000" }}>
             {upcomingEvents.length === 0 && pastEvents.length === 0 ? (
               activeTab === "hosting" ? (
                 <EmptyState

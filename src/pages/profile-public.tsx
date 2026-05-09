@@ -86,7 +86,7 @@ export function PublicProfilePage() {
 
   if (userLoading || eventsLoading) {
     return (
-      <div style={{ backgroundColor: "#111110", minHeight: "100vh" }}>
+      <div style={{ backgroundColor: "#000000", minHeight: "100vh" }}>
         <div style={{ height: "56px" }} />
         <div style={{ padding: "0 20px" }}>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", paddingTop: "32px" }}>
@@ -101,7 +101,7 @@ export function PublicProfilePage() {
 
   if (!user) {
     return (
-      <div style={{ backgroundColor: "#111110", minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 24px" }}>
+      <div style={{ backgroundColor: "#000000", minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 24px" }}>
         <p style={{ fontSize: "18px", fontWeight: 600, color: "#F0EEE9", marginBottom: "8px" }}>User not found</p>
         <p style={{ fontSize: "14px", color: "#6B6B63", marginBottom: "24px" }}>This profile doesn't exist or was removed.</p>
         <button
@@ -129,7 +129,7 @@ export function PublicProfilePage() {
   const gender = (user as any).gender ?? null;
 
   return (
-    <div style={{ backgroundColor: "#111110", minHeight: "100vh", paddingBottom: "80px" }}>
+    <div style={{ backgroundColor: "#000000", minHeight: "100vh", paddingBottom: "80px" }}>
 
       {/* Header */}
       <header
