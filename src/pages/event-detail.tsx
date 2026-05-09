@@ -20,6 +20,7 @@ import { formatDuration } from "@/lib/event-status";
 import { MapPicker } from "@/components/ui/map-picker";
 import { sanitizeText } from "@/lib/sanitize";
 import { CheckInCard } from "@/components/CheckInCard";
+import { ReportSheet } from "@/components/ReportSheet";
 
 export function EventDetailPage() {
   const { id } = useParams();
@@ -34,6 +35,7 @@ export function EventDetailPage() {
 
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showReport, setShowReport] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editCover, setEditCover] = useState('');
@@ -383,6 +385,19 @@ export function EventDetailPage() {
                   </>
                 )}
               </div>
+            )}
+            {user && !isHost && (
+              <button
+                onClick={() => setShowReport(true)}
+                className="flex items-center justify-center rounded-full active:opacity-60 transition-opacity"
+                style={{ width: "36px", height: "36px", backgroundColor: "#242422", border: "1px solid #2A2A28" }}
+                aria-label="Report event"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B6B63" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+                  <line x1="4" y1="22" x2="4" y2="15"/>
+                </svg>
+              </button>
             )}
             <button
               onClick={handleShare}
@@ -1315,6 +1330,14 @@ export function EventDetailPage() {
             </button>
           </div>
         </div>
+      )}
+
+      {showReport && (
+        <ReportSheet
+          targetType="event"
+          targetId={event.id}
+          onClose={() => setShowReport(false)}
+        />
       )}
     </div>
   );

@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useFollowerCount, useIsVerifiedHost } from "@/lib/queries";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
+import { ReportSheet } from "@/components/ReportSheet";
 import { supabase } from "@/lib/supabase";
 import { format } from "date-fns";
 import { ArrowLeft, MapPin, CalendarDays } from "lucide-react";
@@ -45,6 +47,7 @@ export function PublicProfilePage() {
 
   const { data: followerCount } = useFollowerCount(id || "");
   const { data: isVerified } = useIsVerifiedHost(id);
+  const [showReport, setShowReport] = useState(false);
 
   const { data: stats } = useQuery({
     queryKey: ["public-user-stats", id],
@@ -155,6 +158,20 @@ export function PublicProfilePage() {
           style={{ width: "40px", height: "40px", display: "flex", alignItems: "center", justifyContent: "center" }}
         >
           <ArrowLeft size={22} color="#F0EEE9" strokeWidth={2} />
+        </button>
+        <div style={{ flex: 1 }} />
+        <button
+          onClick={() => setShowReport(true)}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: '#6B6B63',
+            fontSize: '13px',
+            cursor: 'pointer',
+            padding: '8px',
+          }}
+        >
+          Report
         </button>
       </header>
 
@@ -352,6 +369,14 @@ export function PublicProfilePage() {
           )}
         </div>
       </div>
+
+      {showReport && (
+        <ReportSheet
+          targetType="user"
+          targetId={id!}
+          onClose={() => setShowReport(false)}
+        />
+      )}
     </div>
   );
 }
