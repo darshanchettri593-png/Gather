@@ -316,8 +316,8 @@ export function ProfilePage() {
                   </div>
                 </div>
                 {/* Camera badge */}
-                <div style={{ position: 'absolute', bottom: 0, right: 0, width: '24px', height: '24px', borderRadius: '50%', backgroundColor: '#FF6B35', border: '2px solid #1C1C1A', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', zIndex: 2 }}>
-                  <span style={{ fontSize: '11px' }}>📷</span>
+                <div style={{ position: 'absolute', bottom: 0, right: 0, width: '22px', height: '22px', borderRadius: '50%', backgroundColor: '#FF6B35', border: '2px solid #1C1C1A', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '11px' }}>
+                  📷
                 </div>
               </div>
 
@@ -362,17 +362,16 @@ export function ProfilePage() {
 
                 {/* Location */}
                 {(localStorage.getItem('gather_city') || profile?.location) && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                    <span style={{ fontSize: '12px' }}>📍</span>
-                    <span style={{ fontSize: '12px', color: '#6B6B63' }}>
-                      {localStorage.getItem('gather_city') || profile?.location}
-                    </span>
-                  </div>
+                  <span style={{ fontSize: '12px', color: '#6B6B63' }}>
+                    {localStorage.getItem('gather_city') || profile?.location}
+                  </span>
                 )}
 
                 {/* Member since */}
-                {joinDate && (
-                  <span style={{ fontSize: '11px', color: '#3D3D38' }}>Since {joinDate}</span>
+                {user?.created_at && (
+                  <span style={{ fontSize: '11px', color: '#3D3D38' }}>
+                    Joined {new Date(user.created_at).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}
+                  </span>
                 )}
               </div>
             </div>
