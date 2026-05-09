@@ -328,6 +328,9 @@ export function useToggleFollow() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ followingId, followerId, isFollowing }: { followingId: string; followerId: string; isFollowing: boolean }) => {
+      if (navigator.vibrate) {
+        navigator.vibrate(10);
+      }
       if (isFollowing) {
         await supabase.from('follows').delete()
           .eq('follower_id', followerId)
