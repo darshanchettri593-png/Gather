@@ -9,7 +9,8 @@ import { ImageUploader } from "@/components/ui/image-uploader";
 import { supabase } from "@/lib/supabase";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEventRatingSummary, useProfileRatings } from "@/hooks/useRatings";
-import { useFollowerCount } from "@/lib/queries";
+import { useFollowerCount, useIsVerifiedHost } from "@/lib/queries";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { StarDisplay } from "@/components/rating-section";
 import { LiveBadge } from "@/components/ui/live-badge";
 import { getEventStatus } from "@/lib/event-status";
@@ -165,6 +166,7 @@ export function ProfilePage() {
   const { data: userEvents, isLoading: isEventsLoading } = useUserEvents();
   const { data: profile, isLoading: isProfileLoading } = useProfile();
   const { data: profileRatings } = useProfileRatings(user?.id);
+  const { data: isVerified } = useIsVerifiedHost(user?.id);
   const { data: followerCount } = useFollowerCount(user?.id || "");
 
   const updateAvatarMutation = useMutation({
@@ -401,12 +403,12 @@ export function ProfilePage() {
 
               {/* Name / location / joined */}
               <div className="flex flex-col gap-[4px] min-w-0">
-                <span
-                  style={{ fontSize: "18px", fontWeight: 600, color: "#F0EEE9" }}
-                  className="line-clamp-1"
-                >
-                  {profile?.display_name || user?.email?.split("@")[0]}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ fontSize: "20px", fontWeight: 700, color: "#F0EEE9" }} className="line-clamp-1">
+                    {profile?.display_name || user?.email?.split("@")[0]}
+                  </span>
+                  {isVerified && <VerifiedBadge size={18} />}
+                </div>
                 <div className="flex items-center gap-[6px] flex-wrap">
                   {profile?.gender && (
                     <span style={{ fontSize: "13px", color: "#F0EEE9", backgroundColor: "#242422", border: "1px solid #2A2A28", borderRadius: "999px", padding: "2px 10px" }}>

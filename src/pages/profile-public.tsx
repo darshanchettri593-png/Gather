@@ -1,6 +1,7 @@
 import { useParams, useNavigate, Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useFollowerCount } from "@/lib/queries";
+import { useFollowerCount, useIsVerifiedHost } from "@/lib/queries";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { supabase } from "@/lib/supabase";
 import { format } from "date-fns";
 import { ArrowLeft, MapPin, CalendarDays } from "lucide-react";
@@ -43,6 +44,7 @@ export function PublicProfilePage() {
   });
 
   const { data: followerCount } = useFollowerCount(id || "");
+  const { data: isVerified } = useIsVerifiedHost(id);
 
   const { data: stats } = useQuery({
     queryKey: ["public-user-stats", id],
@@ -181,9 +183,12 @@ export function PublicProfilePage() {
               <span style={{ fontSize: "28px", fontWeight: 700, color: "white" }}>{initial}</span>
             )}
           </div>
-          <span style={{ fontSize: "20px", fontWeight: 700, color: "#F0EEE9", marginBottom: "4px" }}>
-            {user.display_name || "Anonymous"}
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: "4px" }}>
+            <span style={{ fontSize: "20px", fontWeight: 700, color: "#F0EEE9" }}>
+              {user.display_name || "Anonymous"}
+            </span>
+            {isVerified && <VerifiedBadge size={18} />}
+          </div>
           {(gender || age !== null) && (
             <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap", justifyContent: "center", marginTop: "4px" }}>
               {gender && (

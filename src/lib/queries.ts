@@ -391,3 +391,60 @@ export function useLiveHostsSearch(query: string) {
     enabled: query.length > 0,
   });
 }
+
+export function useIsVerifiedHost(userId?: string) {
+  return useQuery({
+    queryKey: ['verified', userId],
+    queryFn: async () => {
+      if (!userId) return false;
+
+      // Check account age — must be 30+ days old
+      const { data: userData } = await supabase
+        .from('users')
+        .select('created_at')
+        .eq('id', userId)
+        .single();
+
+      if (!userData) return false;
+      const accountAgeDays = (Date.now() - new Date(userData.created_at).getTime()) / (1000 * 60 * 60 * 24);
+      if (accountAgeDays < 30) return false;
+
+      // Check 7+ hosted events
+      const { data: events } = await supabase
+        .from('events')
+        .select('id')
+        .eq('host_id', userId);
+
+      if (!events || events.length < 7) return false;
+
+      // Check average rating above 4.0
+      const { data: ratings } = await supabase
+        .from('event_ratings')
+        .select('rating_value, events!inner(host_id)')
+        .eq('events.host_id', userId)
+        .eq('rater_type', 'attendee');
+
+      if (!ratings || ratings.length < 5) return false;
+      const avg = ratings.reduce((sum, r) => sum + r.rating_value, 0) / ratings.length;
+      if (avg < 4.0) return false;
+
+      // Check 70%+ check-in rate across all hosted events
+      const eventIds = events.map(e => e.id);
+      const { data: attendees } = await supabase
+        .from('attendees')
+        .select('checked_in, no_show')
+        .in('event_id', eventIds);
+
+      if (!attendees || attendees.length < 10) return false;
+      const resolved = attendees.filter(a => a.checked_in || a.no_show);
+      const checkedIn = attendees.filter(a => a.checked_in);
+      if (resolved.length === 0) return false;
+      const checkinRate = checkedIn.length / resolved.length;
+      if (checkinRate < 0.7) return false;
+
+      return true;
+    },
+    enabled: !!userId,
+    staleTime: 1000 * 60 * 10,
+  });
+}
