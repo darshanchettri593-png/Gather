@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useFollowerCount, useIsVerifiedHost } from "@/lib/queries";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { ReportSheet } from "@/components/ReportSheet";
+import { InstagramIcon, TwitterIcon, FacebookIcon } from "@/components/SocialIcons";
 import { supabase } from "@/lib/supabase";
 import { format } from "date-fns";
 import { ArrowLeft, MapPin, CalendarDays } from "lucide-react";
@@ -21,7 +22,7 @@ export function PublicProfilePage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("users")
-        .select("id, display_name, avatar_url, location, created_at, date_of_birth, gender, bio")
+        .select("id, display_name, avatar_url, location, created_at, date_of_birth, gender, bio, instagram, twitter, facebook")
         .eq("id", id!)
         .single();
       if (error) throw error;
@@ -222,6 +223,49 @@ export function PublicProfilePage() {
             <p style={{ fontSize: '14px', color: '#6B6B63', textAlign: 'center', marginTop: '6px', padding: '0 24px', lineHeight: 1.5 }}>
               {(user as any).bio}
             </p>
+          )}
+          {((user as any).instagram || (user as any).twitter || (user as any).facebook) && (
+            <div style={{ display: 'flex', gap: '14px', marginTop: '12px', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap' }}>
+              {(user as any).instagram && (
+                <a
+                  href={(user as any).instagram.startsWith('http') ? (user as any).instagram : `https://instagram.com/${(user as any).instagram}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none' }}
+                >
+                  <InstagramIcon size={18} />
+                  <span style={{ fontSize: '12px', color: '#FF6B35' }}>
+                    {(user as any).instagram.replace(/.*instagram\.com\//, '').replace(/\/$/, '') || (user as any).instagram}
+                  </span>
+                </a>
+              )}
+              {(user as any).twitter && (
+                <a
+                  href={(user as any).twitter.startsWith('http') ? (user as any).twitter : `https://twitter.com/${(user as any).twitter}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none' }}
+                >
+                  <TwitterIcon size={18} />
+                  <span style={{ fontSize: '12px', color: '#FF6B35' }}>
+                    {(user as any).twitter.replace(/.*twitter\.com\//, '').replace(/.*x\.com\//, '').replace(/\/$/, '') || (user as any).twitter}
+                  </span>
+                </a>
+              )}
+              {(user as any).facebook && (
+                <a
+                  href={(user as any).facebook.startsWith('http') ? (user as any).facebook : `https://facebook.com/${(user as any).facebook}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none' }}
+                >
+                  <FacebookIcon size={18} />
+                  <span style={{ fontSize: '12px', color: '#FF6B35' }}>
+                    {(user as any).facebook.replace(/.*facebook\.com\//, '').replace(/\/$/, '') || (user as any).facebook}
+                  </span>
+                </a>
+              )}
+            </div>
           )}
           {(localStorage.getItem('gather_city') || user.location) && (
             <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>

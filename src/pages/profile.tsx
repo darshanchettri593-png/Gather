@@ -11,6 +11,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEventRatingSummary, useProfileRatings } from "@/hooks/useRatings";
 import { useFollowerCount, useIsVerifiedHost } from "@/lib/queries";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
+import { InstagramIcon, TwitterIcon, FacebookIcon } from "@/components/SocialIcons";
 import { StarDisplay } from "@/components/rating-section";
 import { LiveBadge } from "@/components/ui/live-badge";
 import { getEventStatus } from "@/lib/event-status";
@@ -163,6 +164,9 @@ export function ProfilePage() {
   const [showVerifySheet, setShowVerifySheet] = useState(false);
   const [editName, setEditName] = useState('');
   const [editBio, setEditBio] = useState('');
+  const [editInstagram, setEditInstagram] = useState('');
+  const [editTwitter, setEditTwitter] = useState('');
+  const [editFacebook, setEditFacebook] = useState('');
 
   const { data: userEvents, isLoading: isEventsLoading } = useUserEvents();
   const { data: profile, isLoading: isProfileLoading } = useProfile();
@@ -241,6 +245,9 @@ export function ProfilePage() {
     if (profile) {
       setEditName((profile as any).display_name || '');
       setEditBio((profile as any).bio || '');
+      setEditInstagram((profile as any).instagram || '');
+      setEditTwitter((profile as any).twitter || '');
+      setEditFacebook((profile as any).facebook || '');
     }
   }, [profile]);
 
@@ -506,6 +513,49 @@ export function ProfilePage() {
               <p style={{ fontSize: '14px', color: '#6B6B63', textAlign: 'center', marginTop: '6px', padding: '0 16px', lineHeight: 1.5 }}>
                 {(profile as any).bio}
               </p>
+            )}
+            {((profile as any)?.instagram || (profile as any)?.twitter || (profile as any)?.facebook) && (
+              <div style={{ display: 'flex', gap: '14px', marginTop: '12px', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap' }}>
+                {(profile as any).instagram && (
+                  <a
+                    href={(profile as any).instagram.startsWith('http') ? (profile as any).instagram : `https://instagram.com/${(profile as any).instagram}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none' }}
+                  >
+                    <InstagramIcon size={18} />
+                    <span style={{ fontSize: '12px', color: '#FF6B35' }}>
+                      {(profile as any).instagram.replace(/.*instagram\.com\//, '').replace(/\/$/, '') || (profile as any).instagram}
+                    </span>
+                  </a>
+                )}
+                {(profile as any).twitter && (
+                  <a
+                    href={(profile as any).twitter.startsWith('http') ? (profile as any).twitter : `https://twitter.com/${(profile as any).twitter}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none' }}
+                  >
+                    <TwitterIcon size={18} />
+                    <span style={{ fontSize: '12px', color: '#FF6B35' }}>
+                      {(profile as any).twitter.replace(/.*twitter\.com\//, '').replace(/.*x\.com\//, '').replace(/\/$/, '') || (profile as any).twitter}
+                    </span>
+                  </a>
+                )}
+                {(profile as any).facebook && (
+                  <a
+                    href={(profile as any).facebook.startsWith('http') ? (profile as any).facebook : `https://facebook.com/${(profile as any).facebook}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none' }}
+                  >
+                    <FacebookIcon size={18} />
+                    <span style={{ fontSize: '12px', color: '#FF6B35' }}>
+                      {(profile as any).facebook.replace(/.*facebook\.com\//, '').replace(/\/$/, '') || (profile as any).facebook}
+                    </span>
+                  </a>
+                )}
+              </div>
             )}
 
             {/* Separator */}
@@ -795,9 +845,48 @@ export function ProfilePage() {
               {editBio.length}/150
             </p>
 
+            <div style={{ marginTop: '16px' }}>
+              <label style={{ fontSize: '11px', fontWeight: 700, color: '#6B6B63', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '6px' }}>
+                Instagram
+              </label>
+              <input
+                type="text"
+                placeholder="username or profile URL"
+                value={editInstagram}
+                onChange={(e) => setEditInstagram(e.target.value)}
+                style={{ width: '100%', fontSize: '15px', color: '#F0EEE9', backgroundColor: 'transparent', border: 'none', borderBottom: '1px solid #2A2A28', outline: 'none', padding: '0 0 10px' }}
+              />
+            </div>
+
+            <div style={{ marginTop: '16px' }}>
+              <label style={{ fontSize: '11px', fontWeight: 700, color: '#6B6B63', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '6px' }}>
+                Twitter / X
+              </label>
+              <input
+                type="text"
+                placeholder="username or profile URL"
+                value={editTwitter}
+                onChange={(e) => setEditTwitter(e.target.value)}
+                style={{ width: '100%', fontSize: '15px', color: '#F0EEE9', backgroundColor: 'transparent', border: 'none', borderBottom: '1px solid #2A2A28', outline: 'none', padding: '0 0 10px' }}
+              />
+            </div>
+
+            <div style={{ marginTop: '16px', marginBottom: '20px' }}>
+              <label style={{ fontSize: '11px', fontWeight: 700, color: '#6B6B63', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '6px' }}>
+                Facebook
+              </label>
+              <input
+                type="text"
+                placeholder="username or profile URL"
+                value={editFacebook}
+                onChange={(e) => setEditFacebook(e.target.value)}
+                style={{ width: '100%', fontSize: '15px', color: '#F0EEE9', backgroundColor: 'transparent', border: 'none', borderBottom: '1px solid #2A2A28', outline: 'none', padding: '0 0 10px' }}
+              />
+            </div>
+
             <button
               onClick={async () => {
-                await supabase.from('users').update({ display_name: editName, bio: editBio }).eq('id', user!.id);
+                await supabase.from('users').update({ display_name: editName, bio: editBio, instagram: editInstagram || null, twitter: editTwitter || null, facebook: editFacebook || null }).eq('id', user!.id);
                 queryClient.invalidateQueries({ queryKey: ['profile'] });
                 setShowEditModal(false);
               }}
