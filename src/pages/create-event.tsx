@@ -328,7 +328,7 @@ export function CreateEventPage() {
                 </span>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "8px" }}>
-                <div>
+                <div style={{ overflow: 'hidden', width: '100%' }}>
                   <label style={{ fontSize: "11px", fontWeight: 700, color: "#6B6B63", textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: "6px" }}>Date</label>
                   <input
                     type="date"
@@ -352,7 +352,7 @@ export function CreateEventPage() {
                     }}
                   />
                 </div>
-                <div>
+                <div style={{ overflow: 'hidden', width: '100%' }}>
                   <label style={{ fontSize: "11px", fontWeight: 700, color: "#6B6B63", textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: "6px" }}>Time</label>
                   <input
                     type="time"
@@ -400,7 +400,7 @@ export function CreateEventPage() {
                 </span>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "8px" }}>
-                <div>
+                <div style={{ overflow: 'hidden', width: '100%' }}>
                   <label style={{ fontSize: "11px", fontWeight: 700, color: "#6B6B63", textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: "6px" }}>Date</label>
                   <input
                     type="date"
@@ -425,7 +425,7 @@ export function CreateEventPage() {
                     }}
                   />
                 </div>
-                <div>
+                <div style={{ overflow: 'hidden', width: '100%' }}>
                   <label style={{ fontSize: "11px", fontWeight: 700, color: "#6B6B63", textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: "6px" }}>Time</label>
                   <input
                     type="time"
