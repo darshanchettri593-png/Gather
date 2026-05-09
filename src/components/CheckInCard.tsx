@@ -11,94 +11,52 @@ export function CheckInCard({ eventId, userId, attendee }: CheckInCardProps) {
 
   if (attendee?.checked_in) {
     return (
-      <div style={{
-        backgroundColor: '#1C1C1A',
-        border: '1px solid #34C759',
-        borderRadius: '16px',
-        padding: '20px',
-        textAlign: 'center',
-        marginBottom: '24px',
-        position: 'relative',
-        zIndex: 50,
-      }}>
-        <p style={{ fontSize: '24px', marginBottom: '4px' }}>✅</p>
-        <p style={{ fontSize: '16px', fontWeight: 600, color: '#34C759' }}>You showed up!</p>
-        <p style={{ fontSize: '13px', color: '#6B6B63', marginTop: '4px' }}>Thanks for being part of it.</p>
+      <div className="rounded-2xl p-5 mb-6 text-center" style={{ backgroundColor: '#1C1C1A', border: '1px solid #34C759' }}>
+        <p className="text-2xl mb-1">✅</p>
+        <p className="font-semibold" style={{ color: '#34C759' }}>You showed up!</p>
+        <p className="text-sm mt-1" style={{ color: '#6B6B63' }}>Thanks for being part of it.</p>
       </div>
     );
   }
 
   if (attendee?.no_show) {
     return (
-      <div style={{
-        backgroundColor: '#1C1C1A',
-        border: '1px solid #2A2A28',
-        borderRadius: '16px',
-        padding: '20px',
-        textAlign: 'center',
-        marginBottom: '24px',
-        position: 'relative',
-        zIndex: 50,
-      }}>
-        <p style={{ fontSize: '24px', marginBottom: '4px' }}>😔</p>
-        <p style={{ fontSize: '16px', fontWeight: 600, color: '#6B6B63' }}>You missed this one</p>
-        <p style={{ fontSize: '13px', color: '#6B6B63', marginTop: '4px' }}>Next time!</p>
+      <div className="rounded-2xl p-5 mb-6 text-center" style={{ backgroundColor: '#1C1C1A', border: '1px solid #2A2A28' }}>
+        <p className="text-2xl mb-1">😔</p>
+        <p className="font-semibold" style={{ color: '#6B6B63' }}>You missed this one</p>
+        <p className="text-sm mt-1" style={{ color: '#6B6B63' }}>Next time!</p>
       </div>
     );
   }
 
+  const handleYes = () => {
+    checkIn.mutate({ eventId, userId, checkedIn: true });
+  };
+
+  const handleNo = () => {
+    checkIn.mutate({ eventId, userId, checkedIn: false });
+  };
+
   return (
-    <div style={{
-      backgroundColor: '#1C1C1A',
-      border: '1px solid #FF6B35',
-      borderRadius: '16px',
-      padding: '20px',
-      marginBottom: '24px',
-      position: 'relative',
-      zIndex: 50,
-    }}>
-      <p style={{ fontSize: '18px', fontWeight: 700, color: '#F0EEE9', marginBottom: '4px' }}>
-        Did you show up? 👋
-      </p>
-      <p style={{ fontSize: '13px', color: '#6B6B63', marginBottom: '16px' }}>
-        Let the host and community know.
-      </p>
-      <div style={{ display: 'flex', gap: '12px' }}>
+    <div className="rounded-2xl p-5 mb-6" style={{ backgroundColor: '#1C1C1A', border: '1px solid #FF6B35' }}>
+      <p className="text-lg font-bold mb-1" style={{ color: '#F0EEE9' }}>Did you show up? 👋</p>
+      <p className="text-sm mb-4" style={{ color: '#6B6B63' }}>Let the host and community know.</p>
+      <div className="flex gap-3">
         <button
-          onClick={() => checkIn.mutate({ eventId, userId, checkedIn: true })}
+          type="button"
+          onPointerUp={handleYes}
           disabled={checkIn.isPending}
-          style={{
-            flex: 1,
-            backgroundColor: '#FF6B35',
-            color: 'white',
-            border: 'none',
-            borderRadius: '999px',
-            padding: '14px',
-            fontSize: '15px',
-            fontWeight: 600,
-            cursor: 'pointer',
-            position: 'relative',
-            zIndex: 50,
-          }}
+          className="flex-1 rounded-full py-3 text-sm font-semibold"
+          style={{ backgroundColor: '#FF6B35', color: '#fff', border: 'none', touchAction: 'manipulation' }}
         >
           Yes, I was there 🙌
         </button>
         <button
-          onClick={() => checkIn.mutate({ eventId, userId, checkedIn: false })}
+          type="button"
+          onPointerUp={handleNo}
           disabled={checkIn.isPending}
-          style={{
-            flex: 1,
-            backgroundColor: '#242422',
-            color: '#6B6B63',
-            border: '1px solid #2A2A28',
-            borderRadius: '999px',
-            padding: '14px',
-            fontSize: '15px',
-            fontWeight: 600,
-            cursor: 'pointer',
-            position: 'relative',
-            zIndex: 50,
-          }}
+          className="flex-1 rounded-full py-3 text-sm font-semibold"
+          style={{ backgroundColor: '#242422', color: '#6B6B63', border: '1px solid #2A2A28', touchAction: 'manipulation' }}
         >
           No, I missed it
         </button>
