@@ -367,13 +367,15 @@ export function EventDetailPage() {
                         border: "1px solid #2A2A28",
                       }}
                     >
-                      <button
-                        onClick={() => { setIsMenuOpen(false); setShowEditModal(true); }}
-                        style={{ display: 'block', width: '100%', padding: '14px 20px', textAlign: 'left', backgroundColor: 'transparent', border: 'none', color: '#F0EEE9', fontSize: '15px', cursor: 'pointer' }}
-                        className="active:bg-[#2A2A28] transition-colors"
-                      >
-                        ✏️ Edit Event
-                      </button>
+                      {!isPastEvent && (
+                        <button
+                          onClick={() => { setIsMenuOpen(false); setShowEditModal(true); }}
+                          style={{ display: 'block', width: '100%', padding: '14px 20px', textAlign: 'left', backgroundColor: 'transparent', border: 'none', color: '#F0EEE9', fontSize: '15px', cursor: 'pointer' }}
+                          className="active:bg-[#2A2A28] transition-colors"
+                        >
+                          ✏️ Edit Event
+                        </button>
+                      )}
                       <button
                         onClick={() => { setIsMenuOpen(false); setIsDeleteModalOpen(true); }}
                         className="w-full flex items-center px-4 py-3 text-left active:bg-[#2A2A28] transition-colors"
@@ -838,49 +840,74 @@ export function EventDetailPage() {
 
             {isHost && (
               <div>
-                <textarea
-                  value={announcementContent}
-                  onChange={(e) => setAnnouncementContent(e.target.value)}
-                  placeholder="Send an announcement to all attendees..."
-                  rows={3}
-                  style={{
-                    width: "100%",
-                    backgroundColor: "#1C1C1A",
-                    border: "1px solid #2A2A28",
-                    borderRadius: "12px",
-                    padding: "12px",
-                    fontSize: "15px",
-                    color: "#F0EEE9",
-                    resize: "none",
-                    outline: "none",
-                    lineHeight: 1.5,
-                    boxSizing: "border-box",
-                  }}
-                  className="placeholder:text-[#3D3D38]"
-                />
-                <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "4px", marginBottom: "8px" }}>
-                  <span style={{ fontSize: "13px", color: "#6B6B63" }}>
-                    {announcementContent.length}/300
-                  </span>
-                </div>
-                <button
-                  onClick={handlePostAnnouncement}
-                  disabled={!announcementContent.trim() || announcementContent.length > 300 || isPostingAnnouncement}
-                  style={{
-                    width: "100%",
-                    backgroundColor: "#FF6B35",
-                    color: "white",
-                    fontSize: "15px",
-                    fontWeight: 600,
-                    border: "none",
-                    borderRadius: "12px",
-                    padding: "14px",
-                    cursor: "pointer",
-                  }}
-                  className="disabled:opacity-40 transition-opacity active:opacity-70"
-                >
-                  {isPostingAnnouncement ? "Sending..." : "Send Announcement 📣"}
-                </button>
+                {isPastEvent ? (
+                  <div style={{
+                    backgroundColor: '#1C1C1A',
+                    border: '1px solid #2A2A28',
+                    borderRadius: '14px',
+                    padding: '14px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    marginBottom: '12px',
+                  }}>
+                    <span style={{ fontSize: '18px' }}>🔒</span>
+                    <div>
+                      <p style={{ fontSize: '13px', fontWeight: 600, color: '#6B6B63', margin: 0 }}>
+                        Announcements closed
+                      </p>
+                      <p style={{ fontSize: '11px', color: '#3D3D38', margin: '2px 0 0' }}>
+                        Event has ended — no new announcements
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <textarea
+                      value={announcementContent}
+                      onChange={(e) => setAnnouncementContent(e.target.value)}
+                      placeholder="Send an announcement to all attendees..."
+                      rows={3}
+                      style={{
+                        width: "100%",
+                        backgroundColor: "#1C1C1A",
+                        border: "1px solid #2A2A28",
+                        borderRadius: "12px",
+                        padding: "12px",
+                        fontSize: "15px",
+                        color: "#F0EEE9",
+                        resize: "none",
+                        outline: "none",
+                        lineHeight: 1.5,
+                        boxSizing: "border-box",
+                      }}
+                      className="placeholder:text-[#3D3D38]"
+                    />
+                    <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "4px", marginBottom: "8px" }}>
+                      <span style={{ fontSize: "13px", color: "#6B6B63" }}>
+                        {announcementContent.length}/300
+                      </span>
+                    </div>
+                    <button
+                      onClick={handlePostAnnouncement}
+                      disabled={!announcementContent.trim() || announcementContent.length > 300 || isPostingAnnouncement}
+                      style={{
+                        width: "100%",
+                        backgroundColor: "#FF6B35",
+                        color: "white",
+                        fontSize: "15px",
+                        fontWeight: 600,
+                        border: "none",
+                        borderRadius: "12px",
+                        padding: "14px",
+                        cursor: "pointer",
+                      }}
+                      className="disabled:opacity-40 transition-opacity active:opacity-70"
+                    >
+                      {isPostingAnnouncement ? "Sending..." : "Send Announcement 📣"}
+                    </button>
+                  </>
+                )}
               </div>
             )}
           </div>
@@ -981,6 +1008,22 @@ export function EventDetailPage() {
               <p style={{ color: "#6B6B63", fontSize: "13px" }}>Loading...</p>
             ) : !hasRSVPd ? (
               <p style={{ color: "#6B6B63", fontSize: "13px" }}>RSVP to join the conversation.</p>
+            ) : isPastEvent ? (
+              <div style={{
+                backgroundColor: '#1C1C1A',
+                border: '1px solid #2A2A28',
+                borderRadius: '10px',
+                padding: '12px 14px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+              }}>
+                <span style={{ fontSize: '14px' }}>🔒</span>
+                <span style={{ fontSize: '12px', color: '#6B6B63' }}>
+                  Chat is read-only — event has ended
+                </span>
+              </div>
             ) : (
               <div
                 className="flex items-center gap-3"
