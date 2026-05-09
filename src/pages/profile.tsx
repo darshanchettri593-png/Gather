@@ -257,10 +257,10 @@ export function ProfilePage() {
 
   // ─── Authenticated ──────────────────────────────────────────────────────────
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: '#111110', overflow: 'hidden' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', backgroundColor: '#111110' }}>
 
       {/* ── Section 1: Sticky header + profile card + tabs ─────────────────── */}
-      <div style={{ flexShrink: 0, zIndex: 40, backgroundColor: '#111110' }}>
+      <div style={{ flexShrink: 0 }}>
 
         {/* Header */}
         <div style={{ height: '64px', padding: '0 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #2A2A28' }}>
@@ -489,7 +489,7 @@ export function ProfilePage() {
       </div>
 
       {/* ── Section 2: Scrollable content ──────────────────────────────────── */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '16px 16px 100px' }}>
+      <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: '100px' }}>
         {upcomingEvents.length === 0 && pastEvents.length === 0 && liveEvents.length === 0 ? (
           activeTab === 'hosting' ? (
             <EmptyState icon={CalendarDays} heading="Nothing hosted yet." subtext="" buttonText="Host a Gathering" onAction={() => navigate('/host')} />
@@ -544,11 +544,11 @@ export function ProfilePage() {
       {/* ── Edit Modal — position fixed, does not scroll page ──────────────── */}
       {showEditModal && (
         <div
-          style={{ position: 'fixed', inset: 0, zIndex: 300, backgroundColor: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'flex-end' }}
+          style={{ position: 'fixed', inset: 0, zIndex: 200, backgroundColor: 'rgba(0,0,0,0.85)' }}
           onClick={() => setShowEditModal(false)}
         >
           <div
-            style={{ width: '100%', backgroundColor: '#1C1C1A', borderRadius: '24px 24px 0 0', maxHeight: '90vh', overflowY: 'auto', paddingBottom: '40px' }}
+            style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#1C1C1A', borderRadius: '20px 20px 0 0', maxHeight: '90vh', overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}
             onClick={e => e.stopPropagation()}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px 14px', position: 'sticky', top: 0, backgroundColor: '#1C1C1A', zIndex: 10 }}>
