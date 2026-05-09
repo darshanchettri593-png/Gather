@@ -260,7 +260,7 @@ export function ProfilePage() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', backgroundColor: '#111110' }}>
 
       {/* ── Section 1: Sticky header + profile card + tabs ─────────────────── */}
-      <div style={{ flexShrink: 0 }}>
+      <div style={{ flexShrink: 0, position: 'sticky', top: 0, zIndex: 40, backgroundColor: '#111110' }}>
 
         {/* Header */}
         <div style={{ height: '64px', padding: '0 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #2A2A28' }}>
@@ -494,7 +494,7 @@ export function ProfilePage() {
       </div>
 
       {/* ── Section 2: Scrollable content ──────────────────────────────────── */}
-      <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: '100px', paddingTop: '12px' }}>
+      <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: '100px' }}>
         {upcomingEvents.length === 0 && pastEvents.length === 0 && liveEvents.length === 0 ? (
           activeTab === 'hosting' ? (
             <EmptyState icon={CalendarDays} heading="Nothing hosted yet." subtext="" buttonText="Host a Gathering" onAction={() => navigate('/host')} />
