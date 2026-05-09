@@ -362,9 +362,15 @@ export function ProfilePage() {
 
                 {/* Location */}
                 {(localStorage.getItem('gather_city') || profile?.location) && (
-                  <span style={{ fontSize: '12px', color: '#6B6B63' }}>
-                    {localStorage.getItem('gather_city') || profile?.location}
-                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+                      <path d="M6 0C3.24 0 1 2.24 1 5c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5z" fill="#FF6B35"/>
+                      <text x="6" y="7" textAnchor="middle" dominantBaseline="middle" fill="white" fontSize="5" fontWeight="700" fontFamily="-apple-system, sans-serif">G</text>
+                    </svg>
+                    <span style={{ fontSize: '12px', color: '#6B6B63' }}>
+                      {localStorage.getItem('gather_city') || profile?.location}
+                    </span>
+                  </div>
                 )}
 
                 {/* Member since */}
@@ -488,7 +494,7 @@ export function ProfilePage() {
       </div>
 
       {/* ── Section 2: Scrollable content ──────────────────────────────────── */}
-      <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: '100px' }}>
+      <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: '100px', paddingTop: '12px' }}>
         {upcomingEvents.length === 0 && pastEvents.length === 0 && liveEvents.length === 0 ? (
           activeTab === 'hosting' ? (
             <EmptyState icon={CalendarDays} heading="Nothing hosted yet." subtext="" buttonText="Host a Gathering" onAction={() => navigate('/host')} />
@@ -522,7 +528,7 @@ export function ProfilePage() {
 
             {/* Past */}
             {pastEvents.length > 0 && (
-              <div style={{ marginTop: '8px' }}>
+              <div style={{ marginTop: '16px', paddingLeft: '16px', paddingRight: '16px' }}>
                 <p style={{ fontSize: '11px', fontWeight: 700, color: '#3D3D38', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '6px' }}>PAST</p>
                 <button
                   onClick={() => setShowPastEvents(v => !v)}
