@@ -525,7 +525,11 @@ export function ProfilePage() {
                   >
                     <InstagramIcon size={18} />
                     <span style={{ fontSize: '12px', color: '#FF6B35' }}>
-                      {(profile as any).instagram.replace(/.*instagram\.com\//, '').replace(/\/$/, '') || (profile as any).instagram}
+                      {(() => {
+                        const val = (profile as any).instagram || '';
+                        const match = val.match(/instagram\.com\/([^/?]+)/);
+                        return match ? '@' + match[1] : '@' + val.replace(/^@/, '');
+                      })()}
                     </span>
                   </a>
                 )}
@@ -538,7 +542,11 @@ export function ProfilePage() {
                   >
                     <TwitterIcon size={18} />
                     <span style={{ fontSize: '12px', color: '#FF6B35' }}>
-                      {(profile as any).twitter.replace(/.*twitter\.com\//, '').replace(/.*x\.com\//, '').replace(/\/$/, '') || (profile as any).twitter}
+                      {(() => {
+                        const val = (profile as any).twitter || '';
+                        const match = val.match(/(?:twitter|x)\.com\/([^/?]+)/);
+                        return match ? '@' + match[1] : '@' + val.replace(/^@/, '');
+                      })()}
                     </span>
                   </a>
                 )}
@@ -551,7 +559,11 @@ export function ProfilePage() {
                   >
                     <FacebookIcon size={18} />
                     <span style={{ fontSize: '12px', color: '#FF6B35' }}>
-                      {(profile as any).facebook.replace(/.*facebook\.com\//, '').replace(/\/$/, '') || (profile as any).facebook}
+                      {(() => {
+                        const val = (profile as any).facebook || '';
+                        const match = val.match(/facebook\.com\/([^/?]+)/);
+                        return match ? '@' + match[1] : '@' + val.replace(/^@/, '');
+                      })()}
                     </span>
                   </a>
                 )}
@@ -783,7 +795,7 @@ export function ProfilePage() {
           onClick={() => setShowEditModal(false)}
         >
           <div
-            style={{ width: '100%', backgroundColor: '#1C1C1A', borderRadius: '24px 24px 0 0', padding: '32px 24px 100px' }}
+            style={{ width: '100%', backgroundColor: '#1C1C1A', borderRadius: '24px 24px 0 0', padding: '32px 24px 100px', maxHeight: '90vh', overflowY: 'auto' }}
             onClick={e => e.stopPropagation()}
           >
             <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#F0EEE9', marginBottom: '24px' }}>Edit Profile</h3>
