@@ -36,8 +36,8 @@ export function BottomNav() {
       style={{
         backgroundColor: "#1C1C1A",
         borderTop: "1px solid #2A2A28",
-        paddingTop: "14px",
-        paddingBottom: "calc(30px + env(safe-area-inset-bottom, 0px))",
+        paddingTop: "10px",
+        paddingBottom: "calc(20px + env(safe-area-inset-bottom, 0px))",
       }}
     >
       <div className="flex items-center justify-around h-full max-w-md mx-auto px-2">
