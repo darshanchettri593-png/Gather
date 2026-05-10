@@ -141,6 +141,18 @@
     font-family: var(--font-sans);
   }
 
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 250px 250px at top right, rgba(255,107,53,0.10) 0%, transparent 70%),
+      radial-gradient(ellipse 200px 200px at bottom left, rgba(200,75,26,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 120px 120px at 70% 45%, rgba(255,154,108,0.07) 0%, transparent 70%);
+  }
+
   h1, h2, h3, h4, h5, h6 {
     letter-spacing: -0.02em;
     font-weight: 600;
