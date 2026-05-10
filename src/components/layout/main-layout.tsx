@@ -79,7 +79,7 @@ export function MainLayout() {
               <MapPin
                 size={16}
                 strokeWidth={2}
-                style={{ color: "#FF6B35", flexShrink: 0 }}
+                style={{ color: "#F0EEE9", flexShrink: 0 }}
               />
               <span
                 style={{

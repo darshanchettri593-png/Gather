@@ -488,7 +488,7 @@ export function EventDetailPage() {
           <div className="flex flex-col items-center text-center">
             <div
               className="flex items-center justify-center rounded-xl mb-2"
-              style={{ width: "44px", height: "44px", backgroundColor: "#242422", border: "1px solid #2A2A28" }}
+              style={{ width: "44px", height: "44px", backgroundColor: "#1C1C1A", border: "1px solid #2A2A28" }}
             >
               <CalendarRange size={20} style={{ color: "#FF6B35" }} />
             </div>
@@ -507,7 +507,7 @@ export function EventDetailPage() {
           <div className="flex flex-col items-center text-center">
             <div
               className="flex items-center justify-center rounded-xl mb-2"
-              style={{ width: "44px", height: "44px", backgroundColor: "#242422", border: "1px solid #2A2A28" }}
+              style={{ width: "44px", height: "44px", backgroundColor: "#1C1C1A", border: "1px solid #2A2A28" }}
             >
               <Clock size={20} style={{ color: "#FF6B35" }} />
             </div>
@@ -533,7 +533,7 @@ export function EventDetailPage() {
           <div className="flex flex-col items-center text-center">
             <div
               className="flex items-center justify-center rounded-xl mb-2"
-              style={{ width: "44px", height: "44px", backgroundColor: "#242422", border: "1px solid #2A2A28" }}
+              style={{ width: "44px", height: "44px", backgroundColor: "#1C1C1A", border: "1px solid #2A2A28" }}
             >
               <MapPin size={20} style={{ color: "#FF6B35" }} />
             </div>
@@ -550,7 +550,7 @@ export function EventDetailPage() {
             <div className="flex flex-col items-center text-center">
               <div
                 className="flex items-center justify-center rounded-xl mb-2"
-                style={{ width: "44px", height: "44px", backgroundColor: "#242422", border: "1px solid #2A2A28" }}
+                style={{ width: "44px", height: "44px", backgroundColor: "#1C1C1A", border: "1px solid #2A2A28" }}
               >
                 <Users size={20} style={{ color: "#FF6B35" }} />
               </div>

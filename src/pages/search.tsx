@@ -260,12 +260,12 @@ export function SearchPage() {
                   key={vibe}
                   onClick={() => setQuery(vibe.split(' ')[0].toLowerCase())}
                   style={{
-                    backgroundColor: '#242422',
+                    backgroundColor: 'transparent',
                     border: '1px solid #2A2A28',
                     borderRadius: '999px',
                     padding: '8px 16px',
                     fontSize: '14px',
-                    color: '#F0EEE9',
+                    color: '#6B6B63',
                     cursor: 'pointer',
                   }}
                 >

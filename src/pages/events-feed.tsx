@@ -590,12 +590,12 @@ export function EventFeedPage() {
         <button
           onClick={() => setShowFilter(true)}
           style={{
-            backgroundColor: '#242422',
+            backgroundColor: '#1C1C1A',
             border: '1px solid #2A2A28',
             borderRadius: '999px',
             padding: '6px 14px',
             fontSize: '13px',
-            color: userLat ? '#FF6B35' : '#F0EEE9',
+            color: '#F0EEE9',
             fontWeight: 500,
             cursor: 'pointer',
           }}

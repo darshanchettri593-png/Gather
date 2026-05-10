@@ -27,7 +27,7 @@ export function BottomNav() {
     }
   };
 
-  const activeColor = "#FF6B35";
+  const activeColor = "#F0EEE9";
   const inactiveColor = "#6B6B63";
 
   return (
@@ -55,7 +55,7 @@ export function BottomNav() {
             size={22}
             strokeWidth={isActive("/") ? 2.5 : 1.5}
             color={isActive("/") ? activeColor : inactiveColor}
-            fill={isActive("/") ? "rgba(255,107,53,0.15)" : "none"}
+            fill={isActive("/") ? "none" : "none"}
             style={{ display: "block" }}
           />
           <span
@@ -148,7 +148,7 @@ export function BottomNav() {
             size={22}
             strokeWidth={isActive("/profile") ? 2.5 : 1.8}
             color={isActive("/profile") ? activeColor : inactiveColor}
-            fill={isActive("/profile") ? "rgba(255,107,53,0.15)" : "none"}
+            fill={isActive("/profile") ? "none" : "none"}
           />
           <span
             style={{
