@@ -323,19 +323,21 @@ export function EventDetailPage() {
 
       {/* ── Tab bar — shown only when RSVP'd ────────────────────────────────── */}
       {hasRSVPd && (
-        <div style={{ position: 'sticky', top: 0, zIndex: 50, backgroundColor: '#111110', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', borderBottom: '1px solid #2A2A28', display: 'flex' }}>
-          <button
-            onClick={() => setActiveTab('details')}
-            style={{ flex: 1, padding: '12px 0', fontSize: '14px', fontWeight: activeTab === 'details' ? 700 : 500, color: activeTab === 'details' ? '#F0EEE9' : '#6B6B63', backgroundColor: 'transparent', border: 'none', borderBottom: activeTab === 'details' ? '2px solid #FF6B35' : '2px solid transparent', cursor: 'pointer' }}
-          >
-            Details
-          </button>
-          <button
-            onClick={() => setActiveTab('chat')}
-            style={{ flex: 1, padding: '12px 0', fontSize: '14px', fontWeight: activeTab === 'chat' ? 700 : 500, color: activeTab === 'chat' ? '#F0EEE9' : '#6B6B63', backgroundColor: 'transparent', border: 'none', borderBottom: activeTab === 'chat' ? '2px solid #FF6B35' : '2px solid transparent', cursor: 'pointer' }}
-          >
-            Chat
-          </button>
+        <div style={{ position: 'sticky', top: 0, zIndex: 50, backgroundColor: '#111110', padding: '10px 16px', borderBottom: '1px solid #2A2A28' }}>
+          <div style={{ display: 'flex', backgroundColor: '#1C1C1A', borderRadius: '20px', padding: '4px', gap: '4px' }}>
+            <button
+              onClick={() => setActiveTab('details')}
+              style={{ flex: 1, padding: '8px 0', borderRadius: '16px', fontSize: '13px', fontWeight: 700, border: 'none', cursor: 'pointer', backgroundColor: activeTab === 'details' ? '#FF6B35' : 'transparent', color: activeTab === 'details' ? '#fff' : '#6B6B63', transition: 'all 0.2s' }}
+            >
+              Details
+            </button>
+            <button
+              onClick={() => setActiveTab('chat')}
+              style={{ flex: 1, padding: '8px 0', borderRadius: '16px', fontSize: '13px', fontWeight: 700, border: 'none', cursor: 'pointer', backgroundColor: activeTab === 'chat' ? '#FF6B35' : 'transparent', color: activeTab === 'chat' ? '#fff' : '#6B6B63', transition: 'all 0.2s' }}
+            >
+              Chat
+            </button>
+          </div>
         </div>
       )}
 
@@ -956,7 +958,7 @@ export function EventDetailPage() {
 
       {/* ── Chat tab ─────────────────────────────────────────────────────────── */}
       {hasRSVPd && activeTab === 'chat' && (
-        <div style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh - 200px)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflowY: 'auto', minHeight: 'calc(100vh - 200px)' }}>
 
           {/* Members bar */}
           <div style={{ backgroundColor: '#1C1C1A', borderBottom: '1px solid #2A2A28', padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -975,7 +977,8 @@ export function EventDetailPage() {
           </div>
 
           {/* Messages list */}
-          <div style={{ flex: 1, padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '100px' }}>
+          <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minHeight: '100%', padding: '14px 16px', gap: '12px', paddingBottom: '100px' }}>
             {messages.length === 0 && (
               <div style={{ textAlign: 'center', padding: '40px 0', color: '#6B6B63', fontSize: '14px' }}>
                 No messages yet. Say something! 👋
@@ -1014,6 +1017,7 @@ export function EventDetailPage() {
             })}
             <div ref={messagesEndRef} />
             <div ref={chatBottomRef} />
+          </div>
           </div>
 
           {/* Chat input */}
