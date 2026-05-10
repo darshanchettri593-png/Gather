@@ -52,6 +52,9 @@ function FeaturedEventCard({ event, userLocation }: { event: any; userLocation: 
               alt=""
               className="w-full h-full object-cover"
               referrerPolicy="no-referrer"
+              loading="lazy"
+              style={{ opacity: 0, transition: 'opacity 0.3s ease' }}
+              onLoad={(e) => (e.target as HTMLImageElement).style.opacity = '1'}
             />
           ) : (
             <div
@@ -242,6 +245,9 @@ function CompactEventCard({ event, userLocation }: { event: any; userLocation: {
               alt=""
               className="w-full h-full object-cover"
               referrerPolicy="no-referrer"
+              loading="lazy"
+              style={{ opacity: 0, transition: 'opacity 0.3s ease' }}
+              onLoad={(e) => (e.target as HTMLImageElement).style.opacity = '1'}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
