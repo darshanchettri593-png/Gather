@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, Link } from "react-router";
-import { Search, ArrowLeft, CalendarDays, MapPin } from "lucide-react";
+import { Link } from "react-router";
+import { CalendarDays, MapPin } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { format } from "date-fns";
@@ -18,13 +18,13 @@ function EventCard({ event }: { event: any }) {
     >
       <div
         style={{
-          backgroundColor: "#242422",
-          borderRadius: "16px",
+          backgroundColor: "#1C1C1A",
+          borderRadius: "14px",
           overflow: "hidden",
           display: "flex",
           gap: "12px",
           padding: "12px",
-          border: "1px solid #2A2A28",
+          border: "1px solid #1e1e1c",
         }}
       >
         <div
@@ -34,7 +34,7 @@ function EventCard({ event }: { event: any }) {
             borderRadius: "10px",
             overflow: "hidden",
             flexShrink: 0,
-            backgroundColor: "#1C1C1A",
+            backgroundColor: "#242422",
           }}
         >
           {event.cover_image_url ? (
@@ -43,6 +43,7 @@ function EventCard({ event }: { event: any }) {
               alt=""
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
               referrerPolicy="no-referrer"
+              loading="lazy"
             />
           ) : (
             <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -88,8 +89,8 @@ function SkeletonCard() {
   return (
     <div
       style={{
-        backgroundColor: "#242422",
-        borderRadius: "16px",
+        backgroundColor: "#1C1C1A",
+        borderRadius: "14px",
         overflow: "hidden",
         display: "flex",
         gap: "12px",
@@ -109,11 +110,13 @@ function SkeletonCard() {
   );
 }
 
+const VIBES = ['All', 'Move', 'Create', 'Hang', 'Learn', 'Explore'];
+
 export function SearchPage() {
-  const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [selectedVibe, setSelectedVibe] = useState("");
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -161,137 +164,118 @@ export function SearchPage() {
   const showEmpty = debouncedQuery.length >= 2 && !isLoading && results.length === 0;
   const showResults = debouncedQuery.length >= 2 && !isLoading && results.length > 0;
   const showLoading = debouncedQuery.length >= 2 && isLoading;
-  const showPrompt = query.length < 2;
+
+  const filteredResults = selectedVibe ? results.filter((e: any) => e.vibe === selectedVibe) : results;
+  const filteredUpcoming = selectedVibe ? upcomingEvents.filter((e: any) => e.vibe === selectedVibe) : upcomingEvents;
 
   return (
     <div
-      className="page-transition max-w-md mx-auto min-h-screen flex flex-col"
-      style={{ height: '100dvh', display: 'flex', flexDirection: 'column', backgroundColor: '#111110', overflow: 'hidden' }}
+      className="page-transition"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: '#111110',
+        overflow: 'hidden',
+      }}
     >
-      {/* Header */}
-      <header
-        style={{
-          position: "sticky",
-          top: 0,
-          zIndex: 50,
-          height: "56px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "0 16px",
-          backgroundColor: "#111110",
-          borderBottom: "1px solid #2A2A28",
-          flexShrink: 0,
-        }}
-      >
-        <button
-          onClick={() => navigate(-1)}
-          className="active:opacity-60 transition-opacity"
-          style={{ width: "40px", height: "40px", display: "flex", alignItems: "center", justifyContent: "center" }}
-        >
-          <ArrowLeft size={22} color="#F0EEE9" strokeWidth={2} />
-        </button>
-        <span style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", fontSize: "17px", fontWeight: 600, color: "#F0EEE9" }}>
-          Search
-        </span>
-        <div style={{ width: "40px" }} />
-      </header>
+      {/* ── Section 1: Fixed header ─────────────────────────────────────────────── */}
+      <div style={{ flexShrink: 0, padding: '16px 16px 12px' }}>
 
-      {/* Search input — sticky below header */}
-      <div
-        style={{
-          position: "sticky",
-          top: "56px",
-          zIndex: 40,
-          backgroundColor: "#111110",
-          padding: "12px 16px",
-          borderBottom: "1px solid #2A2A28",
-          flexShrink: 0,
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            backgroundColor: "#1C1C1A",
-            border: "1px solid #2A2A28",
-            borderRadius: "12px",
-            padding: "12px 16px",
-            flexShrink: 0,
-          }}
-        >
-          <Search size={16} color="#6B6B63" strokeWidth={2} style={{ flexShrink: 0 }} />
+        <h1 style={{
+          color: '#F0EEE9',
+          fontSize: '26px',
+          fontWeight: 800,
+          lineHeight: 1.1,
+          marginBottom: '14px',
+          letterSpacing: '-0.02em',
+        }}>
+          Find your next{' '}
+          <span style={{ color: '#FF6B35' }}>gathering.</span>
+        </h1>
+
+        {/* Search bar */}
+        <div style={{
+          backgroundColor: '#1C1C1A',
+          border: '1px solid #242422',
+          borderRadius: '14px',
+          padding: '12px 14px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+        }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <circle cx="11" cy="11" r="8" stroke="#6B6B63" strokeWidth="2"/>
+            <path d="M21 21l-4.35-4.35" stroke="#6B6B63" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
           <input
             ref={inputRef}
-            type="search"
+            type="text"
+            placeholder="Events, places, areas..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search events..."
-            autoComplete="off"
-            onFocus={(e) => { e.preventDefault(); }}
             style={{
               flex: 1,
-              backgroundColor: "transparent",
-              border: "none",
-              outline: "none",
-              fontSize: "15px",
-              color: "#F0EEE9",
+              backgroundColor: 'transparent',
+              border: 'none',
+              outline: 'none',
+              color: '#F0EEE9',
+              fontSize: '14px',
+              WebkitTextFillColor: '#F0EEE9',
             }}
-            className="placeholder:text-[#3D3D38]"
           />
+          {query && (
+            <button
+              onClick={() => setQuery('')}
+              style={{ background: 'none', border: 'none', color: '#6B6B63', fontSize: '16px', cursor: 'pointer', padding: 0 }}
+            >
+              ✕
+            </button>
+          )}
+        </div>
+
+        {/* Vibe pills */}
+        <div style={{ display: 'flex', gap: '6px', marginTop: '12px', overflowX: 'auto', scrollbarWidth: 'none' }}>
+          {VIBES.map((v) => (
+            <button
+              key={v}
+              onClick={() => setSelectedVibe(v === 'All' ? '' : v.toLowerCase())}
+              style={{
+                padding: '6px 14px',
+                borderRadius: '20px',
+                fontSize: '12px',
+                fontWeight: 600,
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
+                border: '1px solid #2A2A28',
+                cursor: 'pointer',
+                backgroundColor: (selectedVibe === v.toLowerCase() || (v === 'All' && !selectedVibe)) ? '#F0EEE9' : 'transparent',
+                color: (selectedVibe === v.toLowerCase() || (v === 'All' && !selectedVibe)) ? '#111110' : '#6B6B63',
+              }}
+            >
+              {v}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Content */}
-      <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: '100px', overscrollBehavior: 'contain' }}>
-
-        {/* Prompt / empty state */}
-        {showPrompt && (
-          <div style={{ padding: '32px 24px' }}>
-            <p style={{ color: '#6B6B63', fontSize: '15px', textAlign: 'center', marginBottom: '32px' }}>
-              Search for events by name, location or area.
-            </p>
-
-            <p style={{ color: '#F0EEE9', fontSize: '13px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px' }}>
-              Browse by Vibe
-            </p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '32px' }}>
-              {['Move 🏃', 'Create 🎨', 'Hang 🍻', 'Learn 📚', 'Explore 🗺️'].map((vibe) => (
-                <button
-                  key={vibe}
-                  onClick={() => setQuery(vibe.split(' ')[0].toLowerCase())}
-                  style={{
-                    backgroundColor: 'transparent',
-                    border: '1px solid #2A2A28',
-                    borderRadius: '999px',
-                    padding: '8px 16px',
-                    fontSize: '14px',
-                    color: '#6B6B63',
-                    cursor: 'pointer',
-                  }}
-                >
-                  {vibe}
-                </button>
-              ))}
-            </div>
-
-            <p style={{ color: '#F0EEE9', fontSize: '13px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px' }}>
-              Upcoming Near You
-            </p>
-            {upcomingEvents.length > 0 && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {upcomingEvents.map((event: any) => (
-                  <EventCard key={event.id} event={event} />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+      {/* ── Section 2: Scrollable content ─────────────────────────────────────── */}
+      <div style={{
+        flex: 1,
+        overflowY: 'auto',
+        WebkitOverflowScrolling: 'touch',
+        overscrollBehavior: 'contain',
+        padding: '0 16px',
+        paddingBottom: '100px',
+      }}>
 
         {/* Loading skeletons */}
         {showLoading && (
-          <div style={{ padding: "16px 16px 0", display: "flex", flexDirection: "column", gap: "10px" }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '8px' }}>
             <SkeletonCard />
             <SkeletonCard />
             <SkeletonCard />
@@ -300,20 +284,45 @@ export function SearchPage() {
 
         {/* No results */}
         {showEmpty && (
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", paddingTop: "80px" }}>
-            <p style={{ fontSize: "15px", color: "#6B6B63", textAlign: "center" }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: '80px' }}>
+            <p style={{ fontSize: '15px', color: '#6B6B63', textAlign: 'center' }}>
               No events found for '{debouncedQuery}'
             </p>
           </div>
         )}
 
-        {/* Results */}
+        {/* Search results */}
         {showResults && (
-          <div style={{ padding: "16px 16px 0", display: "flex", flexDirection: "column", gap: "10px" }}>
-            {results.map((event: any) => (
-              <EventCard key={event.id} event={event} />
-            ))}
-          </div>
+          <>
+            <div style={{ fontSize: '9px', fontWeight: 700, color: '#6B6B63', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '14px 0 10px' }}>
+              {filteredResults.length} result{filteredResults.length !== 1 ? 's' : ''}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {filteredResults.map((event: any) => (
+                <EventCard key={event.id} event={event} />
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* Trending when no query */}
+        {!query && (
+          <>
+            <div style={{ fontSize: '9px', fontWeight: 700, color: '#6B6B63', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '14px 0 10px' }}>
+              Trending near you
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {filteredUpcoming.length > 0 ? (
+                filteredUpcoming.map((event: any) => (
+                  <EventCard key={event.id} event={event} />
+                ))
+              ) : (
+                <p style={{ fontSize: '14px', color: '#6B6B63', textAlign: 'center', padding: '20px 0' }}>
+                  No upcoming events{selectedVibe ? ` for ${selectedVibe}` : ''}.
+                </p>
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>
