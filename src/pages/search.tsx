@@ -166,7 +166,7 @@ export function SearchPage() {
   return (
     <div
       className="page-transition max-w-md mx-auto min-h-screen flex flex-col"
-      style={{ backgroundColor: "#111110", paddingBottom: "80px" }}
+      style={{ backgroundColor: "#111110", height: '100vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
     >
       {/* Header */}
       <header
@@ -242,7 +242,7 @@ export function SearchPage() {
       </div>
 
       {/* Content */}
-      <div style={{ flex: 1 }}>
+      <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
 
         {/* Prompt / empty state */}
         {showPrompt && (
