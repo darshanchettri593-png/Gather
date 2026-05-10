@@ -215,10 +215,14 @@ export function SearchPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => {
+              document.documentElement.style.setProperty('overflow', 'hidden');
+              document.body.style.overflow = 'hidden';
               document.body.style.position = 'fixed';
               document.body.style.width = '100%';
             }}
             onBlur={() => {
+              document.documentElement.style.removeProperty('overflow');
+              document.body.style.overflow = '';
               document.body.style.position = '';
               document.body.style.width = '';
             }}

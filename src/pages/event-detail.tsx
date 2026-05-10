@@ -39,12 +39,22 @@ export function EventDetailPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editCover, setEditCover] = useState('');
-  const [editDescription, setEditDescription] = useState(event?.description || '');
-  const [editCapacity, setEditCapacity] = useState(String((event as any)?.capacity || 20));
-  const [editGenderFilter, setEditGenderFilter] = useState((event as any)?.gender_filter || 'All');
-  const [editMinAge, setEditMinAge] = useState((event as any)?.min_age || 18);
-  const [editMaxAge, setEditMaxAge] = useState((event as any)?.max_age || 60);
+  const [editDescription, setEditDescription] = useState('');
+  const [editCapacity, setEditCapacity] = useState('20');
+  const [editGenderFilter, setEditGenderFilter] = useState('All');
+  const [editMinAge, setEditMinAge] = useState(18);
+  const [editMaxAge, setEditMaxAge] = useState(60);
   const updateEvent = useUpdateEvent();
+
+  useEffect(() => {
+    if (event) {
+      setEditDescription((event as any).description || '');
+      setEditCapacity(String((event as any).capacity || 20));
+      setEditGenderFilter((event as any).gender_filter || 'All');
+      setEditMinAge((event as any).min_age || 18);
+      setEditMaxAge((event as any).max_age || 60);
+    }
+  }, [event]);
 
   // ─── Chat ────────────────────────────────────────────────────────────────────
   const queryClient = useQueryClient();
@@ -54,6 +64,7 @@ export function EventDetailPage() {
   const [activeTab, setActiveTab] = useState<'details' | 'chat'>('details');
   const [hasUnreadChat, setHasUnreadChat] = useState(false);
   const [lastSeenMessageCount, setLastSeenMessageCount] = useState(0);
+  const [initialLoadDone, setInitialLoadDone] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatBottomRef = useRef<HTMLDivElement>(null);
   const chatScrollRef = useRef<HTMLDivElement>(null);
@@ -107,7 +118,12 @@ export function EventDetailPage() {
   }, [activeTab, messages]);
 
   useEffect(() => {
-    if (activeTab === 'details' && messages.length > lastSeenMessageCount) {
+    if (!initialLoadDone && messages.length > 0) {
+      setLastSeenMessageCount(messages.length);
+      setInitialLoadDone(true);
+      return;
+    }
+    if (initialLoadDone && activeTab === 'details' && messages.length > lastSeenMessageCount) {
       setHasUnreadChat(true);
     }
     if (activeTab === 'chat') {
