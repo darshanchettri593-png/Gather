@@ -845,16 +845,16 @@ export function CreateEventPage() {
       {/* ── Bottom bar ───────────────────────────────────────────────────────── */}
       <div
         style={{
-          position: "fixed",
+          position: 'fixed',
           bottom: 0,
           left: 0,
           right: 0,
-          backgroundColor: "#1C1C1A",
-          borderTop: "1px solid #2A2A28",
-          padding: "16px 20px",
-          paddingBottom: "calc(90px + env(safe-area-inset-bottom, 0px))",
-          display: "flex",
-          gap: "12px",
+          backgroundColor: '#1C1C1A',
+          borderTop: '1px solid #2A2A28',
+          padding: '16px 20px',
+          paddingBottom: 'calc(100px + env(safe-area-inset-bottom, 0px))',
+          display: 'flex',
+          gap: '12px',
         }}
       >
         {step > 1 && (
