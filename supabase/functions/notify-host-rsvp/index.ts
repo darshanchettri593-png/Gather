@@ -3,7 +3,7 @@ import webpush from 'npm:web-push';
 
 webpush.setVapidDetails(
   Deno.env.get('VAPID_EMAIL')!,
-  Deno.env.get('VITE_VAPID_PUBLIC_KEY')!,
+  Deno.env.get('VAPID_PUBLIC_KEY')!,
   Deno.env.get('VAPID_PRIVATE_KEY')!
 );
 
@@ -33,10 +33,10 @@ Deno.serve(async (req) => {
     .eq('id', event_id)
     .single();
 
-  if (!event) return new Response('Event not found', { status: 404 });
+  if (!event) return new Response('Event not found', { status: 404, headers: corsHeaders });
 
   // Don't notify if host RSVPs their own event
-  if (event.host_id === user_id) return new Response('Host RSVP', { status: 200 });
+  if (event.host_id === user_id) return new Response('Host RSVP', { status: 200, headers: corsHeaders });
 
   // Get joining user's name
   const { data: joiningUser } = await supabase
@@ -52,7 +52,7 @@ Deno.serve(async (req) => {
     .eq('user_id', event.host_id)
     .single();
 
-  if (!sub) return new Response('No subscription', { status: 200 });
+  if (!sub) return new Response('No subscription', { status: 200, headers: corsHeaders });
 
   try {
     await webpush.sendNotification(
@@ -69,5 +69,5 @@ Deno.serve(async (req) => {
     }
   }
 
-  return new Response('Notification sent', { status: 200 });
+  return new Response('Notification sent', { status: 200, headers: corsHeaders });
 });

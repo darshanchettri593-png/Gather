@@ -3,7 +3,7 @@ import webpush from 'npm:web-push';
 
 webpush.setVapidDetails(
   Deno.env.get('VAPID_EMAIL')!,
-  Deno.env.get('VITE_VAPID_PUBLIC_KEY')!,
+  Deno.env.get('VAPID_PUBLIC_KEY')!,
   Deno.env.get('VAPID_PRIVATE_KEY')!
 );
 
@@ -38,7 +38,7 @@ Deno.serve(async (req) => {
     .eq('user_id', following_id)
     .single();
 
-  if (!sub) return new Response('No subscription', { status: 200 });
+  if (!sub) return new Response('No subscription', { status: 200, headers: corsHeaders });
 
   try {
     await webpush.sendNotification(
@@ -55,5 +55,5 @@ Deno.serve(async (req) => {
     }
   }
 
-  return new Response('OK', { status: 200 });
+  return new Response('OK', { status: 200, headers: corsHeaders });
 });

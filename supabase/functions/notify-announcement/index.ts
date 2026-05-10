@@ -3,7 +3,7 @@ import webpush from 'npm:web-push';
 
 webpush.setVapidDetails(
   Deno.env.get('VAPID_EMAIL')!,
-  Deno.env.get('VITE_VAPID_PUBLIC_KEY')!,
+  Deno.env.get('VAPID_PUBLIC_KEY')!,
   Deno.env.get('VAPID_PRIVATE_KEY')!
 );
 
@@ -38,7 +38,7 @@ Deno.serve(async (req) => {
     .eq('event_id', event_id)
     .neq('user_id', host_id);
 
-  if (!attendees) return new Response('No attendees', { status: 200 });
+  if (!attendees) return new Response('No attendees', { status: 200, headers: corsHeaders });
 
   for (const attendee of attendees) {
     const { data: sub } = await supabase
@@ -65,5 +65,5 @@ Deno.serve(async (req) => {
     }
   }
 
-  return new Response('OK', { status: 200 });
+  return new Response('OK', { status: 200, headers: corsHeaders });
 });

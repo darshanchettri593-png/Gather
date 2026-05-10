@@ -3,7 +3,7 @@ import webpush from 'npm:web-push';
 
 webpush.setVapidDetails(
   Deno.env.get('VAPID_EMAIL')!,
-  Deno.env.get('VITE_VAPID_PUBLIC_KEY')!,
+  Deno.env.get('VAPID_PUBLIC_KEY')!,
   Deno.env.get('VAPID_PRIVATE_KEY')!
 );
 
