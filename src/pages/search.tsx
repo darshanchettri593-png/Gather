@@ -172,11 +172,7 @@ export function SearchPage() {
     <div
       className="page-transition"
       style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
+        height: '100dvh',
         display: 'flex',
         flexDirection: 'column',
         backgroundColor: '#111110',
@@ -188,7 +184,7 @@ export function SearchPage() {
 
         <h1 style={{
           color: '#F0EEE9',
-          fontSize: '26px',
+          fontSize: '30px',
           fontWeight: 800,
           lineHeight: 1.1,
           marginBottom: '14px',
@@ -218,6 +214,14 @@ export function SearchPage() {
             placeholder="Events, places, areas..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            onFocus={() => {
+              document.body.style.position = 'fixed';
+              document.body.style.width = '100%';
+            }}
+            onBlur={() => {
+              document.body.style.position = '';
+              document.body.style.width = '';
+            }}
             style={{
               flex: 1,
               backgroundColor: 'transparent',
