@@ -166,7 +166,7 @@ export function SearchPage() {
   return (
     <div
       className="page-transition max-w-md mx-auto min-h-screen flex flex-col"
-      style={{ backgroundColor: "#111110", height: '100vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+      style={{ position: 'fixed', inset: 0, display: 'flex', flexDirection: 'column', backgroundColor: '#111110', overflow: 'hidden' }}
     >
       {/* Header */}
       <header
@@ -228,6 +228,8 @@ export function SearchPage() {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search events..."
             autoComplete="off"
+            onFocus={() => document.body.style.overflow = 'hidden'}
+            onBlur={() => document.body.style.overflow = ''}
             style={{
               flex: 1,
               backgroundColor: "transparent",
@@ -242,7 +244,7 @@ export function SearchPage() {
       </div>
 
       {/* Content */}
-      <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
+      <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: '100px' }}>
 
         {/* Prompt / empty state */}
         {showPrompt && (

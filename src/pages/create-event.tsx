@@ -499,12 +499,14 @@ export function CreateEventPage() {
             {/* Map pin */}
             <div>
               <label style={LABEL}>Pin Location</label>
-              <MapPicker
-                mode="picker"
-                lat={mapCoords?.lat}
-                lng={mapCoords?.lng}
-                onLocationSelect={(coords) => setMapCoords(coords)}
-              />
+              <div style={{ maxHeight: '280px', overflow: 'hidden', borderRadius: '12px' }}>
+                <MapPicker
+                  mode="picker"
+                  lat={mapCoords?.lat}
+                  lng={mapCoords?.lng}
+                  onLocationSelect={(coords) => setMapCoords(coords)}
+                />
+              </div>
             </div>
           </div>
         );
@@ -769,7 +771,7 @@ export function CreateEventPage() {
 
   // ── Render ────────────────────────────────────────────────────────────────────
   return (
-    <div style={{ backgroundColor: "#111110", minHeight: "100vh", paddingBottom: "180px" }}>
+    <div style={{ backgroundColor: "#111110", minHeight: "100vh", paddingBottom: "220px" }}>
 
       {/* ── Header ───────────────────────────────────────────────────────────── */}
       <div
