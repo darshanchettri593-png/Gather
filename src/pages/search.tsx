@@ -272,7 +272,7 @@ export function SearchPage() {
         flex: 1,
         overflowY: 'auto',
         WebkitOverflowScrolling: 'touch',
-        overscrollBehavior: 'contain',
+        overscrollBehavior: 'none',
         padding: '0 16px',
         paddingBottom: '100px',
       }}>
