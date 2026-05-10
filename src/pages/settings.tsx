@@ -1,6 +1,5 @@
 import { ChevronLeft, ChevronRight, User } from "lucide-react";
 import { useNavigate } from "react-router";
-import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/lib/auth-context";
 import { useProfile } from "@/hooks/useUser";
 import { supabase } from "@/lib/supabase";
@@ -26,6 +25,7 @@ export function SettingsPage() {
   const [deleteEmailConfirm, setDeleteEmailConfirm] = useState("");
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [emailUpdates, setEmailUpdates] = useState(false);
 
   useEffect(() => {
     if (profile?.display_name) setDisplayName(profile.display_name);
@@ -361,16 +361,41 @@ export function SettingsPage() {
           )}
           <Separator />
           <div
-            className="flex items-center justify-between"
-            style={{ minHeight: "52px", padding: "8px 16px" }}
+            style={{
+              padding: '16px 20px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
           >
-            <div className="flex flex-col">
-              <span style={{ fontSize: "16px", color: "#F0EEE9" }}>Email updates</span>
-              <span style={{ fontSize: "12px", color: "#3D3D38", marginTop: "2px" }}>
-                Weekly digest of events near you
-              </span>
+            <div>
+              <p style={{ fontSize: '15px', color: '#F0EEE9', marginBottom: '2px' }}>Email updates</p>
+              <p style={{ fontSize: '13px', color: '#6B6B63' }}>Weekly digest of events near you</p>
             </div>
-            <Switch className="data-[state=checked]:bg-[#FF6B35] data-[state=unchecked]:bg-[#2A2A28]" />
+            <div
+              onClick={() => setEmailUpdates(v => !v)}
+              style={{
+                width: '48px',
+                height: '28px',
+                borderRadius: '999px',
+                backgroundColor: emailUpdates ? '#34C759' : '#3D3D38',
+                position: 'relative',
+                cursor: 'pointer',
+                transition: 'background-color 0.2s',
+                flexShrink: 0,
+              }}
+            >
+              <div style={{
+                position: 'absolute',
+                top: '3px',
+                left: emailUpdates ? '23px' : '3px',
+                width: '22px',
+                height: '22px',
+                borderRadius: '50%',
+                backgroundColor: 'white',
+                transition: 'left 0.2s',
+              }} />
+            </div>
           </div>
         </GroupCard>
 

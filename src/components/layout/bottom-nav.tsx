@@ -36,7 +36,8 @@ export function BottomNav() {
       style={{
         backgroundColor: "#1C1C1A",
         borderTop: "1px solid #2A2A28",
-        paddingBottom: "env(safe-area-inset-bottom, 8px)",
+        paddingTop: "10px",
+        paddingBottom: "calc(16px + env(safe-area-inset-bottom, 0px))",
         height: "64px",
       }}
     >

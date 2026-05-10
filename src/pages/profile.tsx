@@ -315,10 +315,6 @@ export function ProfilePage() {
                     />
                   </div>
                 </div>
-                {/* Camera badge */}
-                <div style={{ position: 'absolute', bottom: 0, right: 0, width: '22px', height: '22px', borderRadius: '50%', backgroundColor: '#FF6B35', border: '2px solid #1C1C1A', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '11px' }}>
-                  📷
-                </div>
               </div>
 
               {/* Info */}

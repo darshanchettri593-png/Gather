@@ -600,9 +600,15 @@ export function EventFeedPage() {
             cursor: 'pointer',
           }}
         >
-          📍 {radiusKm} km
+          📍 {radiusKm} km radius
         </button>
       </div>
+
+      {showFilter && (
+        <p style={{ fontSize: '11px', color: '#6B6B63', marginBottom: '8px', paddingLeft: '14px' }}>
+          Slide to adjust how far away you discover events
+        </p>
+      )}
 
       {renderContent()}
 
