@@ -99,11 +99,9 @@ export function EventDetailPage() {
   }, [messages]);
 
   useEffect(() => {
-    if (activeTab === 'chat' && chatScrollRef.current) {
+    if (activeTab === 'chat') {
       setTimeout(() => {
-        if (chatScrollRef.current) {
-          chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
-        }
+        chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
     }
   }, [activeTab, messages]);
@@ -298,7 +296,7 @@ export function EventDetailPage() {
 
   // ─── Page ────────────────────────────────────────────────────────────────────
   return (
-    <div style={{ backgroundColor: "#111110", height: activeTab === 'chat' ? '100vh' : 'auto', overflow: activeTab === 'chat' ? 'hidden' : 'visible', paddingBottom: activeTab === 'chat' ? 0 : "180px", position: 'relative' }}>
+    <div style={{ backgroundColor: "#111110", minHeight: '100vh', paddingBottom: "180px", position: 'relative' }}>
 
       {/* ── Hero image — 320px, no title overlay ─────────────────────────────── */}
       <div className="relative w-full" style={{ height: "320px" }}>
@@ -978,7 +976,7 @@ export function EventDetailPage() {
 
       {/* ── Chat tab ─────────────────────────────────────────────────────────── */}
       {hasRSVPd && activeTab === 'chat' && (
-        <div style={{ height: 'calc(100vh - 320px)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div style={{ paddingBottom: '100px' }}>
 
           {/* Members bar */}
           <div style={{ backgroundColor: '#1C1C1A', borderBottom: '1px solid #2A2A28', padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -997,8 +995,7 @@ export function EventDetailPage() {
           </div>
 
           {/* Messages list */}
-          <div ref={chatScrollRef} style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', display: 'flex', flexDirection: 'column', paddingBottom: '80px' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '14px 16px', marginTop: 'auto' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '14px 16px' }}>
             {messages.length === 0 && (
               <div style={{ textAlign: 'center', padding: '40px 0', color: '#6B6B63', fontSize: '14px' }}>
                 No messages yet. Say something! 👋
@@ -1037,7 +1034,6 @@ export function EventDetailPage() {
             })}
             <div ref={messagesEndRef} />
             <div ref={chatBottomRef} />
-          </div>
           </div>
 
           {/* Chat input */}
