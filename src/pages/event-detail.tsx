@@ -51,6 +51,7 @@ export function EventDetailPage() {
   const { data: messages = [] } = useMessages(id || "");
   const { mutate: sendMessage, isPending: isSending, error: sendError } = useSendMessage();
   const [chatInput, setChatInput] = useState("");
+  const [activeTab, setActiveTab] = useState<'details' | 'chat'>('details');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -313,12 +314,31 @@ export function EventDetailPage() {
         </button>
       </div>
 
-      {/* ── Content card ──────────────────────────────────────────────────────── */}
+      {/* ── Tab bar — shown only when RSVP'd ────────────────────────────────── */}
+      {hasRSVPd && (
+        <div style={{ position: 'sticky', top: 0, zIndex: 50, backgroundColor: '#111110', borderBottom: '1px solid #2A2A28', display: 'flex' }}>
+          <button
+            onClick={() => setActiveTab('details')}
+            style={{ flex: 1, padding: '12px 0', fontSize: '14px', fontWeight: activeTab === 'details' ? 700 : 500, color: activeTab === 'details' ? '#F0EEE9' : '#6B6B63', backgroundColor: 'transparent', border: 'none', borderBottom: activeTab === 'details' ? '2px solid #FF6B35' : '2px solid transparent', cursor: 'pointer' }}
+          >
+            Details
+          </button>
+          <button
+            onClick={() => setActiveTab('chat')}
+            style={{ flex: 1, padding: '12px 0', fontSize: '14px', fontWeight: activeTab === 'chat' ? 700 : 500, color: activeTab === 'chat' ? '#F0EEE9' : '#6B6B63', backgroundColor: 'transparent', border: 'none', borderBottom: activeTab === 'chat' ? '2px solid #FF6B35' : '2px solid transparent', cursor: 'pointer' }}
+          >
+            Chat
+          </button>
+        </div>
+      )}
+
+      {/* ── Details tab ──────────────────────────────────────────────────────── */}
+      {(!hasRSVPd || activeTab === 'details') && (
       <div
         style={{
           backgroundColor: "#1C1C1A",
           borderRadius: "24px 24px 0 0",
-          marginTop: "-24px",
+          marginTop: hasRSVPd ? "0" : "-24px",
           padding: "24px 20px",
           paddingBottom: "40px",
           position: "relative",
@@ -913,152 +933,6 @@ export function EventDetailPage() {
           </div>
         )}
 
-        {/* ── Group Chat ───────────────────────────────────────────────────────── */}
-        <div style={{ paddingTop: "16px", borderTop: "1px solid #2A2A28", marginBottom: "8px" }}>
-          <h2 style={{ fontSize: "11px", fontWeight: 700, color: "#6B6B63", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "12px" }}>
-            Group Chat
-          </h2>
-
-          {/* Message list */}
-          <div
-            className="flex flex-col gap-4 mb-4"
-            style={{ minHeight: messages.length === 0 ? "48px" : undefined, width: "100%", overflowX: "hidden", overflowY: "auto" }}
-          >
-            {messages.length === 0 ? (
-              <p style={{ fontSize: "14px", color: "#6B6B63" }}>
-                No messages yet. Be the first to say something.
-              </p>
-            ) : (
-              messages.map((msg) => {
-                const isOwn = msg.user_id === user?.id;
-                const initial = (msg.users?.display_name || "A").charAt(0).toUpperCase();
-                return (
-                  <div
-                    key={msg.id}
-                    style={{
-                      display: "flex",
-                      width: "100%",
-                      overflow: "hidden",
-                      alignItems: "flex-start",
-                      gap: "10px",
-                      justifyContent: isOwn ? "flex-end" : "flex-start",
-                      flexDirection: isOwn ? "row-reverse" : "row",
-                      padding: "0 4px",
-                    }}
-                  >
-                    <div
-                      className="shrink-0 rounded-full flex items-center justify-center text-white font-bold overflow-hidden"
-                      style={{
-                        width: "30px", height: "30px", fontSize: "12px", flexShrink: 0,
-                        backgroundColor: isOwn ? "#FF6B35" : "#242422",
-                        border: isOwn ? "none" : "1px solid #2A2A28",
-                      }}
-                    >
-                      {msg.users?.avatar_url ? (
-                        <img src={msg.users.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      ) : (
-                        <span style={{ fontSize: '13px', fontWeight: 600, color: '#F0EEE9' }}>
-                          {(msg.users?.display_name || 'A').charAt(0).toUpperCase()}
-                        </span>
-                      )}
-                    </div>
-                    <div
-                      style={{
-                        display: "flex", flexDirection: "column", gap: "2px",
-                        maxWidth: "75%", minWidth: 0,
-                        wordBreak: "break-word", overflowWrap: "anywhere",
-                        alignItems: isOwn ? "flex-end" : "flex-start",
-                      }}
-                    >
-                      <div className="flex items-baseline gap-2">
-                        {!isOwn && (
-                          <span style={{ fontSize: "13px", fontWeight: 600, color: "#F0EEE9" }}>
-                            {msg.users?.display_name || 'Anonymous'}
-                          </span>
-                        )}
-                        <span style={{ fontSize: "11px", color: "#6B6B63" }}>
-                          {format(new Date(msg.created_at), "h:mm a")}
-                        </span>
-                      </div>
-                      <p style={{ fontSize: "15px", color: "#F0EEE9", lineHeight: 1.45, wordBreak: "break-word", overflowWrap: "anywhere", whiteSpace: "pre-wrap", margin: 0 }}>
-                        {msg.content}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Send input — visible on all events */}
-          <>
-            {!user ? (
-              <p style={{ fontSize: "13px", color: "#6B6B63" }}>
-                <button
-                  onClick={() => openAuthModal("Sign in to join the conversation.", `/event/${id}`)}
-                  style={{ color: "#FF6B35", fontWeight: 600 }}
-                  className="active:opacity-70"
-                >
-                  Sign in
-                </button>
-                {" "}to join the conversation.
-              </p>
-            ) : rsvpLoading ? (
-              <p style={{ color: "#6B6B63", fontSize: "13px" }}>Loading...</p>
-            ) : !hasRSVPd ? (
-              <p style={{ color: "#6B6B63", fontSize: "13px" }}>RSVP to join the conversation.</p>
-            ) : isPastEvent ? (
-              <div style={{
-                backgroundColor: '#1C1C1A',
-                border: '1px solid #2A2A28',
-                borderRadius: '10px',
-                padding: '12px 14px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-              }}>
-                <span style={{ fontSize: '14px' }}>🔒</span>
-                <span style={{ fontSize: '12px', color: '#6B6B63' }}>
-                  Chat is read-only — event has ended
-                </span>
-              </div>
-            ) : (
-              <div
-                className="flex items-center gap-3"
-                style={{ backgroundColor: "#242422", border: "1px solid #2A2A28", borderRadius: "14px", padding: "8px 8px 8px 14px" }}
-              >
-                <input
-                  type="text"
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSendMessage(); }
-                  }}
-                  placeholder="Say something..."
-                  maxLength={500}
-                  className="flex-1 bg-transparent outline-none"
-                  style={{ fontSize: "16px", color: "#F0EEE9" }}
-                />
-                <button
-                  onClick={handleSendMessage}
-                  disabled={!chatInput.trim() || isSending}
-                  className="flex items-center justify-center rounded-xl shrink-0 transition-opacity active:opacity-70 disabled:opacity-30"
-                  style={{ width: "36px", height: "36px", backgroundColor: "#FF6B35" }}
-                >
-                  <Send className="h-4 w-4 text-white" strokeWidth={2} />
-                </button>
-              </div>
-            )}
-            {sendError && (
-              <p style={{ color: "#FF3B30", fontSize: "12px", padding: "4px 0" }}>
-                {(sendError as Error).message}
-              </p>
-            )}
-          </>
-        </div>
-
         {/* Ratings (past events only) */}
         {isPastEvent && (
           <div style={{ paddingTop: "16px", borderTop: "1px solid #2A2A28", marginTop: "16px" }}>
@@ -1071,8 +945,105 @@ export function EventDetailPage() {
           </div>
         )}
       </div>
+      )}
+
+      {/* ── Chat tab ─────────────────────────────────────────────────────────── */}
+      {hasRSVPd && activeTab === 'chat' && (
+        <div style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh - 200px)' }}>
+
+          {/* Members bar */}
+          <div style={{ backgroundColor: '#1C1C1A', borderBottom: '1px solid #2A2A28', padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            {attendeesList.slice(0, 5).map((a: any, i: number) => (
+              <div key={a.user_id} style={{ width: '24px', height: '24px', borderRadius: '12px', backgroundColor: '#2A2A28', border: '1.5px solid #111110', marginLeft: i === 0 ? 0 : '-6px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', color: '#F0EEE9', fontWeight: 700, overflow: 'hidden', flexShrink: 0 }}>
+                {a.user?.avatar_url ? (
+                  <img src={a.user.avatar_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+                ) : (
+                  a.user?.display_name?.[0]?.toUpperCase() || '?'
+                )}
+              </div>
+            ))}
+            <span style={{ fontSize: '11px', color: '#6B6B63', marginLeft: '8px' }}>
+              {attendeesList.length} attending this gathering
+            </span>
+          </div>
+
+          {/* Messages list */}
+          <div style={{ flex: 1, padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '100px' }}>
+            {messages.length === 0 && (
+              <div style={{ textAlign: 'center', padding: '40px 0', color: '#6B6B63', fontSize: '14px' }}>
+                No messages yet. Say something! 👋
+              </div>
+            )}
+            {messages.map((msg: any) => {
+              const isOwn = msg.user_id === user?.id;
+              return (
+                <div key={msg.id} style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', flexDirection: isOwn ? 'row-reverse' : 'row' }}>
+                  {!isOwn && (
+                    <div style={{ width: '26px', height: '26px', borderRadius: '13px', backgroundColor: '#2A2A28', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', color: '#F0EEE9', fontWeight: 700, overflow: 'hidden' }}>
+                      {msg.users?.avatar_url ? (
+                        <img src={msg.users.avatar_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+                      ) : (
+                        msg.users?.display_name?.[0]?.toUpperCase() || '?'
+                      )}
+                    </div>
+                  )}
+                  <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '72%', alignItems: isOwn ? 'flex-end' : 'flex-start' }}>
+                    {!isOwn && (
+                      <div style={{ fontSize: '10px', color: '#FF6B35', fontWeight: 600, marginBottom: '3px' }}>
+                        {msg.users?.display_name || 'Anonymous'}
+                      </div>
+                    )}
+                    <div style={{ padding: '9px 13px', borderRadius: '16px', borderBottomLeftRadius: isOwn ? '16px' : '4px', borderBottomRightRadius: isOwn ? '4px' : '16px', background: isOwn ? 'linear-gradient(135deg, #FF6B35, #e55a24)' : '#1C1C1A', border: isOwn ? 'none' : '1px solid #2A2A28' }}>
+                      <div style={{ fontSize: '13px', lineHeight: 1.45, color: isOwn ? '#fff' : '#F0EEE9' }}>
+                        {msg.content}
+                      </div>
+                      <div style={{ fontSize: '10px', marginTop: '3px', color: isOwn ? 'rgba(255,255,255,0.55)' : '#6B6B63', textAlign: isOwn ? 'right' : 'left' }}>
+                        {new Date(msg.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Chat input */}
+          {isPastEvent ? (
+            <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, backgroundColor: '#1C1C1A', borderTop: '1px solid #2A2A28', padding: '12px 16px', paddingBottom: 'calc(80px + env(safe-area-inset-bottom, 0px))', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '14px' }}>🔒</span>
+              <span style={{ fontSize: '12px', color: '#6B6B63' }}>Chat is read-only — event has ended</span>
+            </div>
+          ) : (
+            <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, backgroundColor: '#111110', borderTop: '1px solid #2A2A28', padding: '10px 16px', paddingBottom: 'calc(80px + env(safe-area-inset-bottom, 0px))' }}>
+              <div style={{ backgroundColor: '#1C1C1A', border: `1.5px solid ${chatInput.trim() ? 'rgba(255,107,53,0.4)' : '#2A2A28'}`, borderRadius: '24px', display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 6px 6px 16px', transition: 'border-color 0.2s' }}>
+                <input
+                  type="text"
+                  placeholder="Say something to the group..."
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }}
+                  maxLength={500}
+                  style={{ flex: 1, backgroundColor: 'transparent', border: 'none', outline: 'none', fontSize: '14px', color: '#F0EEE9', WebkitTextFillColor: '#F0EEE9' }}
+                />
+                <span style={{ fontSize: '11px', color: '#3D3D38', flexShrink: 0 }}>{500 - chatInput.length}</span>
+                <button
+                  onClick={handleSendMessage}
+                  disabled={!chatInput.trim() || isSending}
+                  style={{ width: '36px', height: '36px', borderRadius: '18px', background: chatInput.trim() ? 'linear-gradient(135deg, #FF6B35, #e55a24)' : '#242422', border: 'none', cursor: chatInput.trim() ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'background 0.2s' }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                    <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z" stroke={chatInput.trim() ? 'white' : '#3D3D38'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ── Sticky bottom CTA ─────────────────────────────────────────────────── */}
+      {(!hasRSVPd || activeTab === 'details') && (
       <div
         className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-between"
         style={{
@@ -1188,6 +1159,7 @@ export function EventDetailPage() {
           )}
         </div>
       </div>
+      )}
 
       {/* ── Cancel RSVP modal ─────────────────────────────────────────────────── */}
       <Dialog open={isCancelModalOpen} onOpenChange={setIsCancelModalOpen}>
