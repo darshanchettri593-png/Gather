@@ -12,7 +12,7 @@ export default defineConfig(({mode}) => {
       tailwindcss(),
       VitePWA({
         strategies: 'injectManifest',
-        srcDir: 'public',
+        srcDir: 'src',
         filename: 'sw.js',
         registerType: 'autoUpdate',
         includeAssets: ['favicon.png', 'icons/*.png'],
