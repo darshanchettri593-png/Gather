@@ -36,9 +36,8 @@ export function BottomNav() {
       style={{
         backgroundColor: "#1C1C1A",
         borderTop: "1px solid #2A2A28",
-        paddingTop: "10px",
-        paddingBottom: "calc(16px + env(safe-area-inset-bottom, 0px))",
-        height: "64px",
+        paddingTop: "14px",
+        paddingBottom: "calc(30px + env(safe-area-inset-bottom, 0px))",
       }}
     >
       <div className="flex items-center justify-around h-full max-w-md mx-auto px-2">
@@ -52,7 +51,7 @@ export function BottomNav() {
           style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
         >
           <Compass
-            size={22}
+            size={28}
             strokeWidth={isActive("/") ? 2.5 : 1.5}
             color={isActive("/") ? activeColor : inactiveColor}
             fill={isActive("/") ? "none" : "none"}
@@ -64,6 +63,7 @@ export function BottomNav() {
               fontWeight: isActive("/") ? 600 : 400,
               color: isActive("/") ? activeColor : inactiveColor,
               letterSpacing: "0.01em",
+              marginTop: "4px",
             }}
           >
             Explore
@@ -79,7 +79,7 @@ export function BottomNav() {
           style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
         >
           <Search
-            size={22}
+            size={28}
             strokeWidth={1.8}
             color={isActive("/search") ? activeColor : inactiveColor}
             fill="none"
@@ -90,6 +90,7 @@ export function BottomNav() {
               fontWeight: isActive("/search") ? 600 : 400,
               color: isActive("/search") ? activeColor : inactiveColor,
               letterSpacing: "0.01em",
+              marginTop: "4px",
             }}
           >
             Search
@@ -116,19 +117,19 @@ export function BottomNav() {
             className="flex items-center justify-center"
             style={{
               width: "52px",
-              height: "28px",
-              borderRadius: "999px",
+              height: "52px",
+              borderRadius: "26px",
               backgroundColor: "#FF6B35",
             }}
           >
-            <Plus size={20} strokeWidth={2} color="white" />
+            <Plus size={24} strokeWidth={2} color="white" />
           </div>
           <span
             style={{
               fontSize: "10px",
               fontWeight: 600,
               color: "#FF6B35",
-              marginTop: "3px",
+              marginTop: "4px",
               letterSpacing: "0.01em",
             }}
           >
@@ -145,7 +146,7 @@ export function BottomNav() {
           style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
         >
           <User
-            size={22}
+            size={28}
             strokeWidth={isActive("/profile") ? 2.5 : 1.8}
             color={isActive("/profile") ? activeColor : inactiveColor}
             fill={isActive("/profile") ? "none" : "none"}
@@ -156,6 +157,7 @@ export function BottomNav() {
               fontWeight: isActive("/profile") ? 600 : 400,
               color: isActive("/profile") ? activeColor : inactiveColor,
               letterSpacing: "0.01em",
+              marginTop: "4px",
             }}
           >
             Profile
