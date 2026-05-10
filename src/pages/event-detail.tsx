@@ -52,6 +52,8 @@ export function EventDetailPage() {
   const { mutate: sendMessage, isPending: isSending, error: sendError } = useSendMessage();
   const [chatInput, setChatInput] = useState("");
   const [activeTab, setActiveTab] = useState<'details' | 'chat'>('details');
+  const [hasUnreadChat, setHasUnreadChat] = useState(false);
+  const [lastSeenMessageCount, setLastSeenMessageCount] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatBottomRef = useRef<HTMLDivElement>(null);
   const chatScrollRef = useRef<HTMLDivElement>(null);
@@ -99,6 +101,16 @@ export function EventDetailPage() {
   useEffect(() => {
     if (activeTab === 'chat' && chatScrollRef.current) {
       chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
+    }
+  }, [messages, activeTab]);
+
+  useEffect(() => {
+    if (activeTab === 'details' && messages.length > lastSeenMessageCount) {
+      setHasUnreadChat(true);
+    }
+    if (activeTab === 'chat') {
+      setHasUnreadChat(false);
+      setLastSeenMessageCount(messages.length);
     }
   }, [messages, activeTab]);
 
@@ -334,9 +346,12 @@ export function EventDetailPage() {
             </button>
             <button
               onClick={() => setActiveTab('chat')}
-              style={{ flex: 1, padding: '8px 0', borderRadius: '16px', fontSize: '13px', fontWeight: 700, border: 'none', cursor: 'pointer', backgroundColor: activeTab === 'chat' ? '#FF6B35' : 'transparent', color: activeTab === 'chat' ? '#fff' : '#6B6B63', transition: 'all 0.2s' }}
+              style={{ flex: 1, padding: '8px 0', borderRadius: '16px', fontSize: '13px', fontWeight: 700, border: 'none', cursor: 'pointer', backgroundColor: activeTab === 'chat' ? '#FF6B35' : 'transparent', color: activeTab === 'chat' ? '#fff' : '#6B6B63', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', position: 'relative' }}
             >
               Chat
+              {hasUnreadChat && activeTab !== 'chat' && (
+                <div style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#FF6B35', border: '1.5px solid #1C1C1A', position: 'absolute', top: '6px', right: '24px' }} />
+              )}
             </button>
           </div>
         </div>
