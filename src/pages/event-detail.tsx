@@ -53,6 +53,7 @@ export function EventDetailPage() {
   const [chatInput, setChatInput] = useState("");
   const [activeTab, setActiveTab] = useState<'details' | 'chat'>('details');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatBottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -93,6 +94,12 @@ export function EventDetailPage() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  useEffect(() => {
+    if (activeTab === 'chat') {
+      chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, activeTab]);
 
   const handleSendMessage = () => {
     const content = chatInput.trim();
@@ -316,7 +323,7 @@ export function EventDetailPage() {
 
       {/* ── Tab bar — shown only when RSVP'd ────────────────────────────────── */}
       {hasRSVPd && (
-        <div style={{ position: 'sticky', top: 0, zIndex: 50, backgroundColor: '#111110', borderBottom: '1px solid #2A2A28', display: 'flex' }}>
+        <div style={{ position: 'sticky', top: 0, zIndex: 50, backgroundColor: '#111110', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', borderBottom: '1px solid #2A2A28', display: 'flex' }}>
           <button
             onClick={() => setActiveTab('details')}
             style={{ flex: 1, padding: '12px 0', fontSize: '14px', fontWeight: activeTab === 'details' ? 700 : 500, color: activeTab === 'details' ? '#F0EEE9' : '#6B6B63', backgroundColor: 'transparent', border: 'none', borderBottom: activeTab === 'details' ? '2px solid #FF6B35' : '2px solid transparent', cursor: 'pointer' }}
@@ -1006,6 +1013,7 @@ export function EventDetailPage() {
               );
             })}
             <div ref={messagesEndRef} />
+            <div ref={chatBottomRef} />
           </div>
 
           {/* Chat input */}
@@ -1015,7 +1023,7 @@ export function EventDetailPage() {
               <span style={{ fontSize: '12px', color: '#6B6B63' }}>Chat is read-only — event has ended</span>
             </div>
           ) : (
-            <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, backgroundColor: '#111110', borderTop: '1px solid #2A2A28', padding: '10px 16px', paddingBottom: 'calc(80px + env(safe-area-inset-bottom, 0px))' }}>
+            <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, backgroundColor: '#111110', borderTop: '1px solid #2A2A28', padding: '10px 16px', paddingBottom: 'calc(16px + env(safe-area-inset-bottom, 0px))' }}>
               <div style={{ backgroundColor: '#1C1C1A', border: `1.5px solid ${chatInput.trim() ? 'rgba(255,107,53,0.4)' : '#2A2A28'}`, borderRadius: '24px', display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 6px 6px 16px', transition: 'border-color 0.2s' }}>
                 <input
                   type="text"
