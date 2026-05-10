@@ -501,12 +501,12 @@ export function ProfilePage() {
           <>
             {/* Live now */}
             {activeTab === 'hosting' && liveEvents.length > 0 && (
-              <div style={{ marginBottom: '16px' }}>
+              <div style={{ marginTop: '12px', marginBottom: '16px', paddingLeft: '16px', paddingRight: '16px' }}>
                 <p style={{ fontSize: '11px', fontWeight: 700, color: '#FF3B30', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px' }}>
                   LIVE NOW
                 </p>
                 {liveEvents.map((event: any) => (
-                  <div key={event.id} style={{ border: '1px solid rgba(255,59,48,0.3)', borderRadius: '12px', overflow: 'hidden', marginBottom: '8px' }}>
+                  <div key={event.id} style={{ border: '1px solid rgba(255,59,48,0.3)', borderRadius: '12px', overflow: 'hidden', marginTop: '6px', marginBottom: '8px' }}>
                     <EventCard event={event} isPast={false} />
                   </div>
                 ))}
