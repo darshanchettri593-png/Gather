@@ -298,7 +298,7 @@ export function EventDetailPage() {
 
   // ─── Page ────────────────────────────────────────────────────────────────────
   return (
-    <div className="relative min-h-screen" style={{ backgroundColor: "#111110", paddingBottom: "180px" }}>
+    <div style={{ backgroundColor: "#111110", height: activeTab === 'chat' ? '100vh' : 'auto', overflow: activeTab === 'chat' ? 'hidden' : 'visible', paddingBottom: activeTab === 'chat' ? 0 : "180px", position: 'relative' }}>
 
       {/* ── Hero image — 320px, no title overlay ─────────────────────────────── */}
       <div className="relative w-full" style={{ height: "320px" }}>
@@ -978,7 +978,7 @@ export function EventDetailPage() {
 
       {/* ── Chat tab ─────────────────────────────────────────────────────────── */}
       {hasRSVPd && activeTab === 'chat' && (
-        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflowY: 'auto', minHeight: 'calc(100vh - 200px)' }}>
+        <div style={{ height: 'calc(100vh - 320px)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
           {/* Members bar */}
           <div style={{ backgroundColor: '#1C1C1A', borderBottom: '1px solid #2A2A28', padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -997,7 +997,7 @@ export function EventDetailPage() {
           </div>
 
           {/* Messages list */}
-          <div ref={chatScrollRef} style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', paddingBottom: '80px' }}>
+          <div ref={chatScrollRef} style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', display: 'flex', flexDirection: 'column', paddingBottom: '80px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '14px 16px', marginTop: 'auto' }}>
             {messages.length === 0 && (
               <div style={{ textAlign: 'center', padding: '40px 0', color: '#6B6B63', fontSize: '14px' }}>
