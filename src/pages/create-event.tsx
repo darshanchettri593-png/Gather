@@ -852,7 +852,7 @@ export function CreateEventPage() {
           backgroundColor: "#1C1C1A",
           borderTop: "1px solid #2A2A28",
           padding: "16px 20px",
-          paddingBottom: "calc(80px + env(safe-area-inset-bottom, 0px))",
+          paddingBottom: "calc(90px + env(safe-area-inset-bottom, 0px))",
           display: "flex",
           gap: "12px",
         }}
