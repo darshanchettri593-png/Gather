@@ -139,13 +139,6 @@
   body {
     letter-spacing: 0em;
     font-family: var(--font-sans);
-    background: #111110;
-    background-image:
-      radial-gradient(ellipse 300px 300px at 100% 0%, rgba(255,107,53,0.13) 0%, transparent 70%),
-      radial-gradient(ellipse 250px 250px at 0% 100%, rgba(200,75,26,0.10) 0%, transparent 70%),
-      radial-gradient(ellipse 150px 150px at 65% 50%, rgba(255,154,108,0.08) 0%, transparent 70%);
-    background-attachment: fixed;
-    min-height: 100vh;
   }
 
   h1, h2, h3, h4, h5, h6 {
