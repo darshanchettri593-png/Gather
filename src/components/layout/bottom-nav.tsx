@@ -51,7 +51,7 @@ export function BottomNav() {
           style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
         >
           <Compass
-            size={28}
+            size={24}
             strokeWidth={isActive("/") ? 2.5 : 1.5}
             color={isActive("/") ? activeColor : inactiveColor}
             fill={isActive("/") ? "none" : "none"}
@@ -79,7 +79,7 @@ export function BottomNav() {
           style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
         >
           <Search
-            size={28}
+            size={24}
             strokeWidth={1.8}
             color={isActive("/search") ? activeColor : inactiveColor}
             fill="none"
@@ -116,13 +116,13 @@ export function BottomNav() {
           <div
             className="flex items-center justify-center"
             style={{
-              width: "52px",
-              height: "52px",
-              borderRadius: "26px",
+              width: "48px",
+              height: "48px",
+              borderRadius: "24px",
               backgroundColor: "#FF6B35",
             }}
           >
-            <Plus size={24} strokeWidth={2} color="white" />
+            <Plus size={22} strokeWidth={2} color="white" />
           </div>
           <span
             style={{
@@ -146,7 +146,7 @@ export function BottomNav() {
           style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
         >
           <User
-            size={28}
+            size={24}
             strokeWidth={isActive("/profile") ? 2.5 : 1.8}
             color={isActive("/profile") ? activeColor : inactiveColor}
             fill={isActive("/profile") ? "none" : "none"}
