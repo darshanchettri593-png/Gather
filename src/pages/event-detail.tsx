@@ -54,6 +54,7 @@ export function EventDetailPage() {
   const [activeTab, setActiveTab] = useState<'details' | 'chat'>('details');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatBottomRef = useRef<HTMLDivElement>(null);
+  const chatScrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -96,8 +97,8 @@ export function EventDetailPage() {
   }, [messages]);
 
   useEffect(() => {
-    if (activeTab === 'chat') {
-      chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (activeTab === 'chat' && chatScrollRef.current) {
+      chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
     }
   }, [messages, activeTab]);
 
@@ -977,8 +978,8 @@ export function EventDetailPage() {
           </div>
 
           {/* Messages list */}
-          <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minHeight: '100%', padding: '14px 16px', gap: '12px', paddingBottom: '100px' }}>
+          <div ref={chatScrollRef} style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', paddingBottom: '80px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '14px 16px', marginTop: 'auto' }}>
             {messages.length === 0 && (
               <div style={{ textAlign: 'center', padding: '40px 0', color: '#6B6B63', fontSize: '14px' }}>
                 No messages yet. Say something! 👋
