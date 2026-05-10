@@ -100,9 +100,13 @@ export function EventDetailPage() {
 
   useEffect(() => {
     if (activeTab === 'chat' && chatScrollRef.current) {
-      chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
+      setTimeout(() => {
+        if (chatScrollRef.current) {
+          chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
+        }
+      }, 100);
     }
-  }, [messages, activeTab]);
+  }, [activeTab, messages]);
 
   useEffect(() => {
     if (activeTab === 'details' && messages.length > lastSeenMessageCount) {
