@@ -228,7 +228,7 @@ export function SearchPage() {
               border: 'none',
               outline: 'none',
               color: '#F0EEE9',
-              fontSize: '14px',
+              fontSize: '16px',
               WebkitTextFillColor: '#F0EEE9',
             }}
           />

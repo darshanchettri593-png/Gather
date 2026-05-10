@@ -260,7 +260,7 @@ export function ProfilePage() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', backgroundColor: '#111110' }}>
 
       {/* ── Section 1: Sticky header + profile card + tabs ─────────────────── */}
-      <div style={{ flexShrink: 0, position: 'sticky', top: 0, zIndex: 40, backgroundColor: '#111110' }}>
+      <div style={{ flexShrink: 0, position: 'sticky', top: 0, zIndex: 40, backgroundColor: '#111110', paddingTop: 'env(safe-area-inset-top, 0px)' }}>
 
         {/* Header */}
         <div style={{ height: '64px', padding: '0 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #2A2A28' }}>
@@ -326,7 +326,7 @@ export function ProfilePage() {
                   </span>
                   <button
                     onClick={() => setShowVerifySheet(true)}
-                    style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', flexShrink: 0 }}
+                    style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '44px', height: '44px', flexShrink: 0 }}
                   >
                     {isVerified ? (
                       <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
@@ -581,7 +581,7 @@ export function ProfilePage() {
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
                 maxLength={30}
-                style={{ width: '100%', backgroundColor: '#242422', border: '1px solid #2A2A28', borderRadius: '12px', padding: '14px 16px', fontSize: '15px', color: '#F0EEE9', marginBottom: '16px', boxSizing: 'border-box' }}
+                style={{ width: '100%', backgroundColor: '#242422', border: '1px solid #2A2A28', borderRadius: '12px', padding: '14px 16px', fontSize: '16px', color: '#F0EEE9', marginBottom: '16px', boxSizing: 'border-box' }}
               />
 
               <p style={{ fontSize: '11px', fontWeight: 600, color: '#6B6B63', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px' }}>Bio</p>
@@ -590,7 +590,7 @@ export function ProfilePage() {
                 onChange={(e) => setEditBio(e.target.value.slice(0, 150))}
                 placeholder="Tell people about yourself..."
                 rows={3}
-                style={{ width: '100%', backgroundColor: '#242422', border: '1px solid #2A2A28', borderRadius: '12px', padding: '14px 16px', fontSize: '15px', color: '#F0EEE9', marginBottom: '4px', boxSizing: 'border-box', resize: 'none', fontFamily: 'inherit' }}
+                style={{ width: '100%', backgroundColor: '#242422', border: '1px solid #2A2A28', borderRadius: '12px', padding: '14px 16px', fontSize: '16px', color: '#F0EEE9', marginBottom: '4px', boxSizing: 'border-box', resize: 'none', fontFamily: 'inherit' }}
               />
               <p style={{ fontSize: '12px', color: editBio.length >= 140 ? '#FF3B30' : '#6B6B63', textAlign: 'right', marginBottom: '20px' }}>
                 {editBio.length}/150
@@ -599,17 +599,17 @@ export function ProfilePage() {
               <div style={{ marginTop: '16px' }}>
                 <label style={{ fontSize: '11px', fontWeight: 700, color: '#6B6B63', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '6px' }}>Instagram</label>
                 <input type="text" placeholder="username or profile URL" value={editInstagram} onChange={(e) => setEditInstagram(e.target.value)}
-                  style={{ width: '100%', fontSize: '15px', color: '#F0EEE9', backgroundColor: 'transparent', border: 'none', borderBottom: '1px solid #2A2A28', outline: 'none', padding: '0 0 10px' }} />
+                  style={{ width: '100%', fontSize: '16px', color: '#F0EEE9', backgroundColor: 'transparent', border: 'none', borderBottom: '1px solid #2A2A28', outline: 'none', padding: '0 0 10px' }} />
               </div>
               <div style={{ marginTop: '16px' }}>
                 <label style={{ fontSize: '11px', fontWeight: 700, color: '#6B6B63', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '6px' }}>Twitter / X</label>
                 <input type="text" placeholder="username or profile URL" value={editTwitter} onChange={(e) => setEditTwitter(e.target.value)}
-                  style={{ width: '100%', fontSize: '15px', color: '#F0EEE9', backgroundColor: 'transparent', border: 'none', borderBottom: '1px solid #2A2A28', outline: 'none', padding: '0 0 10px' }} />
+                  style={{ width: '100%', fontSize: '16px', color: '#F0EEE9', backgroundColor: 'transparent', border: 'none', borderBottom: '1px solid #2A2A28', outline: 'none', padding: '0 0 10px' }} />
               </div>
               <div style={{ marginTop: '16px', marginBottom: '20px' }}>
                 <label style={{ fontSize: '11px', fontWeight: 700, color: '#6B6B63', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '6px' }}>Facebook</label>
                 <input type="text" placeholder="username or profile URL" value={editFacebook} onChange={(e) => setEditFacebook(e.target.value)}
-                  style={{ width: '100%', fontSize: '15px', color: '#F0EEE9', backgroundColor: 'transparent', border: 'none', borderBottom: '1px solid #2A2A28', outline: 'none', padding: '0 0 10px' }} />
+                  style={{ width: '100%', fontSize: '16px', color: '#F0EEE9', backgroundColor: 'transparent', border: 'none', borderBottom: '1px solid #2A2A28', outline: 'none', padding: '0 0 10px' }} />
               </div>
 
             </div>

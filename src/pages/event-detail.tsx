@@ -325,7 +325,7 @@ export function EventDetailPage() {
           onClick={() => navigate(-1)}
           className="absolute top-4 left-4 z-10 flex items-center justify-center rounded-full active:scale-90 transition-transform"
           style={{
-            width: "40px", height: "40px",
+            width: "44px", height: "44px",
             backgroundColor: "rgba(0,0,0,0.50)",
             backdropFilter: "blur(8px)",
             WebkitBackdropFilter: "blur(8px)",
@@ -338,7 +338,7 @@ export function EventDetailPage() {
 
       {/* ── Tab bar — shown only when RSVP'd ────────────────────────────────── */}
       {hasRSVPd && (
-        <div style={{ position: 'sticky', top: 0, zIndex: 50, backgroundColor: '#111110', padding: '10px 16px', borderBottom: '1px solid #2A2A28' }}>
+        <div style={{ position: 'sticky', top: 0, zIndex: 50, backgroundColor: '#111110', paddingTop: 'env(safe-area-inset-top, 0px)', padding: '10px 16px', borderBottom: '1px solid #2A2A28' }}>
           <div style={{ display: 'flex', backgroundColor: '#1C1C1A', borderRadius: '20px', padding: '4px', gap: '4px' }}>
             <button
               onClick={() => setActiveTab('details')}
@@ -396,7 +396,7 @@ export function EventDetailPage() {
                 <button
                   onClick={() => setIsMenuOpen((v) => !v)}
                   className="flex items-center justify-center rounded-full active:opacity-60 transition-opacity"
-                  style={{ width: "36px", height: "36px", backgroundColor: "#242422", border: "1px solid #2A2A28" }}
+                  style={{ width: "44px", height: "44px", backgroundColor: "#242422", border: "1px solid #2A2A28" }}
                   aria-label="More options"
                 >
                   <MoreVertical size={18} color="#6B6B63" strokeWidth={1.8} />
@@ -439,7 +439,7 @@ export function EventDetailPage() {
               <button
                 onClick={() => setShowReport(true)}
                 className="flex items-center justify-center rounded-full active:opacity-60 transition-opacity"
-                style={{ width: "36px", height: "36px", backgroundColor: "#242422", border: "1px solid #2A2A28" }}
+                style={{ width: "44px", height: "44px", backgroundColor: "#242422", border: "1px solid #2A2A28" }}
                 aria-label="Report event"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B6B63" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -451,7 +451,7 @@ export function EventDetailPage() {
             <button
               onClick={handleShare}
               className="flex items-center justify-center rounded-full active:opacity-60 transition-opacity"
-              style={{ width: "36px", height: "36px", backgroundColor: "#242422", border: "1px solid #2A2A28" }}
+              style={{ width: "44px", height: "44px", backgroundColor: "#242422", border: "1px solid #2A2A28" }}
               aria-label="Share"
             >
               <Share2 size={18} color="#6B6B63" strokeWidth={1.8} />
@@ -921,7 +921,7 @@ export function EventDetailPage() {
                         border: "1px solid #2A2A28",
                         borderRadius: "12px",
                         padding: "12px",
-                        fontSize: "15px",
+                        fontSize: "16px",
                         color: "#F0EEE9",
                         resize: "none",
                         outline: "none",
@@ -1052,13 +1052,13 @@ export function EventDetailPage() {
                   onChange={(e) => setChatInput(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }}
                   maxLength={500}
-                  style={{ flex: 1, backgroundColor: 'transparent', border: 'none', outline: 'none', fontSize: '14px', color: '#F0EEE9', WebkitTextFillColor: '#F0EEE9' }}
+                  style={{ flex: 1, backgroundColor: 'transparent', border: 'none', outline: 'none', fontSize: '16px', color: '#F0EEE9', WebkitTextFillColor: '#F0EEE9' }}
                 />
                 <span style={{ fontSize: '11px', color: '#3D3D38', flexShrink: 0 }}>{500 - chatInput.length}</span>
                 <button
                   onClick={handleSendMessage}
                   disabled={!chatInput.trim() || isSending}
-                  style={{ width: '36px', height: '36px', borderRadius: '18px', background: chatInput.trim() ? 'linear-gradient(135deg, #FF6B35, #e55a24)' : '#242422', border: 'none', cursor: chatInput.trim() ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'background 0.2s' }}
+                  style={{ width: '44px', height: '44px', borderRadius: '22px', background: chatInput.trim() ? 'linear-gradient(135deg, #FF6B35, #e55a24)' : '#242422', border: 'none', cursor: chatInput.trim() ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'background 0.2s' }}
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                     <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z" stroke={chatInput.trim() ? 'white' : '#3D3D38'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -1289,7 +1289,7 @@ export function EventDetailPage() {
                 border: '1px solid #2A2A28',
                 borderRadius: '12px',
                 padding: '14px 16px',
-                fontSize: '15px',
+                fontSize: '16px',
                 color: '#F0EEE9',
                 marginBottom: '20px',
                 boxSizing: 'border-box',
@@ -1311,7 +1311,7 @@ export function EventDetailPage() {
                 border: '1px solid #2A2A28',
                 borderRadius: '12px',
                 padding: '14px 16px',
-                fontSize: '15px',
+                fontSize: '16px',
                 color: '#F0EEE9',
                 marginBottom: '6px',
                 boxSizing: 'border-box',

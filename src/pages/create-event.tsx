@@ -337,7 +337,7 @@ export function CreateEventPage() {
                     style={{
                       width: '100%',
                       height: '48px',
-                      fontSize: '15px',
+                      fontSize: '16px',
                       fontWeight: 500,
                       color: '#F0EEE9',
                       WebkitTextFillColor: '#F0EEE9',
@@ -361,7 +361,7 @@ export function CreateEventPage() {
                     style={{
                       width: '100%',
                       height: '48px',
-                      fontSize: '15px',
+                      fontSize: '16px',
                       fontWeight: 500,
                       color: '#F0EEE9',
                       WebkitTextFillColor: '#F0EEE9',
@@ -410,7 +410,7 @@ export function CreateEventPage() {
                     style={{
                       width: '100%',
                       height: '48px',
-                      fontSize: '15px',
+                      fontSize: '16px',
                       fontWeight: 500,
                       color: '#F0EEE9',
                       WebkitTextFillColor: '#F0EEE9',
@@ -434,7 +434,7 @@ export function CreateEventPage() {
                     style={{
                       width: '100%',
                       height: '48px',
-                      fontSize: '15px',
+                      fontSize: '16px',
                       fontWeight: 500,
                       color: '#F0EEE9',
                       WebkitTextFillColor: '#F0EEE9',
@@ -577,7 +577,7 @@ export function CreateEventPage() {
                     <button
                       type="button"
                       onClick={() => setMinAge(String(Math.max(18, parseInt(minAge) - 1)))}
-                      style={{ width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#242422", border: "1px solid #2A2A28", color: "#FF6B35", fontSize: "20px", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                      style={{ width: "44px", height: "44px", borderRadius: "22px", backgroundColor: "#242422", border: "1px solid #2A2A28", color: "#FF6B35", fontSize: "20px", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
                     >
                       −
                     </button>
@@ -587,7 +587,7 @@ export function CreateEventPage() {
                     <button
                       type="button"
                       onClick={() => setMinAge(String(Math.min(parseInt(maxAge) - 1, parseInt(minAge) + 1)))}
-                      style={{ width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#242422", border: "1px solid #2A2A28", color: "#FF6B35", fontSize: "20px", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                      style={{ width: "44px", height: "44px", borderRadius: "22px", backgroundColor: "#242422", border: "1px solid #2A2A28", color: "#FF6B35", fontSize: "20px", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
                     >
                       +
                     </button>
@@ -603,7 +603,7 @@ export function CreateEventPage() {
                     <button
                       type="button"
                       onClick={() => setMaxAge(String(Math.max(parseInt(minAge) + 1, parseInt(maxAge) - 1)))}
-                      style={{ width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#242422", border: "1px solid #2A2A28", color: "#FF6B35", fontSize: "20px", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                      style={{ width: "44px", height: "44px", borderRadius: "22px", backgroundColor: "#242422", border: "1px solid #2A2A28", color: "#FF6B35", fontSize: "20px", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
                     >
                       −
                     </button>
@@ -613,7 +613,7 @@ export function CreateEventPage() {
                     <button
                       type="button"
                       onClick={() => setMaxAge(String(Math.min(99, parseInt(maxAge) + 1)))}
-                      style={{ width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#242422", border: "1px solid #2A2A28", color: "#FF6B35", fontSize: "20px", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                      style={{ width: "44px", height: "44px", borderRadius: "22px", backgroundColor: "#242422", border: "1px solid #2A2A28", color: "#FF6B35", fontSize: "20px", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
                     >
                       +
                     </button>
@@ -674,7 +674,7 @@ export function CreateEventPage() {
                       const current = parseInt(capacity) || 0;
                       if (current > 1) { setCapacity(String(current - 1)); setCapacityError(""); }
                     }}
-                    style={{ width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#242422", border: "1px solid #2A2A28", color: "#FF6B35", fontSize: "20px", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                    style={{ width: "44px", height: "44px", borderRadius: "22px", backgroundColor: "#242422", border: "1px solid #2A2A28", color: "#FF6B35", fontSize: "20px", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
                   >
                     −
                   </button>
@@ -703,7 +703,7 @@ export function CreateEventPage() {
                       const current = parseInt(capacity) || 0;
                       if (current < 10000) { setCapacity(String(current + 1)); setCapacityError(""); }
                     }}
-                    style={{ width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#242422", border: "1px solid #2A2A28", color: "#FF6B35", fontSize: "20px", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                    style={{ width: "44px", height: "44px", borderRadius: "22px", backgroundColor: "#242422", border: "1px solid #2A2A28", color: "#FF6B35", fontSize: "20px", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
                   >
                     +
                   </button>
@@ -779,6 +779,7 @@ export function CreateEventPage() {
           position: "sticky",
           top: 0,
           zIndex: 50,
+          paddingTop: 'env(safe-area-inset-top, 0px)',
           backgroundColor: "rgba(17,17,16,0.95)",
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
@@ -796,8 +797,8 @@ export function CreateEventPage() {
           <button
             onClick={goBack}
             style={{
-              width: "40px",
-              height: "40px",
+              width: "44px",
+              height: "44px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
