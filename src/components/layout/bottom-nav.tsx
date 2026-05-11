@@ -32,6 +32,7 @@ export function BottomNav() {
 
   return (
     <div
+      id="bottom-nav"
       style={{
         position: 'fixed',
         bottom: '16px',
@@ -42,7 +43,7 @@ export function BottomNav() {
         WebkitBackdropFilter: 'blur(20px)',
         borderRadius: '100px',
         border: '1px solid rgba(255,255,255,0.08)',
-        padding: '10px 20px',
+        padding: '10px 0px',
         paddingBottom: 'calc(10px + env(safe-area-inset-bottom, 0px))',
         display: 'flex',
         alignItems: 'center',
@@ -50,112 +51,46 @@ export function BottomNav() {
         zIndex: 50,
       }}
     >
+      <Link
+        to="/"
+        onClick={() => navigator.vibrate?.(10)}
+        onContextMenu={(e) => e.preventDefault()}
+        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px', flex: 1, WebkitTouchCallout: 'none', userSelect: 'none' }}
+      >
+        <Compass size={24} strokeWidth={isActive("/") ? 2.5 : 1.5} color={isActive("/") ? activeColor : inactiveColor} fill="none" />
+        <span style={{ fontSize: '10px', lineHeight: 1, fontWeight: isActive("/") ? 600 : 400, color: isActive("/") ? activeColor : inactiveColor }}>Explore</span>
+      </Link>
 
-        {/* Explore */}
-        <Link
-          to="/"
-          onClick={() => navigator.vibrate?.(10)}
-          onContextMenu={(e) => e.preventDefault()}
-          className="flex flex-col items-center justify-center gap-1 flex-1 min-w-0 transition-opacity active:opacity-60"
-          style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
-        >
-          <Compass
-            size={24}
-            strokeWidth={isActive("/") ? 2.5 : 1.5}
-            color={isActive("/") ? activeColor : inactiveColor}
-            fill="none"
-          />
-          <span className="text-[10px] leading-none" style={{ fontWeight: isActive("/") ? 600 : 400, color: isActive("/") ? activeColor : inactiveColor }}>
-            Explore
-          </span>
-        </Link>
+      <Link
+        to="/search"
+        onClick={() => navigator.vibrate?.(10)}
+        onContextMenu={(e) => e.preventDefault()}
+        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px', flex: 1, WebkitTouchCallout: 'none', userSelect: 'none' }}
+      >
+        <Search size={24} strokeWidth={1.8} color={isActive("/search") ? activeColor : inactiveColor} fill="none" />
+        <span style={{ fontSize: '10px', lineHeight: 1, fontWeight: isActive("/search") ? 600 : 400, color: isActive("/search") ? activeColor : inactiveColor }}>Search</span>
+      </Link>
 
-        {/* Search */}
-        <Link
-          to="/search"
-          onClick={() => navigator.vibrate?.(10)}
-          onContextMenu={(e) => e.preventDefault()}
-          className="flex flex-col items-center justify-center gap-1 flex-1 min-w-0 transition-opacity active:opacity-60"
-          style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
-        >
-          <Search
-            size={24}
-            strokeWidth={1.8}
-            color={isActive("/search") ? activeColor : inactiveColor}
-            fill="none"
-          />
-          <span className="text-[10px] leading-none" style={{ fontWeight: isActive("/search") ? 600 : 400, color: isActive("/search") ? activeColor : inactiveColor }}>
-            Search
-          </span>
-        </Link>
+      <button
+        onClick={handleHostTap}
+        onContextMenu={(e) => e.preventDefault()}
+        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px', flex: 1, background: 'none', border: 'none', cursor: 'pointer', WebkitTouchCallout: 'none', userSelect: 'none' }}
+      >
+        <div style={{ width: '48px', height: '48px', borderRadius: '24px', backgroundColor: '#FF6B35', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Plus size={22} strokeWidth={2} color="white" />
+        </div>
+        <span style={{ fontSize: '10px', lineHeight: 1, fontWeight: 600, color: '#FF6B35' }}>Host</span>
+      </button>
 
-        {/* Host — pill button, no label */}
-        <button
-          onClick={handleHostTap}
-          onContextMenu={(e) => e.preventDefault()}
-          className="tap-scale flex flex-col items-center justify-center flex-1 h-full transition-opacity active:opacity-70"
-          style={{
-            WebkitTouchCallout: 'none',
-            WebkitUserSelect: 'none',
-            userSelect: 'none',
-            position: 'relative',
-            zIndex: 100,
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-          }}
-        >
-          <div
-            className="flex items-center justify-center"
-            style={{
-              width: "48px",
-              height: "48px",
-              borderRadius: "24px",
-              backgroundColor: "#FF6B35",
-            }}
-          >
-            <Plus size={22} strokeWidth={2} color="white" />
-          </div>
-          <span
-            style={{
-              fontSize: "10px",
-              fontWeight: 600,
-              color: "#FF6B35",
-              marginTop: "4px",
-              letterSpacing: "0.01em",
-            }}
-          >
-            Host
-          </span>
-        </button>
-
-        {/* Profile */}
-        <Link
-          to="/profile"
-          onClick={() => navigator.vibrate?.(10)}
-          onContextMenu={(e) => e.preventDefault()}
-          className="flex flex-col items-center justify-center flex-1 h-full gap-[3px] transition-opacity active:opacity-60"
-          style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
-        >
-          <User
-            size={24}
-            strokeWidth={isActive("/profile") ? 2.5 : 1.8}
-            color={isActive("/profile") ? activeColor : inactiveColor}
-            fill={isActive("/profile") ? "none" : "none"}
-          />
-          <span
-            style={{
-              fontSize: "10px",
-              fontWeight: isActive("/profile") ? 600 : 400,
-              color: isActive("/profile") ? activeColor : inactiveColor,
-              letterSpacing: "0.01em",
-              marginTop: "4px",
-            }}
-          >
-            Profile
-          </span>
-        </Link>
-
+      <Link
+        to="/profile"
+        onClick={() => navigator.vibrate?.(10)}
+        onContextMenu={(e) => e.preventDefault()}
+        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px', flex: 1, WebkitTouchCallout: 'none', userSelect: 'none' }}
+      >
+        <User size={24} strokeWidth={isActive("/profile") ? 2.5 : 1.8} color={isActive("/profile") ? activeColor : inactiveColor} fill="none" />
+        <span style={{ fontSize: '10px', lineHeight: 1, fontWeight: isActive("/profile") ? 600 : 400, color: isActive("/profile") ? activeColor : inactiveColor }}>Profile</span>
+      </Link>
     </div>
   );
 }
