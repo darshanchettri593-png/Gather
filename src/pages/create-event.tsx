@@ -785,7 +785,7 @@ export function CreateEventPage() {
 
   // ── Render ────────────────────────────────────────────────────────────────────
   return (
-    <div style={{ backgroundColor: "#111110", minHeight: "100vh", paddingBottom: "220px" }}>
+    <div style={{ backgroundColor: "#111110", height: "100dvh", overflow: "hidden", paddingBottom: "220px" }}>
 
       {/* ── Header ───────────────────────────────────────────────────────────── */}
       <div
