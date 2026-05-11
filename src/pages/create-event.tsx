@@ -349,20 +349,20 @@ export function CreateEventPage() {
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
                     style={{
-                      width: '100%',
-                      height: '48px',
-                      fontSize: '16px',
-                      fontWeight: 500,
                       color: '#F0EEE9',
                       WebkitTextFillColor: '#F0EEE9',
-                      opacity: 1,
-                      backgroundColor: '#2A2A28',
-                      border: '1px solid #2A2A28',
-                      borderRadius: '10px',
-                      padding: '0 10px',
-                      outline: 'none',
                       colorScheme: 'dark',
-                      boxSizing: 'border-box',
+                      fontSize: '16px',
+                      fontWeight: 600,
+                      opacity: 1,
+                      backgroundColor: '#242422',
+                      borderRadius: '8px',
+                      padding: '8px',
+                      border: 'none',
+                      outline: 'none',
+                      width: '100%',
+                      height: '44px',
+                      minHeight: '44px',
                     }}
                   />
                 </div>
@@ -373,20 +373,20 @@ export function CreateEventPage() {
                     value={time}
                     onChange={(e) => setTime(e.target.value)}
                     style={{
-                      width: '100%',
-                      height: '48px',
-                      fontSize: '16px',
-                      fontWeight: 500,
                       color: '#F0EEE9',
                       WebkitTextFillColor: '#F0EEE9',
-                      opacity: 1,
-                      backgroundColor: '#2A2A28',
-                      border: '1px solid #2A2A28',
-                      borderRadius: '10px',
-                      padding: '0 10px',
-                      outline: 'none',
                       colorScheme: 'dark',
-                      boxSizing: 'border-box',
+                      fontSize: '16px',
+                      fontWeight: 600,
+                      opacity: 1,
+                      backgroundColor: '#242422',
+                      borderRadius: '8px',
+                      padding: '8px',
+                      border: 'none',
+                      outline: 'none',
+                      width: '100%',
+                      height: '44px',
+                      minHeight: '44px',
                     }}
                   />
                 </div>
@@ -422,20 +422,20 @@ export function CreateEventPage() {
                     min={date}
                     onChange={(e) => { setEndDate(e.target.value); setEndTimeError(""); }}
                     style={{
-                      width: '100%',
-                      height: '48px',
-                      fontSize: '16px',
-                      fontWeight: 500,
                       color: '#F0EEE9',
                       WebkitTextFillColor: '#F0EEE9',
-                      opacity: 1,
-                      backgroundColor: '#2A2A28',
-                      border: '1px solid #2A2A28',
-                      borderRadius: '10px',
-                      padding: '0 10px',
-                      outline: 'none',
                       colorScheme: 'dark',
-                      boxSizing: 'border-box',
+                      fontSize: '16px',
+                      fontWeight: 600,
+                      opacity: 1,
+                      backgroundColor: '#242422',
+                      borderRadius: '8px',
+                      padding: '8px',
+                      border: 'none',
+                      outline: 'none',
+                      width: '100%',
+                      height: '44px',
+                      minHeight: '44px',
                     }}
                   />
                 </div>
@@ -446,20 +446,20 @@ export function CreateEventPage() {
                     value={endTime}
                     onChange={(e) => { setEndTime(e.target.value); setEndTimeError(""); }}
                     style={{
-                      width: '100%',
-                      height: '48px',
-                      fontSize: '16px',
-                      fontWeight: 500,
                       color: '#F0EEE9',
                       WebkitTextFillColor: '#F0EEE9',
-                      opacity: 1,
-                      backgroundColor: '#2A2A28',
-                      border: '1px solid #2A2A28',
-                      borderRadius: '10px',
-                      padding: '0 10px',
-                      outline: 'none',
                       colorScheme: 'dark',
-                      boxSizing: 'border-box',
+                      fontSize: '16px',
+                      fontWeight: 600,
+                      opacity: 1,
+                      backgroundColor: '#242422',
+                      borderRadius: '8px',
+                      padding: '8px',
+                      border: 'none',
+                      outline: 'none',
+                      width: '100%',
+                      height: '44px',
+                      minHeight: '44px',
                     }}
                   />
                 </div>
