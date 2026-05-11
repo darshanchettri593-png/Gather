@@ -163,7 +163,8 @@ export function useTrendingEvents() {
 
       return sorted;
     },
-    staleTime: 60 * 1000,
+    staleTime: 0,
+    gcTime: 0,
   });
 }
 
@@ -187,11 +188,12 @@ export function useLiveEventsSearch(query: string) {
         .or(`title.ilike.%${query}%,location_text.ilike.%${query}%`)
         .order('event_datetime', { ascending: true })
         .limit(10);
-      
+
       if (error) throw error;
       return data;
     },
     staleTime: 0,
+    gcTime: 0,
     enabled: query.length > 0,
   });
 }
