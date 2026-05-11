@@ -424,6 +424,22 @@ export function EventFeedPage() {
     if (isRefreshing) setPullProgress(50);
   }, [isRefreshing]);
 
+  useEffect(() => {
+    const nav = document.getElementById('bottom-nav');
+    if (!nav) return;
+    if (showFilter) {
+      nav.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+      nav.style.transform = 'translateY(calc(100% + 32px))';
+    } else {
+      nav.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+      nav.style.transform = 'translateY(0)';
+    }
+    return () => {
+      const nav = document.getElementById('bottom-nav');
+      if (nav) nav.style.transform = 'translateY(0)';
+    };
+  }, [showFilter]);
+
   // ─── Distance filter ─────────────────────────────────────────────────────────
 
   const filteredEvents = events?.filter(event => {
