@@ -69,23 +69,6 @@ export function CreateEventPage() {
     };
   }, []);
 
-  useEffect(() => {
-    if (step < 6) {
-      document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
-    } else {
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-    };
-  }, [step]);
-
   // ── Step ──────────────────────────────────────────────────────────────────────
   const [step, setStep] = useState(1);
 
