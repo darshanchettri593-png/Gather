@@ -57,25 +57,16 @@ export function BottomNav() {
           to="/"
           onClick={() => navigator.vibrate?.(10)}
           onContextMenu={(e) => e.preventDefault()}
-          className="flex flex-col items-center justify-center flex-1 h-full gap-[3px] transition-opacity active:opacity-60"
+          className="flex flex-col items-center justify-center gap-1 flex-1 min-w-0 transition-opacity active:opacity-60"
           style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
         >
           <Compass
             size={24}
             strokeWidth={isActive("/") ? 2.5 : 1.5}
             color={isActive("/") ? activeColor : inactiveColor}
-            fill={isActive("/") ? "none" : "none"}
-            style={{ display: "block" }}
+            fill="none"
           />
-          <span
-            style={{
-              fontSize: "10px",
-              fontWeight: isActive("/") ? 600 : 400,
-              color: isActive("/") ? activeColor : inactiveColor,
-              letterSpacing: "0.01em",
-              marginTop: "4px",
-            }}
-          >
+          <span className="text-[10px] leading-none" style={{ fontWeight: isActive("/") ? 600 : 400, color: isActive("/") ? activeColor : inactiveColor }}>
             Explore
           </span>
         </Link>
@@ -85,7 +76,7 @@ export function BottomNav() {
           to="/search"
           onClick={() => navigator.vibrate?.(10)}
           onContextMenu={(e) => e.preventDefault()}
-          className="flex flex-col items-center justify-center flex-1 h-full gap-[3px] transition-opacity active:opacity-60"
+          className="flex flex-col items-center justify-center gap-1 flex-1 min-w-0 transition-opacity active:opacity-60"
           style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
         >
           <Search
@@ -94,15 +85,7 @@ export function BottomNav() {
             color={isActive("/search") ? activeColor : inactiveColor}
             fill="none"
           />
-          <span
-            style={{
-              fontSize: "10px",
-              fontWeight: isActive("/search") ? 600 : 400,
-              color: isActive("/search") ? activeColor : inactiveColor,
-              letterSpacing: "0.01em",
-              marginTop: "4px",
-            }}
-          >
+          <span className="text-[10px] leading-none" style={{ fontWeight: isActive("/search") ? 600 : 400, color: isActive("/search") ? activeColor : inactiveColor }}>
             Search
           </span>
         </Link>
