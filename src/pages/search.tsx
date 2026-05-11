@@ -5,7 +5,6 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { format } from "date-fns";
 import { useAuth } from "@/lib/auth-context";
-import { meetsEventCriteria } from "@/lib/utils";
 
 function getVibeLabel(vibe: string) {
   return vibe.charAt(0).toUpperCase() + vibe.slice(1);
@@ -150,46 +149,23 @@ export function SearchPage() {
   });
 
   const { data: upcomingEvents = [] } = useQuery({
-    queryKey: ["search-upcoming"],
+    queryKey: ["search-upcoming", user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("events")
-        .select("*")
-        .gte("event_datetime", new Date().toISOString())
-        .order("event_datetime", { ascending: true })
-        .limit(5);
+      const { data, error } = await supabase.rpc('get_active_events', {
+        current_user_uuid: user?.id || null,
+      });
       if (error) throw error;
-      return data || [];
+      return (data || []).slice(0, 5);
     },
     staleTime: 60 * 1000,
-  });
-
-  const { data: userProfile } = useQuery({
-    queryKey: ['profile', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return null;
-      const { data } = await supabase
-        .from('users')
-        .select('date_of_birth, gender')
-        .eq('id', user.id)
-        .single();
-      return data;
-    },
-    enabled: !!user?.id,
   });
 
   const showEmpty = debouncedQuery.length >= 2 && !isLoading && results.length === 0;
   const showResults = debouncedQuery.length >= 2 && !isLoading && results.length > 0;
   const showLoading = debouncedQuery.length >= 2 && isLoading;
 
-  const filteredResults = results.filter((e: any) =>
-    meetsEventCriteria(e, userProfile ?? null) &&
-    (!selectedVibe || e.vibe === selectedVibe)
-  );
-  const filteredUpcoming = upcomingEvents.filter((e: any) =>
-    meetsEventCriteria(e, userProfile ?? null) &&
-    (!selectedVibe || e.vibe === selectedVibe)
-  );
+  const filteredResults = results.filter((e: any) => !selectedVibe || e.vibe === selectedVibe);
+  const filteredUpcoming = upcomingEvents.filter((e: any) => !selectedVibe || e.vibe === selectedVibe);
 
   return (
     <div
