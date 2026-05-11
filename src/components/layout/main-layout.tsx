@@ -67,7 +67,7 @@ export function MainLayout() {
             backdropFilter: "blur(20px)",
             WebkitBackdropFilter: "blur(20px)",
             borderBottom: "1px solid #2A2A28",
-            paddingTop: 'env(safe-area-inset-top, 0px)',
+            paddingTop: 'calc(env(safe-area-inset-top, 0px) + 8px)',
             minHeight: "56px",
             height: "auto",
           }}
