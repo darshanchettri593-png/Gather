@@ -17,7 +17,7 @@ export function useEvents(vibeFilter: string, userId?: string) {
         ...d,
         host: d.users ?? null,
         _count: {
-          attendees: d.attendees?.[0]?.count || 0,
+          attendees: d.attendee_count || 0,
         },
       })) as Event[];
 
