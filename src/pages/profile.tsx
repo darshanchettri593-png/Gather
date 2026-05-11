@@ -176,6 +176,22 @@ export function ProfilePage() {
     }
   }, [profile]);
 
+  useEffect(() => {
+    const nav = document.getElementById('bottom-nav');
+    if (!nav) return;
+    if (showEditModal) {
+      nav.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+      nav.style.transform = 'translateY(calc(100% + 32px))';
+    } else {
+      nav.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+      nav.style.transform = 'translateY(0)';
+    }
+    return () => {
+      const nav = document.getElementById('bottom-nav');
+      if (nav) nav.style.transform = 'translateY(0)';
+    };
+  }, [showEditModal]);
+
   const { liveEvents, upcomingEvents, pastEvents } = useMemo(() => {
     const rawEvents = activeTab === "hosting" ? userEvents?.hosted : userEvents?.joined;
     if (!rawEvents) return { liveEvents: [], upcomingEvents: [], pastEvents: [] };
