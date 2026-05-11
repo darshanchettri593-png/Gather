@@ -4,6 +4,10 @@ import { format } from "date-fns";
 import { CalendarDays, AlertCircle, MapPin, Loader2 } from "lucide-react";
 import { useEvents } from "@/hooks/useEvents";
 import { LiveBadge } from "@/components/ui/live-badge";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/lib/auth-context";
+import { meetsEventCriteria } from "@/lib/utils";
 
 const VIBES = ["All", "Move", "Create", "Hang", "Learn", "Explore"];
 
@@ -359,6 +363,7 @@ function FeedEmptyState({ onHost }: { onHost: () => void }) {
 
 export function EventFeedPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [vibeFilter, setVibeFilter] = useState<string>("All");
   const [userLat, setUserLat] = useState<number | null>(null);
   const [userLng, setUserLng] = useState<number | null>(null);
@@ -378,6 +383,20 @@ export function EventFeedPage() {
   }, []);
 
   const { data: events, isLoading, error, refetch } = useEvents(vibeFilter);
+
+  const { data: userProfile } = useQuery({
+    queryKey: ['profile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data } = await supabase
+        .from('users')
+        .select('date_of_birth, gender')
+        .eq('id', user.id)
+        .single();
+      return data;
+    },
+    enabled: !!user?.id,
+  });
 
   // 8-second timeout — show empty state instead of infinite skeleton
   const [isTimedOut, setIsTimedOut] = useState(false);
@@ -425,6 +444,7 @@ export function EventFeedPage() {
   // ─── Distance filter ─────────────────────────────────────────────────────────
 
   const filteredEvents = events?.filter(event => {
+    if (!meetsEventCriteria(event, userProfile ?? null)) return false;
     if (!userLat || !userLng) return true;
     if (!event.latitude || !event.longitude) return false;
     return getDistanceKm(userLat, userLng, event.latitude, event.longitude) <= radiusKm;

@@ -4,6 +4,8 @@ import { CalendarDays, MapPin } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { format } from "date-fns";
+import { useAuth } from "@/lib/auth-context";
+import { meetsEventCriteria } from "@/lib/utils";
 
 function getVibeLabel(vibe: string) {
   return vibe.charAt(0).toUpperCase() + vibe.slice(1);
@@ -113,6 +115,7 @@ function SkeletonCard() {
 const VIBES = ['All', 'Move', 'Create', 'Hang', 'Learn', 'Explore'];
 
 export function SearchPage() {
+  const { user } = useAuth();
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
@@ -161,12 +164,32 @@ export function SearchPage() {
     staleTime: 60 * 1000,
   });
 
+  const { data: userProfile } = useQuery({
+    queryKey: ['profile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data } = await supabase
+        .from('users')
+        .select('date_of_birth, gender')
+        .eq('id', user.id)
+        .single();
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
   const showEmpty = debouncedQuery.length >= 2 && !isLoading && results.length === 0;
   const showResults = debouncedQuery.length >= 2 && !isLoading && results.length > 0;
   const showLoading = debouncedQuery.length >= 2 && isLoading;
 
-  const filteredResults = selectedVibe ? results.filter((e: any) => e.vibe === selectedVibe) : results;
-  const filteredUpcoming = selectedVibe ? upcomingEvents.filter((e: any) => e.vibe === selectedVibe) : upcomingEvents;
+  const filteredResults = results.filter((e: any) =>
+    meetsEventCriteria(e, userProfile ?? null) &&
+    (!selectedVibe || e.vibe === selectedVibe)
+  );
+  const filteredUpcoming = upcomingEvents.filter((e: any) =>
+    meetsEventCriteria(e, userProfile ?? null) &&
+    (!selectedVibe || e.vibe === selectedVibe)
+  );
 
   return (
     <div
