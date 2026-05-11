@@ -55,6 +55,20 @@ export function CreateEventPage() {
     }
   }, [user, authLoading]);
 
+  useEffect(() => {
+    const nav = document.getElementById('bottom-nav');
+    if (!nav) return;
+    nav.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+    nav.style.transform = 'translateY(calc(100% + 32px))';
+    return () => {
+      const nav = document.getElementById('bottom-nav');
+      if (nav) {
+        nav.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+        nav.style.transform = 'translateY(0)';
+      }
+    };
+  }, []);
+
   // ── Step ──────────────────────────────────────────────────────────────────────
   const [step, setStep] = useState(1);
 
@@ -854,8 +868,7 @@ export function CreateEventPage() {
           right: 0,
           backgroundColor: '#1C1C1A',
           borderTop: '1px solid #2A2A28',
-          padding: '16px 20px',
-          paddingBottom: 'calc(100px + env(safe-area-inset-bottom, 0px))',
+          padding: '12px 24px 32px 24px',
           display: 'flex',
           gap: '12px',
         }}
