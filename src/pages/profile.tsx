@@ -78,11 +78,6 @@ function EventCard({ event, isPast }: { event: any; isPast: boolean }) {
               <span style={{ fontSize: "18px", fontWeight: 700, color: "#3D3D38" }}>{vibeInitial}</span>
             </div>
           )}
-          {isPast && (
-            <div className="absolute top-[5px] right-[5px]" style={{ backgroundColor: "rgba(0,0,0,0.6)", borderRadius: "4px", padding: "1px 4px" }}>
-              <span style={{ fontSize: "9px", color: "#6B6B63" }}>Past</span>
-            </div>
-          )}
         </div>
 
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -276,15 +271,15 @@ export function ProfilePage() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', backgroundColor: '#111110' }}>
 
       {/* ── Section 1: Sticky header + profile card + tabs ─────────────────── */}
-      <div style={{ flexShrink: 0, position: 'sticky', top: 0, zIndex: 40, backgroundColor: '#111110', paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+      <div style={{ flexShrink: 0, position: 'sticky', top: 0, zIndex: 50, backgroundColor: '#111110', paddingTop: 'env(safe-area-inset-top, 0px)', boxShadow: '0 0.5px 0 rgba(255,255,255,0.06)' }}>
 
         {/* Header */}
-        <div style={{ height: '64px', padding: '0 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #2A2A28' }}>
+        <div style={{ height: '64px', padding: '0 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span style={{ fontSize: '22px', fontWeight: 700, color: '#F0EEE9' }}>Profile</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <button
               onClick={() => setShowEditModal(true)}
-              style={{ fontSize: '15px', fontWeight: 600, color: '#FF6B35', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+              style={{ fontSize: '15px', fontWeight: 600, color: '#6B6B63', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
             >
               Edit
             </button>
@@ -303,7 +298,7 @@ export function ProfilePage() {
             <Skeleton className="h-[160px] w-full rounded-2xl" style={{ backgroundColor: '#1C1C1A' }} />
           </div>
         ) : (
-          <div style={{ margin: '12px', backgroundColor: '#1C1C1A', border: '1px solid #2A2A28', borderRadius: '16px', padding: '20px' }}>
+          <div style={{ margin: '8px 12px 12px', backgroundColor: '#1C1C1A', border: '1px solid #2A2A28', borderRadius: '16px', padding: '20px' }}>
 
             {/* Top row: avatar + info */}
             <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
@@ -387,7 +382,7 @@ export function ProfilePage() {
 
                 {/* Member since */}
                 {user?.created_at && (
-                  <span style={{ fontSize: '11px', color: '#3D3D38' }}>
+                  <span style={{ fontSize: '11px', color: '#6B6B63' }}>
                     Joined {new Date(user.created_at).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}
                   </span>
                 )}
@@ -468,7 +463,7 @@ export function ProfilePage() {
                 </span>
                 <div style={{ display: 'flex', gap: '2px' }}>
                   {[1, 2, 3, 4, 5].map((star) => (
-                    <span key={star} style={{ fontSize: '16px', color: star <= Math.round(Number(profileRatings.overall.avg)) ? '#FF6B35' : '#2A2A28' }}>★</span>
+                    <span key={star} style={{ fontSize: '16px', color: star <= Math.round(Number(profileRatings.overall.avg)) ? '#34C759' : '#2A2A28' }}>★</span>
                   ))}
                 </div>
                 <span style={{ fontSize: '12px', color: '#6B6B63' }}>
