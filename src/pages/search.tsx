@@ -354,6 +354,20 @@ export function SearchPage() {
                     <rect x="82" y="100" width="12" height="8" rx="2" fill="#F0EEE9" opacity="0.25"/>
                     <text x="76" y="96" fill="#F0EEE9" fontSize="5" opacity="0.25" fontFamily="-apple-system,sans-serif">Motor Stand</text>
                     <text x="100" y="145" fill="#F0EEE9" fontSize="8" fontWeight="700" opacity="0.2" fontFamily="-apple-system,sans-serif">KALIMPONG</text>
+                    <path d="M50 210 Q65 195 75 180 Q85 165 88 160" stroke="#F0EEE9" strokeWidth="0.8" fill="none"/>
+                    <path d="M60 215 Q75 205 90 198" stroke="#F0EEE9" strokeWidth="0.8" fill="none"/>
+                    <path d="M88 160 Q75 167 62 174 Q48 182 35 192" stroke="#F0EEE9" strokeWidth="0.7" fill="none"/>
+                    <path d="M175 110 Q178 90 176 70 Q174 52 170 35" stroke="#F0EEE9" strokeWidth="1" fill="none"/>
+                    <path d="M195 95 Q193 75 190 55 Q187 38 183 20" stroke="#F0EEE9" strokeWidth="0.8" fill="none"/>
+                    <path d="M245 82 Q248 65 244 48 Q241 32 238 15" stroke="#F0EEE9" strokeWidth="0.8" fill="none"/>
+                    <path d="M220 115 Q235 110 250 105 Q265 100 280 95" stroke="#F0EEE9" strokeWidth="0.7" fill="none"/>
+                    <path d="M80 78 Q70 85 58 95 Q45 106 35 115" stroke="#F0EEE9" strokeWidth="0.7" fill="none"/>
+                    <rect x="170" y="40" width="12" height="8" rx="2" fill="#F0EEE9" opacity="0.2"/>
+                    <rect x="185" y="25" width="10" height="8" rx="2" fill="#F0EEE9" opacity="0.18"/>
+                    <rect x="235" y="20" width="14" height="9" rx="2" fill="#F0EEE9" opacity="0.2"/>
+                    <rect x="48" y="135" width="10" height="7" rx="2" fill="#F0EEE9" opacity="0.18"/>
+                    <rect x="260" y="85" width="11" height="8" rx="2" fill="#F0EEE9" opacity="0.18"/>
+                    <rect x="38" y="108" width="9" height="7" rx="2" fill="#F0EEE9" opacity="0.15"/>
                   </svg>
 
                   {/* Empty state content */}
@@ -364,7 +378,6 @@ export function SearchPage() {
                       </svg>
                     </div>
                     <p style={{ color: '#6B6B63', fontSize: '14px', fontWeight: 600, textAlign: 'center' }}>No gatherings near you yet.</p>
-                    <p style={{ color: '#3D3D38', fontSize: '12px', textAlign: 'center', lineHeight: 1.5 }}>Be the first to host something in Kalimpong.</p>
                   </div>
 
                 </div>
