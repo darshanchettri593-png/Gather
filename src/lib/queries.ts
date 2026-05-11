@@ -149,7 +149,7 @@ export function useTrendingEvents() {
           location_text,
           _count:attendees(count)
         `)
-        .gte('event_datetime', new Date().toISOString())
+        .gte('end_datetime', new Date().toISOString())
         .order('created_at', { ascending: false }); // There is no direct attendee count order in simple supabase JS without a view or rpc, so we will fetch all future and sort in JS
       
       if (error) throw error;
@@ -183,7 +183,7 @@ export function useLiveEventsSearch(query: string) {
           location_text,
           _count:attendees(count)
         `)
-        .gte('event_datetime', new Date().toISOString())
+        .gte('end_datetime', new Date().toISOString())
         .or(`title.ilike.%${query}%,location_text.ilike.%${query}%`)
         .order('event_datetime', { ascending: true })
         .limit(10);
