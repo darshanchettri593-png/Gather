@@ -245,8 +245,8 @@
   }
 
   @keyframes shimmer {
-    0%   { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+    0%   { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
   }
 
   @keyframes pulse {
@@ -314,6 +314,26 @@ input, textarea {
 }
 .slide-up {
   animation: slideUp 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    #1C1C1A 25%,
+    #242422 50%,
+    #1C1C1A 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.tap-scale {
+  transition: transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tap-scale:active {
+  transform: scale(0.95);
 }
 
 .tab-transition {

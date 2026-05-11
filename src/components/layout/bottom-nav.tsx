@@ -32,12 +32,22 @@ export function BottomNav() {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-50"
       style={{
-        backgroundColor: "#1C1C1A",
-        borderTop: "1px solid #2A2A28",
-        paddingTop: "8px",
-        paddingBottom: "calc(16px + env(safe-area-inset-bottom, 0px))",
+        position: 'fixed',
+        bottom: '16px',
+        left: '16px',
+        right: '16px',
+        backgroundColor: 'rgba(28,28,26,0.85)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderRadius: '100px',
+        border: '1px solid rgba(255,255,255,0.08)',
+        padding: '10px 20px',
+        paddingBottom: 'calc(10px + env(safe-area-inset-bottom, 0px))',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-around',
+        zIndex: 50,
       }}
     >
       <div className="flex items-center justify-around h-full max-w-md mx-auto px-2">
@@ -101,7 +111,7 @@ export function BottomNav() {
         <button
           onClick={handleHostTap}
           onContextMenu={(e) => e.preventDefault()}
-          className="flex flex-col items-center justify-center flex-1 h-full transition-opacity active:opacity-70"
+          className="tap-scale flex flex-col items-center justify-center flex-1 h-full transition-opacity active:opacity-70"
           style={{
             WebkitTouchCallout: 'none',
             WebkitUserSelect: 'none',

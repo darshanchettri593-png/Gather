@@ -1147,7 +1147,7 @@ export function EventDetailPage() {
             <button
               disabled={isRSVPPending}
               onClick={handleRSVPClick}
-              className="flex items-center justify-center active:scale-[0.98] transition-all"
+              className="tap-scale flex items-center justify-center active:scale-[0.98] transition-all"
               style={{
                 height: "52px",
                 padding: "0 28px",
@@ -1183,7 +1183,7 @@ export function EventDetailPage() {
             <button
               disabled={isRSVPPending}
               onClick={handleRSVPClick}
-              className="text-white active:scale-[0.98] transition-all"
+              className="tap-scale text-white active:scale-[0.98] transition-all"
               style={{
                 height: "52px",
                 padding: "0 32px",

@@ -142,6 +142,7 @@ export function MainLayout() {
 
       <main
         className="tab-transition flex-1 w-full max-w-5xl mx-auto"
+        style={{ paddingBottom: '100px' }}
       >
         <Outlet />
       </main>

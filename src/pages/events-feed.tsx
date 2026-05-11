@@ -40,8 +40,8 @@ function FeaturedEventCard({ event, userLocation }: { event: any; userLocation: 
     >
       <div
         style={{
-          backgroundColor: "#1C1C1A",
-          border: "1px solid #2A2A28",
+          backgroundColor: "#111110",
+          border: "1px solid rgba(255,255,255,0.08)",
           borderRadius: "16px",
           overflow: "hidden",
         }}
@@ -224,8 +224,8 @@ function CompactEventCard({ event, userLocation }: { event: any; userLocation: {
       <div
         className="flex gap-3"
         style={{
-          backgroundColor: "#1C1C1A",
-          border: "1px solid #2A2A28",
+          backgroundColor: "#111110",
+          border: "1px solid rgba(255,255,255,0.08)",
           borderRadius: "14px",
           padding: "12px",
         }}
@@ -465,48 +465,27 @@ export function EventFeedPage() {
 
     if (isLoading && !isTimedOut) {
       return (
-        <div className="flex flex-col gap-[10px]" style={{ padding: "0 20px" }}>
+        <div className="flex flex-col">
           {[0, 1, 2].map((i) => (
             <div
               key={i}
               style={{
-                backgroundColor: "#1C1C1A",
-                border: "1px solid #2A2A28",
-                borderRadius: "16px",
-                overflow: "hidden",
+                margin: '0 12px 12px',
+                borderRadius: '16px',
+                overflow: 'hidden',
+                border: '1px solid rgba(255,255,255,0.08)',
               }}
             >
-              {i === 0 ? (
-                <div
-                  className="w-full aspect-video relative overflow-hidden"
-                  style={{ backgroundColor: "#242422" }}
-                >
-                  <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/[0.03] to-transparent" />
+              <div className="shimmer" style={{ height: '200px', width: '100%' }} />
+              <div style={{ padding: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div className="shimmer" style={{ height: '12px', width: '60px', borderRadius: '6px' }} />
+                <div className="shimmer" style={{ height: '18px', width: '80%', borderRadius: '6px' }} />
+                <div className="shimmer" style={{ height: '12px', width: '50%', borderRadius: '6px' }} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px' }}>
+                  <div className="shimmer" style={{ height: '12px', width: '30%', borderRadius: '6px' }} />
+                  <div className="shimmer" style={{ height: '28px', width: '80px', borderRadius: '14px' }} />
                 </div>
-              ) : (
-                <div className="flex gap-3" style={{ padding: "12px" }}>
-                  <div
-                    style={{
-                      width: "72px",
-                      height: "72px",
-                      borderRadius: "10px",
-                      backgroundColor: "#242422",
-                      flexShrink: 0,
-                    }}
-                  />
-                  <div className="flex flex-col gap-2 flex-1 justify-center">
-                    <div style={{ height: "10px", width: "40%", backgroundColor: "#242422", borderRadius: "4px" }} />
-                    <div style={{ height: "14px", width: "80%", backgroundColor: "#242422", borderRadius: "4px" }} />
-                    <div style={{ height: "11px", width: "60%", backgroundColor: "#242422", borderRadius: "4px" }} />
-                  </div>
-                </div>
-              )}
-              {i === 0 && (
-                <div className="flex gap-4" style={{ padding: "12px 14px" }}>
-                  <div style={{ height: "12px", width: "35%", backgroundColor: "#242422", borderRadius: "4px" }} />
-                  <div style={{ height: "12px", width: "30%", backgroundColor: "#242422", borderRadius: "4px" }} />
-                </div>
-              )}
+              </div>
             </div>
           ))}
         </div>

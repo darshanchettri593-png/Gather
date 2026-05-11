@@ -19,13 +19,13 @@ function EventCard({ event }: { event: any }) {
     >
       <div
         style={{
-          backgroundColor: "#1C1C1A",
+          backgroundColor: "#111110",
           borderRadius: "14px",
           overflow: "hidden",
           display: "flex",
           gap: "12px",
           padding: "12px",
-          border: "1px solid #1e1e1c",
+          border: "1px solid rgba(255,255,255,0.08)",
         }}
       >
         <div
