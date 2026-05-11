@@ -50,7 +50,6 @@ export function BottomNav() {
         zIndex: 50,
       }}
     >
-      <div className="flex items-center justify-around h-full max-w-md mx-auto px-2">
 
         {/* Explore */}
         <Link
@@ -157,7 +156,6 @@ export function BottomNav() {
           </span>
         </Link>
 
-      </div>
     </div>
   );
 }
