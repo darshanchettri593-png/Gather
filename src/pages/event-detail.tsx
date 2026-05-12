@@ -654,7 +654,7 @@ export function EventDetailPage() {
         )}
 
         {/* WhatsApp group link */}
-        {event.whatsapp_link && (
+        {event.whatsapp_link && (hasRSVPd || isHost) && (
           <a
             href={event.whatsapp_link}
             target="_blank"
