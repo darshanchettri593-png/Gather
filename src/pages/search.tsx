@@ -324,62 +324,54 @@ export function SearchPage() {
                   <EventCard key={event.id} event={event} />
                 ))
               ) : (
-                <div style={{ position: 'relative', height: '230px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-
-                  {/* Kalimpong map SVG — faded tribute */}
-                  <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.09 }} viewBox="0 0 300 230" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M0 180 Q30 160 60 170 Q90 180 120 165 Q150 150 180 160 Q210 170 240 155 Q270 140 300 150" stroke="#F0EEE9" strokeWidth="0.6" fill="none"/>
-                    <path d="M0 200 Q40 185 70 195 Q100 205 130 188 Q160 172 190 182 Q220 192 260 175 Q280 165 300 170" stroke="#F0EEE9" strokeWidth="0.6" fill="none"/>
-                    <path d="M0 215 Q50 205 90 212 Q120 218 150 205 Q180 192 210 200 Q250 210 300 198" stroke="#F0EEE9" strokeWidth="0.4" fill="none"/>
-                    <path d="M0 230 Q20 210 30 195 Q40 178 25 160 Q15 145 10 125 Q5 108 20 95" stroke="#4A9EBF" strokeWidth="2" fill="none" opacity="0.6"/>
-                    <path d="M0 230 Q22 212 32 198 Q43 180 28 162 Q18 147 13 127 Q8 110 23 97" stroke="#4A9EBF" strokeWidth="1" fill="none" opacity="0.3"/>
-                    <path d="M15 230 Q25 210 40 195 Q55 178 70 165 Q90 148 115 140 Q140 132 165 125 Q190 118 220 115 Q250 112 280 108 Q290 106 300 105" stroke="#F0EEE9" strokeWidth="2" fill="none"/>
-                    <text x="230" y="102" fill="#F0EEE9" fontSize="7" fontWeight="700" opacity="0.4" fontFamily="-apple-system,sans-serif">NH10</text>
-                    <path d="M115 140 Q118 120 120 100 Q122 80 118 60" stroke="#F0EEE9" strokeWidth="1.2" fill="none"/>
-                    <path d="M115 140 Q130 135 145 128 Q160 120 175 110 Q185 103 195 95" stroke="#F0EEE9" strokeWidth="1.5" fill="none"/>
-                    <path d="M140 132 Q142 115 138 98 Q135 82 130 65" stroke="#F0EEE9" strokeWidth="1" fill="none"/>
-                    <path d="M165 125 Q163 108 160 90 Q157 72 152 55" stroke="#F0EEE9" strokeWidth="1" fill="none"/>
-                    <path d="M90 148 Q92 130 88 112 Q84 95 80 78" stroke="#F0EEE9" strokeWidth="1" fill="none"/>
-                    <path d="M88 112 Q100 108 115 105 Q130 102 142 98" stroke="#F0EEE9" strokeWidth="0.8" fill="none"/>
-                    <path d="M80 78 Q95 74 110 71 Q128 68 143 65 Q158 62 170 58" stroke="#F0EEE9" strokeWidth="0.8" fill="none"/>
-                    <path d="M118 60 Q133 57 148 55 Q163 53 175 50" stroke="#F0EEE9" strokeWidth="0.6" fill="none"/>
-                    <path d="M220 115 Q222 95 218 75 Q215 58 212 40" stroke="#F0EEE9" strokeWidth="1.2" fill="none"/>
-                    <path d="M195 95 Q207 90 220 88 Q232 86 245 82" stroke="#F0EEE9" strokeWidth="0.8" fill="none"/>
-                    <text x="215" y="72" fill="#FF6B35" fontSize="6" fontWeight="700" opacity="0.5" fontFamily="-apple-system,sans-serif">9th Mile</text>
-                    <rect x="108" y="94" width="18" height="10" rx="2" fill="#F0EEE9" opacity="0.25"/>
-                    <rect x="130" y="88" width="14" height="12" rx="2" fill="#F0EEE9" opacity="0.2"/>
-                    <rect x="148" y="82" width="16" height="9" rx="2" fill="#F0EEE9" opacity="0.22"/>
-                    <rect x="162" y="70" width="10" height="10" rx="2" fill="#F0EEE9" opacity="0.3"/>
-                    <text x="158" y="67" fill="#F0EEE9" fontSize="5" opacity="0.3" fontFamily="-apple-system,sans-serif">Mangal Dham</text>
-                    <rect x="82" y="100" width="12" height="8" rx="2" fill="#F0EEE9" opacity="0.25"/>
-                    <text x="76" y="96" fill="#F0EEE9" fontSize="5" opacity="0.25" fontFamily="-apple-system,sans-serif">Motor Stand</text>
-                    <text x="100" y="145" fill="#F0EEE9" fontSize="8" fontWeight="700" opacity="0.2" fontFamily="-apple-system,sans-serif">KALIMPONG</text>
-                    <path d="M50 210 Q65 195 75 180 Q85 165 88 160" stroke="#F0EEE9" strokeWidth="0.8" fill="none"/>
-                    <path d="M60 215 Q75 205 90 198" stroke="#F0EEE9" strokeWidth="0.8" fill="none"/>
-                    <path d="M88 160 Q75 167 62 174 Q48 182 35 192" stroke="#F0EEE9" strokeWidth="0.7" fill="none"/>
-                    <path d="M175 110 Q178 90 176 70 Q174 52 170 35" stroke="#F0EEE9" strokeWidth="1" fill="none"/>
-                    <path d="M195 95 Q193 75 190 55 Q187 38 183 20" stroke="#F0EEE9" strokeWidth="0.8" fill="none"/>
-                    <path d="M245 82 Q248 65 244 48 Q241 32 238 15" stroke="#F0EEE9" strokeWidth="0.8" fill="none"/>
-                    <path d="M220 115 Q235 110 250 105 Q265 100 280 95" stroke="#F0EEE9" strokeWidth="0.7" fill="none"/>
-                    <path d="M80 78 Q70 85 58 95 Q45 106 35 115" stroke="#F0EEE9" strokeWidth="0.7" fill="none"/>
-                    <rect x="170" y="40" width="12" height="8" rx="2" fill="#F0EEE9" opacity="0.2"/>
-                    <rect x="185" y="25" width="10" height="8" rx="2" fill="#F0EEE9" opacity="0.18"/>
-                    <rect x="235" y="20" width="14" height="9" rx="2" fill="#F0EEE9" opacity="0.2"/>
-                    <rect x="48" y="135" width="10" height="7" rx="2" fill="#F0EEE9" opacity="0.18"/>
-                    <rect x="260" y="85" width="11" height="8" rx="2" fill="#F0EEE9" opacity="0.18"/>
-                    <rect x="38" y="108" width="9" height="7" rx="2" fill="#F0EEE9" opacity="0.15"/>
+                <div style={{ position: 'relative', height: '300px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.13 }} viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 300 Q10 270 8 240 Q6 210 15 180 Q24 150 18 120 Q12 90 22 60 Q28 40 20 10" stroke="#4A9EBF" strokeWidth="5" fill="none" opacity="0.7"/>
+                    <path d="M5 300 Q15 272 13 242 Q11 212 20 182 Q29 152 23 122 Q17 92 27 62 Q33 42 25 12" stroke="#4A9EBF" strokeWidth="2.5" fill="none" opacity="0.3"/>
+                    <path d="M0 300 Q15 275 28 255 Q42 233 58 215 Q76 196 98 182 Q122 167 148 158 Q174 149 202 144 Q230 139 258 136 Q278 134 300 132" stroke="#F0EEE9" strokeWidth="3" fill="none"/>
+                    <text x="240" y="128" fill="#F0EEE9" fontSize="8" fontWeight="700" opacity="0.5" fontFamily="-apple-system,sans-serif">NH10</text>
+                    <path d="M98 182 Q110 170 124 158 Q138 146 152 134 Q166 122 178 110 Q190 98 200 86" stroke="#F0EEE9" strokeWidth="2.5" fill="none"/>
+                    <path d="M124 158 Q126 138 128 118 Q130 98 126 78 Q122 58 118 38" stroke="#F0EEE9" strokeWidth="1.8" fill="none"/>
+                    <path d="M148 158 Q150 136 147 114 Q144 92 140 70 Q136 50 132 28" stroke="#F0EEE9" strokeWidth="1.5" fill="none"/>
+                    <path d="M178 148 Q176 126 173 104 Q170 82 166 60 Q162 40 158 18" stroke="#F0EEE9" strokeWidth="1.5" fill="none"/>
+                    <path d="M78 200 Q80 178 77 156 Q74 134 70 112 Q66 90 62 68" stroke="#F0EEE9" strokeWidth="1.5" fill="none"/>
+                    <path d="M70 156 Q84 152 98 148 Q112 144 126 140 Q140 136 152 132" stroke="#F0EEE9" strokeWidth="1" fill="none"/>
+                    <path d="M62 112 Q78 108 94 104 Q112 100 130 96 Q148 92 164 88 Q178 84 192 80" stroke="#F0EEE9" strokeWidth="1" fill="none"/>
+                    <path d="M118 56 Q134 52 150 49 Q166 46 180 43 Q194 40 208 37" stroke="#F0EEE9" strokeWidth="0.8" fill="none"/>
+                    <path d="M202 144 Q204 120 200 96 Q197 74 194 50 Q191 28 188 8" stroke="#F0EEE9" strokeWidth="1.8" fill="none"/>
+                    <path d="M202 144 Q218 140 234 136 Q250 132 268 128 Q284 124 300 122" stroke="#F0EEE9" strokeWidth="1.2" fill="none"/>
+                    <text x="196" y="78" fill="#FF6B35" fontSize="7" fontWeight="700" opacity="0.6" fontFamily="-apple-system,sans-serif">9th Mile</text>
+                    <path d="M58 215 Q50 230 42 245 Q34 260 28 275" stroke="#F0EEE9" strokeWidth="1" fill="none"/>
+                    <path d="M78 200 Q66 208 54 216 Q42 224 30 234" stroke="#F0EEE9" strokeWidth="0.8" fill="none"/>
+                    <path d="M200 86 Q210 76 220 64 Q232 50 240 36 Q248 22 252 8" stroke="#F0EEE9" strokeWidth="1.2" fill="none"/>
+                    <path d="M234 136 Q236 114 232 92 Q229 72 226 50" stroke="#F0EEE9" strokeWidth="1" fill="none"/>
+                    <path d="M192 80 Q204 76 218 72 Q232 68 246 64" stroke="#F0EEE9" strokeWidth="0.8" fill="none"/>
+                    <rect x="114" y="136" width="22" height="14" rx="2" fill="#F0EEE9" opacity="0.28"/>
+                    <rect x="140" y="126" width="18" height="13" rx="2" fill="#F0EEE9" opacity="0.24"/>
+                    <rect x="160" y="116" width="20" height="12" rx="2" fill="#F0EEE9" opacity="0.26"/>
+                    <rect x="102" y="148" width="14" height="10" rx="2" fill="#F0EEE9" opacity="0.22"/>
+                    <rect x="132" y="112" width="16" height="11" rx="2" fill="#F0EEE9" opacity="0.2"/>
+                    <rect x="68" y="148" width="16" height="10" rx="2" fill="#F0EEE9" opacity="0.25"/>
+                    <text x="58" y="144" fill="#F0EEE9" fontSize="6" opacity="0.3" fontFamily="-apple-system,sans-serif">Motor Stand</text>
+                    <rect x="172" y="96" width="14" height="12" rx="2" fill="#F0EEE9" opacity="0.3"/>
+                    <text x="162" y="92" fill="#F0EEE9" fontSize="6" opacity="0.32" fontFamily="-apple-system,sans-serif">Mangal Dham</text>
+                    <rect x="118" y="64" width="14" height="10" rx="2" fill="#F0EEE9" opacity="0.2"/>
+                    <rect x="138" y="56" width="12" height="9" rx="2" fill="#F0EEE9" opacity="0.18"/>
+                    <rect x="162" y="48" width="14" height="9" rx="2" fill="#F0EEE9" opacity="0.2"/>
+                    <rect x="188" y="40" width="12" height="9" rx="2" fill="#F0EEE9" opacity="0.22"/>
+                    <rect x="222" y="52" width="14" height="10" rx="2" fill="#F0EEE9" opacity="0.18"/>
+                    <rect x="238" y="38" width="10" height="8" rx="2" fill="#F0EEE9" opacity="0.16"/>
+                    <text x="88" y="196" fill="#F0EEE9" fontSize="9" fontWeight="700" opacity="0.15" fontFamily="-apple-system,sans-serif">KALIMPONG</text>
                   </svg>
 
-                  {/* Empty state content */}
                   <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', padding: '0 24px' }}>
-                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(17,17,16,0.8)', border: '0.5px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(17,17,16,0.85)', border: '0.5px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6B6B63" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                         <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="10" y1="14" x2="8" y2="14"/><line x1="10" y1="18" x2="8" y2="18"/>
                       </svg>
                     </div>
                     <p style={{ color: '#6B6B63', fontSize: '14px', fontWeight: 600, textAlign: 'center' }}>No gatherings near you yet.</p>
                   </div>
-
                 </div>
               )}
             </div>
