@@ -475,28 +475,41 @@ export function ProfilePage() {
         )}
 
         {/* Tabs */}
-        <div style={{ borderBottom: '1px solid #2A2A28', padding: '0 20px', display: 'flex' }}>
-          {(['hosting', 'joined'] as const).map((tab) => (
-            <button
-              key={tab}
-              onClick={() => switchTab(tab)}
-              style={{
-                flex: 1,
-                textAlign: 'center',
-                padding: '10px 0',
-                fontSize: '15px',
-                fontWeight: activeTab === tab ? 700 : 500,
-                color: activeTab === tab ? '#F0EEE9' : '#6B6B63',
-                background: 'none',
-                border: 'none',
-                borderBottom: activeTab === tab ? '2px solid #FF6B35' : '2px solid transparent',
-                marginBottom: '-1px',
-                cursor: 'pointer',
-              }}
-            >
-              {tab === 'hosting' ? 'Hosting' : 'Joined'}
-            </button>
-          ))}
+        <div style={{ display: 'flex', background: '#1C1C1A', borderRadius: '12px', padding: '3px', margin: '12px 16px' }}>
+          <button
+            onClick={() => switchTab('hosting')}
+            style={{
+              flex: 1,
+              padding: '8px',
+              borderRadius: '10px',
+              fontSize: '13px',
+              fontWeight: 600,
+              border: 'none',
+              cursor: 'pointer',
+              backgroundColor: activeTab === 'hosting' ? '#2A2A28' : 'transparent',
+              color: activeTab === 'hosting' ? '#F0EEE9' : '#6B6B63',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            Hosting
+          </button>
+          <button
+            onClick={() => switchTab('joined')}
+            style={{
+              flex: 1,
+              padding: '8px',
+              borderRadius: '10px',
+              fontSize: '13px',
+              fontWeight: 600,
+              border: 'none',
+              cursor: 'pointer',
+              backgroundColor: activeTab === 'joined' ? '#2A2A28' : 'transparent',
+              color: activeTab === 'joined' ? '#F0EEE9' : '#6B6B63',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            Joined
+          </button>
         </div>
       </div>
 
