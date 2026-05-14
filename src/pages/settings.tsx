@@ -26,6 +26,9 @@ export function SettingsPage() {
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [emailUpdates, setEmailUpdates] = useState(false);
+  const [locationResetting, setLocationResetting] = useState(false);
+  const [resetsLeft, setResetsLeft] = useState(3);
+  const [resetExhaustedDate, setResetExhaustedDate] = useState<string | null>(null);
 
   useEffect(() => {
     if (profile?.display_name) setDisplayName(profile.display_name);
@@ -41,6 +44,83 @@ export function SettingsPage() {
   });
 
   const { toast } = useToast();
+
+  const getResetInfo = () => {
+    const key = 'gather_location_resets';
+    const stored = localStorage.getItem(key);
+    const now = Date.now();
+    const oneWeek = 7 * 24 * 60 * 60 * 1000;
+    if (stored) {
+      const { count, firstReset } = JSON.parse(stored);
+      if (now - firstReset < oneWeek) {
+        const left = Math.max(0, 3 - count);
+        const date = new Date(firstReset + oneWeek).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+        return { left, exhaustedDate: left === 0 ? date : null };
+      }
+    }
+    return { left: 3, exhaustedDate: null };
+  };
+
+  useEffect(() => {
+    const { left, exhaustedDate } = getResetInfo();
+    setResetsLeft(left);
+    setResetExhaustedDate(exhaustedDate);
+  }, []);
+
+  const handleResetLocation = async () => {
+    const key = 'gather_location_resets';
+    const now = Date.now();
+    const oneWeek = 7 * 24 * 60 * 60 * 1000;
+    const stored = localStorage.getItem(key);
+    if (stored) {
+      const { count, firstReset } = JSON.parse(stored);
+      if (now - firstReset < oneWeek && count >= 3) {
+        const date = new Date(firstReset + oneWeek).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+        toast(`Reset limit reached — try again after ${date}`, 'error');
+        return;
+      }
+      if (now - firstReset < oneWeek) {
+        localStorage.setItem(key, JSON.stringify({ count: count + 1, firstReset }));
+      } else {
+        localStorage.setItem(key, JSON.stringify({ count: 1, firstReset: now }));
+      }
+    } else {
+      localStorage.setItem(key, JSON.stringify({ count: 1, firstReset: now }));
+    }
+    setLocationResetting(true);
+    localStorage.removeItem('gather_city');
+    localStorage.removeItem('gather_lat');
+    localStorage.removeItem('gather_lng');
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      try {
+        const response = await fetch(
+          `https://api.olamaps.io/places/v1/reverse-geocode?latlng=${pos.coords.latitude},${pos.coords.longitude}&api_key=${import.meta.env.VITE_OLA_MAPS_KEY}`
+        );
+        const data = await response.json();
+        const components = data.results?.[0]?.address_components || [];
+        const city =
+          components.find((c: any) => c.types?.includes('locality'))?.long_name ||
+          components.find((c: any) => c.types?.includes('administrative_area_level_2'))?.long_name ||
+          'Nearby';
+        localStorage.setItem('gather_city', city);
+        localStorage.setItem('gather_lat', String(pos.coords.latitude));
+        localStorage.setItem('gather_lng', String(pos.coords.longitude));
+        if (user) await supabase.from('users').update({ location: city }).eq('id', user.id);
+        toast(`Location updated to ${city}`);
+        const { left, exhaustedDate } = getResetInfo();
+        setResetsLeft(left);
+        setResetExhaustedDate(exhaustedDate);
+        setLocationResetting(false);
+        setTimeout(() => window.location.reload(), 800);
+      } catch {
+        setLocationResetting(false);
+        toast('Failed to update location', 'error');
+      }
+    }, () => {
+      setLocationResetting(false);
+      toast('Could not get GPS. Enable location access and try again.', 'error');
+    });
+  };
 
   const handleLogout = async () => {
     await signOut();
@@ -300,15 +380,53 @@ export function SettingsPage() {
           </GroupCard>
         )}
 
+        {/* LOCATION */}
+        <SectionLabel>Location</SectionLabel>
+        <div style={{ margin: '0 0 8px', background: '#1C1C1A', border: '0.5px solid #2A2A28', borderRadius: '14px', overflow: 'hidden' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 16px 10px' }}>
+            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,107,53,0.1)', border: '0.5px solid rgba(255,107,53,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <span style={{ color: '#F0EEE9', fontSize: '14px', fontWeight: 600 }}>Your Location</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '0 16px 12px' }}>
+            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: locationResetting ? '#FF6B35' : '#34C759', flexShrink: 0 }}></div>
+            <span style={{ color: '#6B6B63', fontSize: '13px' }}>
+              {locationResetting ? 'Detecting location...' : (localStorage.getItem('gather_city') || 'Not detected')}
+            </span>
+          </div>
+          <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.06)', margin: '0 16px' }}></div>
+          <div style={{ padding: '12px 16px 14px' }}>
+            <button
+              onClick={handleResetLocation}
+              disabled={locationResetting || resetsLeft === 0}
+              style={{
+                width: '100%',
+                padding: '10px',
+                borderRadius: '10px',
+                background: resetsLeft === 0 ? 'rgba(255,59,48,0.06)' : locationResetting ? 'rgba(255,255,255,0.04)' : 'rgba(255,107,53,0.08)',
+                border: resetsLeft === 0 ? '0.5px solid rgba(255,59,48,0.15)' : locationResetting ? '0.5px solid rgba(255,255,255,0.08)' : '0.5px solid rgba(255,107,53,0.2)',
+                color: resetsLeft === 0 ? '#FF3B30' : locationResetting ? '#6B6B63' : '#FF6B35',
+                fontSize: '13px',
+                fontWeight: 600,
+                cursor: resetsLeft === 0 || locationResetting ? 'not-allowed' : 'pointer',
+                opacity: resetsLeft === 0 ? 0.6 : 1,
+              }}
+            >
+              {locationResetting ? 'Updating...' : resetsLeft === 0 ? 'Reset limit reached' : 'Reset Location'}
+            </button>
+            <p style={{ textAlign: 'center', marginTop: '6px', fontSize: '11px', color: '#3D3D38' }}>
+              {resetsLeft === 0
+                ? <span>Resets again on <span style={{ color: '#6B6B63' }}>{resetExhaustedDate}</span></span>
+                : <span><span style={{ color: '#6B6B63' }}>{resetsLeft} reset{resetsLeft !== 1 ? 's' : ''} remaining</span> this week</span>
+              }
+            </p>
+          </div>
+        </div>
+
         {/* PREFERENCES */}
         <SectionLabel>Preferences</SectionLabel>
         <GroupCard>
-          <div style={{ padding: '16px 20px', borderBottom: '1px solid #2A2A28' }}>
-            <p style={{ fontSize: '15px', color: '#F0EEE9', marginBottom: '4px' }}>Location</p>
-            <p style={{ fontSize: '13px', color: '#6B6B63' }}>
-              Detected automatically from your GPS
-            </p>
-          </div>
           {typeof Notification !== 'undefined' && (
             <div
               style={{
