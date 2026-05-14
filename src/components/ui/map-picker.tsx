@@ -38,6 +38,11 @@ export function MapPicker({ mode, lat, lng, onLocationSelect }: MapPickerProps) 
   const [gpsLoading, setGpsLoading] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [pinSet, setPinSet] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    setDropdownOpen(searchResults.length > 0);
+  }, [searchResults]);
 
   const DEFAULT_LAT = 26.7271;
   const DEFAULT_LNG = 88.3953;
@@ -112,6 +117,10 @@ export function MapPicker({ mode, lat, lng, onLocationSelect }: MapPickerProps) 
 
     if (mode === 'picker') {
       map.on('click', (e) => {
+        if (dropdownOpen) return;
+        const target = e.originalEvent?.target as HTMLElement;
+        if (target?.closest('[data-search-dropdown]')) return;
+
         const { lat: clickLat, lng: clickLng } = e.latlng;
         if (markerRef.current) {
           markerRef.current.setLatLng([clickLat, clickLng]);
@@ -270,6 +279,7 @@ export function MapPicker({ mode, lat, lng, onLocationSelect }: MapPickerProps) 
             )}
             {searchResults.length > 0 && (
               <div
+                data-search-dropdown="true"
                 style={{
                   position: 'absolute',
                   top: '100%',
