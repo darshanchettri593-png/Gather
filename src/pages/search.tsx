@@ -324,8 +324,8 @@ export function SearchPage() {
                   <EventCard key={event.id} event={event} />
                 ))
               ) : (
-                <div style={{ position: 'relative', height: '300px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.13 }} viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+                <div style={{ position: 'relative', height: '380px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.15 }} viewBox="0 0 260 280" xmlns="http://www.w3.org/2000/svg">
                     <path d="M0 300 Q10 270 8 240 Q6 210 15 180 Q24 150 18 120 Q12 90 22 60 Q28 40 20 10" stroke="#4A9EBF" strokeWidth="5" fill="none" opacity="0.7"/>
                     <path d="M5 300 Q15 272 13 242 Q11 212 20 182 Q29 152 23 122 Q17 92 27 62 Q33 42 25 12" stroke="#4A9EBF" strokeWidth="2.5" fill="none" opacity="0.3"/>
                     <path d="M0 300 Q15 275 28 255 Q42 233 58 215 Q76 196 98 182 Q122 167 148 158 Q174 149 202 144 Q230 139 258 136 Q278 134 300 132" stroke="#F0EEE9" strokeWidth="3" fill="none"/>
