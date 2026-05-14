@@ -415,6 +415,24 @@ export function SettingsPage() {
           <Row label="App version" value="1.0.0" />
         </GroupCard>
 
+        <div style={{
+          padding: '12px 20px',
+          borderTop: '0.5px solid rgba(255,255,255,0.06)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+        }}>
+          <span style={{ fontSize: '11px', color: '#3D3D38' }}>Maps powered by</span>
+          <a
+            href="https://openstreetmap.org/copyright"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ fontSize: '11px', color: '#6B6B63', textDecoration: 'none' }}
+          >
+            Ola Maps
+          </a>
+        </div>
+
         {/* DANGER ZONE */}
         {user && (
           <>
