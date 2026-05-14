@@ -20,10 +20,11 @@ interface MapPickerProps {
   onLocationSelect?: (coords: { lat: number; lng: number }) => void;
 }
 
-interface NominatimResult {
-  lat: string;
-  lon: string;
+interface OlaResult {
   display_name: string;
+  lat?: number;
+  lon?: number;
+  place_id?: string;
 }
 
 export function MapPicker({ mode, lat, lng, onLocationSelect }: MapPickerProps) {
@@ -33,8 +34,9 @@ export function MapPicker({ mode, lat, lng, onLocationSelect }: MapPickerProps) 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<NominatimResult[]>([]);
+  const [searchResults, setSearchResults] = useState<OlaResult[]>([]);
   const [gpsLoading, setGpsLoading] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const [pinSet, setPinSet] = useState(false);
 
   const DEFAULT_LAT = 26.7271;
@@ -96,8 +98,8 @@ export function MapPicker({ mode, lat, lng, onLocationSelect }: MapPickerProps) 
       attributionControl: false,
     });
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '',
       maxZoom: 19,
     }).addTo(map);
 
@@ -165,6 +167,41 @@ export function MapPicker({ mode, lat, lng, onLocationSelect }: MapPickerProps) 
     );
   };
 
+  const searchPlaces = async (query: string) => {
+    if (!query || query.length < 3) return;
+    setIsSearching(true);
+    try {
+      const response = await fetch(
+        `https://api.olamaps.io/places/v1/autocomplete?input=${encodeURIComponent(query)}&api_key=${import.meta.env.VITE_OLA_MAPS_KEY}`
+      );
+      const data = await response.json();
+      if (data.predictions) {
+        setSearchResults(data.predictions.map((p: any) => ({
+          display_name: p.description,
+          lat: p.geometry?.location?.lat,
+          lon: p.geometry?.location?.lng,
+          place_id: p.place_id,
+        })));
+      }
+    } catch (err) {
+      console.error('OLA Maps search error:', err);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const getPlaceDetails = async (place_id: string) => {
+    const response = await fetch(
+      `https://api.olamaps.io/places/v1/details?place_id=${place_id}&api_key=${import.meta.env.VITE_OLA_MAPS_KEY}`
+    );
+    const data = await response.json();
+    return {
+      lat: data.result?.geometry?.location?.lat,
+      lon: data.result?.geometry?.location?.lng,
+      display_name: data.result?.formatted_address,
+    };
+  };
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchQuery(value);
@@ -173,24 +210,33 @@ export function MapPicker({ mode, lat, lng, onLocationSelect }: MapPickerProps) 
     if (debounceRef.current) clearTimeout(debounceRef.current);
     if (!value.trim()) return;
 
-    debounceRef.current = setTimeout(async () => {
-      try {
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(value)}&format=json&limit=5&countrycodes=in&addressdetails=1`
-        );
-        const data: NominatimResult[] = await res.json();
-        setSearchResults(data);
-      } catch {
-        // silently fail — user can try again
-      }
+    debounceRef.current = setTimeout(() => {
+      searchPlaces(value);
     }, 300);
   };
 
-  const handleResultSelect = (result: NominatimResult) => {
-    const placeLat = parseFloat(result.lat);
-    const placeLng = parseFloat(result.lon);
-    placeMarker(placeLat, placeLng);
-    setSearchQuery(result.display_name);
+  const handleResultSelect = async (result: OlaResult) => {
+    let placeLat = result.lat;
+    let placeLng = result.lon;
+
+    if ((!placeLat || !placeLng) && result.place_id) {
+      try {
+        const details = await getPlaceDetails(result.place_id);
+        placeLat = details.lat;
+        placeLng = details.lon;
+        if (details.display_name) {
+          setSearchQuery(details.display_name);
+        }
+      } catch {
+        // silently fail
+      }
+    } else {
+      setSearchQuery(result.display_name);
+    }
+
+    if (placeLat && placeLng) {
+      placeMarker(placeLat, placeLng);
+    }
     setSearchResults([]);
   };
 
@@ -217,6 +263,11 @@ export function MapPicker({ mode, lat, lng, onLocationSelect }: MapPickerProps) 
                 boxSizing: 'border-box',
               }}
             />
+            {isSearching && (
+              <div style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '12px', color: '#6B6B63' }}>
+                …
+              </div>
+            )}
             {searchResults.length > 0 && (
               <div
                 style={{
@@ -245,13 +296,16 @@ export function MapPicker({ mode, lat, lng, onLocationSelect }: MapPickerProps) 
                       border: 'none',
                       borderBottom: i < searchResults.length - 1 ? '1px solid #2A2A28' : 'none',
                       padding: '10px 14px',
-                      color: '#F0EEE9',
-                      fontSize: '13px',
                       cursor: 'pointer',
                       lineHeight: 1.4,
                     }}
                   >
-                    {result.display_name}
+                    <div style={{ color: '#F0EEE9', fontSize: '13px', fontWeight: 500 }}>
+                      {result.display_name.split(',')[0]}
+                    </div>
+                    <div style={{ color: '#6B6B63', fontSize: '11px', marginTop: '2px' }}>
+                      {result.display_name.split(',').slice(1, 3).join(',').trim()}
+                    </div>
                   </button>
                 ))}
               </div>
@@ -291,14 +345,21 @@ export function MapPicker({ mode, lat, lng, onLocationSelect }: MapPickerProps) 
         style={{
           width: '100%',
           height: '220px',
-          borderRadius: '16px',
+          borderRadius: '12px',
           overflow: 'hidden',
-          border: '1px solid #2A2A28',
+          border: '1px solid rgba(255,255,255,0.08)',
         }}
       />
 
+      {/* Attribution */}
+      <div style={{ fontSize: '10px', color: '#3D3D38', textAlign: 'right', padding: '4px 8px' }}>
+        <a href="https://openstreetmap.org/copyright" target="_blank" style={{ color: '#3D3D38' }}>
+          Ola Maps
+        </a>
+      </div>
+
       {mode === 'picker' && (
-        <p style={{ fontSize: '13px', color: pinSet ? '#34C759' : '#6B6B63', marginTop: '8px', textAlign: 'center' }}>
+        <p style={{ fontSize: '13px', color: pinSet ? '#34C759' : '#6B6B63', marginTop: '4px', textAlign: 'center' }}>
           {pinSet ? '✓ Location pinned — drag to adjust' : 'Tap the map to drop a pin'}
         </p>
       )}
