@@ -285,21 +285,21 @@ input, textarea {
 }
 
 .page-transition {
-  animation: slideInRight 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  animation: pageSlideIn 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 }
 
 .tab-transition {
   animation: fadeIn 0.2s ease-out;
 }
 
-@keyframes slideInRight {
+@keyframes pageSlideIn {
   from {
     opacity: 0;
-    transform: translateX(20px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0);
   }
 }
 
