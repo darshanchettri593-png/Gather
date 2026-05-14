@@ -275,12 +275,14 @@ export function MapPicker({ mode, lat, lng, onLocationSelect }: MapPickerProps) 
                   top: '100%',
                   left: 0,
                   right: 0,
-                  zIndex: 1000,
+                  zIndex: 2000,
                   backgroundColor: '#1C1C1A',
                   border: '1px solid #2A2A28',
                   borderRadius: '10px',
                   marginTop: '4px',
-                  overflow: 'hidden',
+                  maxHeight: '200px',
+                  overflowY: 'auto',
+                  WebkitOverflowScrolling: 'touch',
                 }}
               >
                 {searchResults.map((result, i) => (
@@ -344,10 +346,9 @@ export function MapPicker({ mode, lat, lng, onLocationSelect }: MapPickerProps) 
         ref={containerRef}
         style={{
           width: '100%',
-          height: '220px',
+          height: '260px',
           borderRadius: '12px',
           overflow: 'hidden',
-          border: '1px solid rgba(255,255,255,0.08)',
         }}
       />
 
