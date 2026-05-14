@@ -135,7 +135,8 @@ export function SearchPage() {
       const { data, error } = await supabase
         .from("events")
         .select("*")
-        .gte("event_datetime", new Date().toISOString())
+        .gte("end_datetime", new Date().toISOString())
+        .not("end_datetime", "is", null)
         .or(
           `title.ilike.%${debouncedQuery}%,location_text.ilike.%${debouncedQuery}%,district.ilike.%${debouncedQuery}%`
         )
@@ -213,18 +214,8 @@ export function SearchPage() {
             placeholder="Events, places, areas..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => {
-              document.documentElement.style.setProperty('overflow', 'hidden');
-              document.body.style.overflow = 'hidden';
-              document.body.style.position = 'fixed';
-              document.body.style.width = '100%';
-            }}
-            onBlur={() => {
-              document.documentElement.style.removeProperty('overflow');
-              document.body.style.overflow = '';
-              document.body.style.position = '';
-              document.body.style.width = '';
-            }}
+            onFocus={() => {}}
+            onBlur={() => {}}
             style={{
               flex: 1,
               backgroundColor: 'transparent',
