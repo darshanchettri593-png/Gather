@@ -164,7 +164,18 @@ export function MainLayout() {
         className="tab-transition flex-1 w-full max-w-5xl mx-auto"
         style={{ paddingBottom: '100px' }}
       >
-        <Outlet />
+        <div
+          key={location.pathname}
+          style={{
+            flex: 1,
+            overflowY: 'auto',
+            overflowX: 'hidden',
+            WebkitOverflowScrolling: 'touch',
+            height: '100%',
+          }}
+        >
+          <Outlet />
+        </div>
       </main>
 
       {!isEventDetail && <BottomNav />}
