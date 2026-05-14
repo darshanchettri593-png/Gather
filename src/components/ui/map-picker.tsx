@@ -172,7 +172,7 @@ export function MapPicker({ mode, lat, lng, onLocationSelect }: MapPickerProps) 
     setIsSearching(true);
     try {
       const response = await fetch(
-        `https://api.olamaps.io/places/v1/autocomplete?input=${encodeURIComponent(query)}&api_key=${import.meta.env.VITE_OLA_MAPS_KEY}`
+        `https://api.olamaps.io/places/v1/autocomplete?input=${encodeURIComponent(query)}&location=27.0660,88.4757&radius=50000&api_key=${import.meta.env.VITE_OLA_MAPS_KEY}`
       );
       const data = await response.json();
       if (data.predictions) {

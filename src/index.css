@@ -373,3 +373,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
   opacity: 0.6;
 }
+
+.leaflet-control-zoom {
+  z-index: 400 !important;
+}
