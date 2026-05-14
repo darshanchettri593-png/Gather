@@ -27,6 +27,8 @@ export function SettingsPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [emailUpdates, setEmailUpdates] = useState(false);
   const [locationResetting, setLocationResetting] = useState(false);
+  const [showConfirmReset, setShowConfirmReset] = useState(false);
+  const [confirmText, setConfirmText] = useState('');
   const [resetsLeft, setResetsLeft] = useState(3);
   const [resetExhaustedDate, setResetExhaustedDate] = useState<string | null>(null);
 
@@ -383,26 +385,26 @@ export function SettingsPage() {
         {/* LOCATION */}
         <SectionLabel>Location</SectionLabel>
         <div style={{ margin: '0 0 8px', background: '#1C1C1A', border: '0.5px solid #2A2A28', borderRadius: '14px', overflow: 'hidden' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 16px 10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 16px 8px' }}>
             <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,107,53,0.1)', border: '0.5px solid rgba(255,107,53,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
             </div>
             <span style={{ color: '#F0EEE9', fontSize: '14px', fontWeight: 600 }}>Your Location</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '0 16px 12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '0 16px 8px' }}>
             <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: locationResetting ? '#FF6B35' : '#34C759', flexShrink: 0 }}></div>
             <span style={{ color: '#6B6B63', fontSize: '13px' }}>
               {locationResetting ? 'Detecting location...' : (localStorage.getItem('gather_city') || 'Not detected')}
             </span>
           </div>
           <div style={{ height: '0.5px', background: 'rgba(255,255,255,0.06)', margin: '0 16px' }}></div>
-          <div style={{ padding: '12px 16px 14px' }}>
+          <div style={{ padding: '10px 16px 12px' }}>
             <button
-              onClick={handleResetLocation}
+              onClick={() => { setShowConfirmReset(true); setConfirmText(''); }}
               disabled={locationResetting || resetsLeft === 0}
               style={{
                 width: '100%',
-                padding: '10px',
+                padding: '8px',
                 borderRadius: '10px',
                 background: resetsLeft === 0 ? 'rgba(255,59,48,0.06)' : locationResetting ? 'rgba(255,255,255,0.04)' : 'rgba(255,107,53,0.08)',
                 border: resetsLeft === 0 ? '0.5px solid rgba(255,59,48,0.15)' : locationResetting ? '0.5px solid rgba(255,255,255,0.08)' : '0.5px solid rgba(255,107,53,0.2)',
@@ -655,6 +657,66 @@ export function SettingsPage() {
               }}
             >
               {isDeleting ? "Deleting…" : "Delete"}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Confirm reset location dialog */}
+      <Dialog open={showConfirmReset} onOpenChange={setShowConfirmReset}>
+        <DialogContent style={{ background: '#1C1C1A', border: '1px solid #2A2A28', borderRadius: '16px', padding: '24px', maxWidth: '320px', margin: '0 auto' }}>
+          <DialogTitle style={{ color: '#F0EEE9', fontSize: '16px', fontWeight: 700, marginBottom: '8px' }}>
+            Reset Location?
+          </DialogTitle>
+          <DialogDescription style={{ color: '#6B6B63', fontSize: '13px', marginBottom: '16px', lineHeight: 1.5 }}>
+            Type CONFIRM below to update your location using GPS.
+          </DialogDescription>
+          <input
+            type="text"
+            value={confirmText}
+            onChange={(e) => setConfirmText(e.target.value)}
+            placeholder="Type CONFIRM"
+            style={{
+              width: '100%',
+              background: '#242422',
+              border: '1px solid #2A2A28',
+              borderRadius: '10px',
+              padding: '10px 14px',
+              color: '#F0EEE9',
+              fontSize: '14px',
+              outline: 'none',
+              marginBottom: '16px',
+              WebkitTextFillColor: '#F0EEE9',
+            }}
+          />
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              onClick={() => setShowConfirmReset(false)}
+              style={{ flex: 1, padding: '10px', borderRadius: '10px', background: '#242422', border: '1px solid #2A2A28', color: '#6B6B63', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => {
+                if (confirmText.trim().toUpperCase() !== 'CONFIRM') return;
+                setShowConfirmReset(false);
+                setConfirmText('');
+                handleResetLocation();
+              }}
+              style={{
+                flex: 1,
+                padding: '10px',
+                borderRadius: '10px',
+                background: confirmText.trim().toUpperCase() === 'CONFIRM' ? '#FF6B35' : '#242422',
+                border: 'none',
+                color: confirmText.trim().toUpperCase() === 'CONFIRM' ? 'white' : '#3D3D38',
+                fontSize: '13px',
+                fontWeight: 600,
+                cursor: confirmText.trim().toUpperCase() === 'CONFIRM' ? 'pointer' : 'not-allowed',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              Confirm
             </button>
           </div>
         </DialogContent>
