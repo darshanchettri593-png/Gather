@@ -31,9 +31,11 @@ export function BottomNav() {
   const inactiveColor = "#6B6B63";
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }, 300);
   };
 
   return (

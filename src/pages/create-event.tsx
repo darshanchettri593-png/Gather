@@ -174,16 +174,20 @@ export function CreateEventPage() {
 
   // ── Navigation helpers ────────────────────────────────────────────────────────
   const goBack = () => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
     if (step === 1) { navigate(-1); } else { setStep(s => s - 1); }
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }, 300);
   };
   const goNext = () => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
     setStep(s => s + 1);
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }, 300);
   };
 
   // ── Step content ──────────────────────────────────────────────────────────────
