@@ -30,6 +30,12 @@ export function BottomNav() {
   const activeColor = "#F0EEE9";
   const inactiveColor = "#6B6B63";
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  };
+
   return (
     <div
       id="bottom-nav"
@@ -53,7 +59,7 @@ export function BottomNav() {
     >
       <Link
         to="/"
-        onClick={() => navigator.vibrate?.(10)}
+        onClick={() => { navigator.vibrate?.(10); scrollToTop(); }}
         onContextMenu={(e) => e.preventDefault()}
         style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px', flex: 1, WebkitTouchCallout: 'none', userSelect: 'none' }}
       >
@@ -63,7 +69,7 @@ export function BottomNav() {
 
       <Link
         to="/search"
-        onClick={() => navigator.vibrate?.(10)}
+        onClick={() => { navigator.vibrate?.(10); scrollToTop(); }}
         onContextMenu={(e) => e.preventDefault()}
         style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px', flex: 1, WebkitTouchCallout: 'none', userSelect: 'none' }}
       >
@@ -84,7 +90,7 @@ export function BottomNav() {
 
       <Link
         to="/profile"
-        onClick={() => navigator.vibrate?.(10)}
+        onClick={() => { navigator.vibrate?.(10); scrollToTop(); }}
         onContextMenu={(e) => e.preventDefault()}
         style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px', flex: 1, WebkitTouchCallout: 'none', userSelect: 'none' }}
       >
