@@ -184,13 +184,17 @@ export function MapPicker({ mode, lat, lng, onLocationSelect }: MapPickerProps) 
         `https://api.olamaps.io/places/v1/autocomplete?input=${encodeURIComponent(query)}&location=27.0660,88.4757&radius=50000&api_key=${import.meta.env.VITE_OLA_MAPS_KEY}`
       );
       const data = await response.json();
-      if (data.predictions) {
+      if (data.predictions && data.predictions.length > 0) {
         setSearchResults(data.predictions.map((p: any) => ({
           display_name: p.description,
           lat: p.geometry?.location?.lat,
           lon: p.geometry?.location?.lng,
           place_id: p.place_id,
         })));
+        mapRef.current?.dragging.disable();
+        mapRef.current?.touchZoom.disable();
+        mapRef.current?.scrollWheelZoom.disable();
+        mapRef.current?.off('click');
       }
     } catch (err) {
       console.error('OLA Maps search error:', err);
@@ -217,7 +221,23 @@ export function MapPicker({ mode, lat, lng, onLocationSelect }: MapPickerProps) 
     setSearchResults([]);
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (!value.trim()) return;
+    if (!value.trim()) {
+      mapRef.current?.dragging.enable();
+      mapRef.current?.touchZoom.enable();
+      mapRef.current?.scrollWheelZoom.enable();
+      mapRef.current?.on('click', (e: any) => {
+        const { lat: clickLat, lng: clickLng } = e.latlng;
+        if (markerRef.current) {
+          markerRef.current.setLatLng([clickLat, clickLng]);
+        } else {
+          const marker = L.marker([clickLat, clickLng], { icon: gIcon, draggable: true }).addTo(mapRef.current!);
+          markerRef.current = marker;
+        }
+        onLocationSelect?.({ lat: clickLat, lng: clickLng });
+        setPinSet(true);
+      });
+      return;
+    }
 
     debounceRef.current = setTimeout(() => {
       searchPlaces(value);
@@ -247,6 +267,20 @@ export function MapPicker({ mode, lat, lng, onLocationSelect }: MapPickerProps) 
       placeMarker(placeLat, placeLng);
     }
     setSearchResults([]);
+    mapRef.current?.dragging.enable();
+    mapRef.current?.touchZoom.enable();
+    mapRef.current?.scrollWheelZoom.enable();
+    mapRef.current?.on('click', (e: any) => {
+      const { lat: clickLat, lng: clickLng } = e.latlng;
+      if (markerRef.current) {
+        markerRef.current.setLatLng([clickLat, clickLng]);
+      } else {
+        const marker = L.marker([clickLat, clickLng], { icon: gIcon, draggable: true }).addTo(mapRef.current!);
+        markerRef.current = marker;
+      }
+      onLocationSelect?.({ lat: clickLat, lng: clickLng });
+      setPinSet(true);
+    });
   };
 
   return (
