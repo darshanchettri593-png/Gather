@@ -94,7 +94,7 @@ export function MapPicker({ mode, lat, lng, onLocationSelect }: MapPickerProps) 
     const map = L.map(containerRef.current, {
       center: [initialLat, initialLng],
       zoom: 13,
-      zoomControl: true,
+      zoomControl: false,
       attributionControl: false,
     });
 
