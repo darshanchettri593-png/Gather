@@ -26,13 +26,33 @@ export function MainLayout() {
       return;
     }
 
+    const reverseGeocode = async (lat: number, lon: number): Promise<string> => {
+      try {
+        const response = await fetch(
+          `https://api.olamaps.io/places/v1/reverse-geocode?latlng=${lat},${lon}&api_key=${import.meta.env.VITE_OLA_MAPS_KEY}`
+        );
+        const data = await response.json();
+        if (data.results && data.results.length > 0) {
+          const result = data.results[0];
+          const components = result.address_components || [];
+          const city =
+            components.find((c: any) => c.types?.includes('locality'))?.long_name ||
+            components.find((c: any) => c.types?.includes('administrative_area_level_2'))?.long_name ||
+            components.find((c: any) => c.types?.includes('administrative_area_level_1'))?.long_name ||
+            result.formatted_address?.split(',')[0] ||
+            'Nearby';
+          return city;
+        }
+        return 'Nearby';
+      } catch (err) {
+        console.error('OLA reverse geocode error:', err);
+        return 'Nearby';
+      }
+    };
+
     navigator.geolocation.getCurrentPosition(async (pos) => {
       try {
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`
-        );
-        const data = await res.json();
-        const city = data.address.city || data.address.town || data.address.village || data.address.county || 'India';
+        const city = await reverseGeocode(pos.coords.latitude, pos.coords.longitude);
         setHeaderState(city);
         localStorage.setItem('gather_city', city);
         localStorage.setItem('gather_lat', String(pos.coords.latitude));
