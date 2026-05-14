@@ -279,11 +279,14 @@ export function MapPicker({ mode, lat, lng, onLocationSelect }: MapPickerProps) 
                   backgroundColor: '#1C1C1A',
                   border: '1px solid #2A2A28',
                   borderRadius: '10px',
-                  marginTop: '4px',
                   maxHeight: '200px',
-                  overflowY: 'auto',
+                  overflowY: 'scroll',
                   WebkitOverflowScrolling: 'touch',
                 }}
+                onTouchStart={(e) => e.stopPropagation()}
+                onTouchMove={(e) => e.stopPropagation()}
+                onTouchEnd={(e) => e.stopPropagation()}
+                onClick={(e) => e.stopPropagation()}
               >
                 {searchResults.map((result, i) => (
                   <button
