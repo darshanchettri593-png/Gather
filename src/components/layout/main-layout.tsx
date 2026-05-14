@@ -76,8 +76,8 @@ export function MainLayout() {
 
   return (
     <div
-      className={`flex h-screen flex-col ${isEventDetail ? "pb-0" : "pb-[64px]"}`}
-      style={{ backgroundColor: "#111110", overflow: 'hidden' }}
+      className={`flex min-h-screen flex-col ${isEventDetail ? "pb-0" : "pb-[64px]"}`}
+      style={{ backgroundColor: "#111110" }}
     >
       {!hideHeader && (
         <header
@@ -162,16 +162,16 @@ export function MainLayout() {
 
       <main
         className="tab-transition flex-1 w-full max-w-5xl mx-auto"
-        style={{ overflow: 'hidden', height: '100%' }}
+        style={{ paddingBottom: '100px' }}
       >
         <div
           key={location.pathname}
           style={{
+            flex: 1,
             overflowY: 'auto',
             overflowX: 'hidden',
             WebkitOverflowScrolling: 'touch',
             height: '100%',
-            paddingBottom: '100px',
           }}
         >
           <Outlet />
