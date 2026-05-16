@@ -124,7 +124,9 @@ export function SettingsPage() {
     });
   };
 
+  const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
   const handleLogout = async () => {
+    setShowSignOutConfirm(false);
     await signOut();
     navigate("/");
   };
@@ -554,7 +556,7 @@ export function SettingsPage() {
           <>
             <div style={{ margin: "24px 20px 0" }}>
               <button
-                onClick={handleLogout}
+                onClick={() => setShowSignOutConfirm(true)}
                 className="w-full active:opacity-70 transition-opacity"
                 style={{
                   height: "52px",
@@ -719,5 +721,21 @@ export function SettingsPage() {
       </Dialog>
 
     </div>
+  <>
+      {showSignOutConfirm && (
+        <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.7)", zIndex: 1000, display: "flex", alignItems: "flex-end", justifyContent: "center", padding: "0 16px 32px" }}>
+          <div style={{ backgroundColor: "#1C1C1A", border: "0.5px solid #2A2A28", borderRadius: "20px", padding: "24px", width: "100%", maxWidth: "400px" }}>
+            <h2 style={{ color: "#F0EEE9", fontSize: "18px", fontWeight: 600, margin: "0 0 8px", textAlign: "center" }}>Sign out?</h2>
+            <p style={{ color: "#6B6B63", fontSize: "14px", textAlign: "center", margin: "0 0 24px", lineHeight: 1.5 }}>You will need to sign back in to host or RSVP to events.</p>
+            <button onClick={handleLogout} style={{ width: "100%", padding: "14px", borderRadius: "50px", backgroundColor: "#FF3B30", border: "none", color: "white", fontSize: "15px", fontWeight: 600, cursor: "pointer", marginBottom: "10px" }}>
+              Yes, sign out
+            </button>
+            <button onClick={() => setShowSignOutConfirm(false)} style={{ width: "100%", padding: "14px", borderRadius: "50px", backgroundColor: "#242422", border: "0.5px solid #2A2A28", color: "#F0EEE9", fontSize: "15px", fontWeight: 600, cursor: "pointer" }}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
