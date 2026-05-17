@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router";
 import { format } from "date-fns";
-import { CalendarDays, AlertCircle, MapPin, Loader2 } from "lucide-react";
+import { CalendarDays, AlertCircle, MapPin, Loader2, Search } from "lucide-react";
 import { useEvents } from "@/hooks/useEvents";
 import { LiveBadge } from "@/components/ui/live-badge";
 import { useAuth } from "@/lib/auth-context";
+import { useProfile } from "@/hooks/useUser";
 
 const VIBES = ["All", "Move", "Create", "Hang", "Learn", "Explore"];
 
@@ -329,7 +330,23 @@ function CompactEventCard({ event, userLocation }: { event: any; userLocation: {
 function FeedEmptyState({ onHost }: { onHost: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center text-center px-6 py-20">
-      <CalendarDays size={40} color="#3D3D38" strokeWidth={1.5} />
+      <style>{`
+        @keyframes pulse-ring {
+          0% { transform: scale(0.8); opacity: 0.6; }
+          100% { transform: scale(1.6); opacity: 0; }
+        }
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-8px); }
+        }
+      `}</style>
+      <div style={{ position: 'relative', width: 72, height: 72, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+        <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', border: '1px solid #FF6B35', animation: 'pulse-ring 2s ease-out infinite' }} />
+        <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', border: '1px solid #FF6B35', animation: 'pulse-ring 2s ease-out 0.6s infinite' }} />
+        <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#1C1C1A', border: '0.5px solid #2A2A28', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'float 3s ease-in-out infinite' }}>
+          <CalendarDays size={22} color="#FF6B35" />
+        </div>
+      </div>
       <h3 style={{ fontSize: "18px", fontWeight: 600, color: "#F0EEE9", marginTop: "16px" }}>
         Nothing here yet.
       </h3>
@@ -379,7 +396,11 @@ export function EventFeedPage() {
     }
   }, []);
 
+  const { data: profile } = useProfile();
   const { data: events, isLoading, error, refetch } = useEvents(vibeFilter, user?.id);
+
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
 
   // 8-second timeout — show empty state instead of infinite skeleton
   const [isTimedOut, setIsTimedOut] = useState(false);
@@ -551,10 +572,25 @@ export function EventFeedPage() {
         </div>
       </div>
 
+      {/* Greeting + inline search */}
+      <div style={{ padding: '20px 20px 4px' }}>
+        <h2 style={{ fontSize: 22, fontWeight: 700, color: '#F0EEE9', letterSpacing: -0.3, lineHeight: 1.15, marginBottom: 14 }}>
+          {greeting}{profile?.display_name ? <>, <span style={{ color: '#FF6B35' }}>{profile.display_name}</span></> : ''}
+        </h2>
+        <div
+          onClick={() => navigate('/search')}
+          style={{ background: '#1C1C1A', border: '0.5px solid #2A2A28', borderRadius: 16, padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14, cursor: 'pointer' }}
+          className="active:opacity-70 transition-opacity"
+        >
+          <Search size={16} color="#6B6B63" />
+          <span style={{ fontSize: 14, color: '#3D3D38' }}>Search events, places...</span>
+        </div>
+      </div>
+
       {/* Vibe pills */}
       <div
         className="flex gap-2 no-scrollbar overflow-x-auto"
-        style={{ padding: "12px 20px" }}
+        style={{ padding: "0 20px 12px" }}
       >
         {VIBES.map((v) => (
           <button
