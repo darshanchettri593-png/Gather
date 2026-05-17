@@ -306,8 +306,12 @@ export function SearchPage() {
         {/* Trending when no query */}
         {!query && (
           <>
-            <div style={{ fontSize: '9px', fontWeight: 700, color: '#6B6B63', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '14px 0 10px' }}>
-              Trending near you
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+              <span style={{ fontSize: 10, fontWeight: 600, color: '#6B6B63', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Trending near you</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#34C759' }}></div>
+                <span style={{ fontSize: 10, fontWeight: 600, color: '#34C759' }}>Live</span>
+              </div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {filteredUpcoming.length > 0 ? (
@@ -315,53 +319,38 @@ export function SearchPage() {
                   <EventCard key={event.id} event={event} />
                 ))
               ) : (
-                <div style={{ position: 'relative', height: '380px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.15 }} viewBox="0 0 260 280" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M0 300 Q10 270 8 240 Q6 210 15 180 Q24 150 18 120 Q12 90 22 60 Q28 40 20 10" stroke="#4A9EBF" strokeWidth="5" fill="none" opacity="0.7"/>
-                    <path d="M5 300 Q15 272 13 242 Q11 212 20 182 Q29 152 23 122 Q17 92 27 62 Q33 42 25 12" stroke="#4A9EBF" strokeWidth="2.5" fill="none" opacity="0.3"/>
-                    <path d="M0 300 Q15 275 28 255 Q42 233 58 215 Q76 196 98 182 Q122 167 148 158 Q174 149 202 144 Q230 139 258 136 Q278 134 300 132" stroke="#F0EEE9" strokeWidth="3" fill="none"/>
-                    <text x="240" y="128" fill="#F0EEE9" fontSize="8" fontWeight="700" opacity="0.5" fontFamily="-apple-system,sans-serif">NH10</text>
-                    <path d="M98 182 Q110 170 124 158 Q138 146 152 134 Q166 122 178 110 Q190 98 200 86" stroke="#F0EEE9" strokeWidth="2.5" fill="none"/>
-                    <path d="M124 158 Q126 138 128 118 Q130 98 126 78 Q122 58 118 38" stroke="#F0EEE9" strokeWidth="1.8" fill="none"/>
-                    <path d="M148 158 Q150 136 147 114 Q144 92 140 70 Q136 50 132 28" stroke="#F0EEE9" strokeWidth="1.5" fill="none"/>
-                    <path d="M178 148 Q176 126 173 104 Q170 82 166 60 Q162 40 158 18" stroke="#F0EEE9" strokeWidth="1.5" fill="none"/>
-                    <path d="M78 200 Q80 178 77 156 Q74 134 70 112 Q66 90 62 68" stroke="#F0EEE9" strokeWidth="1.5" fill="none"/>
-                    <path d="M70 156 Q84 152 98 148 Q112 144 126 140 Q140 136 152 132" stroke="#F0EEE9" strokeWidth="1" fill="none"/>
-                    <path d="M62 112 Q78 108 94 104 Q112 100 130 96 Q148 92 164 88 Q178 84 192 80" stroke="#F0EEE9" strokeWidth="1" fill="none"/>
-                    <path d="M118 56 Q134 52 150 49 Q166 46 180 43 Q194 40 208 37" stroke="#F0EEE9" strokeWidth="0.8" fill="none"/>
-                    <path d="M202 144 Q204 120 200 96 Q197 74 194 50 Q191 28 188 8" stroke="#F0EEE9" strokeWidth="1.8" fill="none"/>
-                    <path d="M202 144 Q218 140 234 136 Q250 132 268 128 Q284 124 300 122" stroke="#F0EEE9" strokeWidth="1.2" fill="none"/>
-                    <text x="196" y="78" fill="#FF6B35" fontSize="7" fontWeight="700" opacity="0.6" fontFamily="-apple-system,sans-serif">9th Mile</text>
-                    <path d="M58 215 Q50 230 42 245 Q34 260 28 275" stroke="#F0EEE9" strokeWidth="1" fill="none"/>
-                    <path d="M78 200 Q66 208 54 216 Q42 224 30 234" stroke="#F0EEE9" strokeWidth="0.8" fill="none"/>
-                    <path d="M200 86 Q210 76 220 64 Q232 50 240 36 Q248 22 252 8" stroke="#F0EEE9" strokeWidth="1.2" fill="none"/>
-                    <path d="M234 136 Q236 114 232 92 Q229 72 226 50" stroke="#F0EEE9" strokeWidth="1" fill="none"/>
-                    <path d="M192 80 Q204 76 218 72 Q232 68 246 64" stroke="#F0EEE9" strokeWidth="0.8" fill="none"/>
-                    <rect x="114" y="136" width="22" height="14" rx="2" fill="#F0EEE9" opacity="0.28"/>
-                    <rect x="140" y="126" width="18" height="13" rx="2" fill="#F0EEE9" opacity="0.24"/>
-                    <rect x="160" y="116" width="20" height="12" rx="2" fill="#F0EEE9" opacity="0.26"/>
-                    <rect x="102" y="148" width="14" height="10" rx="2" fill="#F0EEE9" opacity="0.22"/>
-                    <rect x="132" y="112" width="16" height="11" rx="2" fill="#F0EEE9" opacity="0.2"/>
-                    <rect x="68" y="148" width="16" height="10" rx="2" fill="#F0EEE9" opacity="0.25"/>
-                    <text x="58" y="144" fill="#F0EEE9" fontSize="6" opacity="0.3" fontFamily="-apple-system,sans-serif">Motor Stand</text>
-                    <rect x="172" y="96" width="14" height="12" rx="2" fill="#F0EEE9" opacity="0.3"/>
-                    <text x="162" y="92" fill="#F0EEE9" fontSize="6" opacity="0.32" fontFamily="-apple-system,sans-serif">Mangal Dham</text>
-                    <rect x="118" y="64" width="14" height="10" rx="2" fill="#F0EEE9" opacity="0.2"/>
-                    <rect x="138" y="56" width="12" height="9" rx="2" fill="#F0EEE9" opacity="0.18"/>
-                    <rect x="162" y="48" width="14" height="9" rx="2" fill="#F0EEE9" opacity="0.2"/>
-                    <rect x="188" y="40" width="12" height="9" rx="2" fill="#F0EEE9" opacity="0.22"/>
-                    <rect x="222" y="52" width="14" height="10" rx="2" fill="#F0EEE9" opacity="0.18"/>
-                    <rect x="238" y="38" width="10" height="8" rx="2" fill="#F0EEE9" opacity="0.16"/>
-                    <text x="88" y="196" fill="#F0EEE9" fontSize="9" fontWeight="700" opacity="0.15" fontFamily="-apple-system,sans-serif">KALIMPONG</text>
+                <div style={{ background: '#141412', border: '0.5px solid #2A2A28', borderRadius: '20px', overflow: 'hidden', position: 'relative', width: '100%', aspectRatio: '4/3' }}>
+                  <svg viewBox="0 0 308 231" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: '100%' }}>
+                    <rect width="308" height="231" fill="#141412"/>
+                    <defs>
+                      <pattern id="mapgrid" width="20" height="20" patternUnits="userSpaceOnUse">
+                        <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#1E1E1C" strokeWidth="0.8"/>
+                      </pattern>
+                    </defs>
+                    <rect width="308" height="231" fill="url(#mapgrid)"/>
+                    <path d="M 10 60 Q 40 80 55 110 Q 70 140 90 165 Q 110 188 130 205 Q 150 218 170 224 Q 190 228 220 226" stroke="#4A9EBF" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.85"/>
+                    <path d="M 10 68 Q 38 88 52 118 Q 66 148 86 172" stroke="#4A9EBF" strokeWidth="1.2" fill="none" strokeLinecap="round" opacity="0.3"/>
+                    <path d="M 30 10 L 44 38 L 62 68 L 82 98 L 104 122 L 128 142 L 154 156 L 182 162 L 218 160 L 260 156 L 308 152" stroke="#2A2A28" strokeWidth="1.8" fill="none" strokeLinecap="round"/>
+                    <path d="M 0 88 L 60 85 L 120 83 L 180 86 L 240 83 L 308 80" stroke="#222220" strokeWidth="0.8" fill="none"/>
+                    <path d="M 50 0 L 54 50 L 58 100 L 62 150 L 66 200 L 70 231" stroke="#222220" strokeWidth="0.7" fill="none"/>
+                    <path d="M 140 0 L 142 60 L 145 120 L 148 180 L 151 231" stroke="#222220" strokeWidth="0.7" fill="none"/>
+                    <path d="M 210 0 L 211 60 L 213 120 L 215 180 L 217 231" stroke="#222220" strokeWidth="0.6" fill="none"/>
+                    <text x="228" y="148" fill="#FF6B35" fontSize="8" fontFamily="sans-serif" fontWeight="700" opacity="0.9" letterSpacing="0.06em">NH10</text>
+                    <text x="82" y="224" fill="#3D3D38" fontSize="7" fontFamily="sans-serif" letterSpacing="0.06em">KALIMPONG</text>
+                    <text x="70" y="82" fill="#3D3D38" fontSize="6.5" fontFamily="sans-serif">9TH MILE</text>
+                    <text x="32" y="46" fill="#3D3D38" fontSize="6.5" fontFamily="sans-serif">MOTOR STAND</text>
+                    <text x="148" y="52" fill="#3D3D38" fontSize="6" fontFamily="sans-serif">MANGAL DHAM</text>
+                    <text x="18" y="138" fill="#4A9EBF" fontSize="6.5" fontFamily="sans-serif" opacity="0.75">Teesta</text>
+                    <circle cx="154" cy="115" r="30" fill="#FF6B35" opacity="0.05"/>
+                    <circle cx="154" cy="115" r="18" fill="#FF6B35" opacity="0.08"/>
+                    <circle cx="154" cy="115" r="5" fill="#FF6B35"/>
+                    <circle cx="154" cy="115" r="9" fill="none" stroke="#FF6B35" strokeWidth="1" opacity="0.4"/>
+                    <rect x="44" y="200" width="220" height="24" rx="12" fill="#1C1C1A" stroke="#2A2A28" strokeWidth="0.5"/>
+                    <text x="154" y="216" fill="#6B6B63" fontSize="9.5" fontFamily="sans-serif" textAnchor="middle">No gatherings near you yet.</text>
                   </svg>
-
-                  <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', padding: '0 24px' }}>
-                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(17,17,16,0.85)', border: '0.5px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6B6B63" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="10" y1="14" x2="8" y2="14"/><line x1="10" y1="18" x2="8" y2="18"/>
-                      </svg>
-                    </div>
-                    <p style={{ color: '#6B6B63', fontSize: '14px', fontWeight: 600, textAlign: 'center' }}>No gatherings near you yet.</p>
+                  <div style={{ position: 'absolute', top: 10, right: 10, background: '#1C1C1A', border: '0.5px solid #2A2A28', borderRadius: 8, padding: '5px 9px', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <span style={{ fontSize: 10, color: '#FF6B35' }}>📍</span>
+                    <span style={{ fontSize: 10, fontWeight: 600, color: '#F0EEE9' }}>Kalimpong</span>
                   </div>
                 </div>
               )}
