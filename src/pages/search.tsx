@@ -253,7 +253,7 @@ export function SearchPage() {
         </div>
 
         {/* Vibe pills — collapsible, edge-to-edge */}
-        <div style={{ maxHeight: pillsVisible ? '60px' : '0px', opacity: pillsVisible ? 1 : 0, overflow: 'hidden', transition: 'max-height 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease', marginTop: pillsVisible ? '12px' : '0px' }}>
+        <div style={{ transform: pillsVisible ? 'translateY(0)' : 'translateY(-100%)', opacity: pillsVisible ? 1 : 0, height: pillsVisible ? 'auto' : '0px', overflow: 'hidden', transition: 'transform 0.28s cubic-bezier(0.4,0,0.2,1), opacity 0.2s ease, height 0.28s cubic-bezier(0.4,0,0.2,1)', willChange: 'transform, opacity', marginTop: pillsVisible ? '12px' : '0px' }}>
           <style>{`.vibe-row::-webkit-scrollbar { display: none; }`}</style>
           <div className="vibe-row" style={{ marginLeft: '-16px', marginRight: '-16px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none' as any }}>
             <div style={{ display: 'flex', gap: 8, padding: '0 16px', width: 'max-content' }}>
