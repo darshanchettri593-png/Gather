@@ -142,6 +142,27 @@ export function SearchPage() {
   const pulseVibe = pulse?.trendingVibe ?? '—';
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [selectedVibe, setSelectedVibe] = useState("");
+  const [pillsVisible, setPillsVisible] = useState(true);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      if (currentY < 10) {
+        setPillsVisible(true);
+        lastScrollY.current = currentY;
+        return;
+      }
+      if (currentY > lastScrollY.current && currentY > 60) {
+        setPillsVisible(false);
+      } else if (currentY < lastScrollY.current) {
+        setPillsVisible(true);
+      }
+      lastScrollY.current = currentY;
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -194,105 +215,71 @@ export function SearchPage() {
   return (
     <div
       className="page-transition"
-      style={{
-        height: '100dvh',
-        display: 'flex',
-        flexDirection: 'column',
-        backgroundColor: '#111110',
-        overflow: 'hidden',
-      }}
+      style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', backgroundColor: '#111110' }}
     >
-      {/* ── Section 1: Fixed header ─────────────────────────────────────────────── */}
-      <div style={{ flexShrink: 0, padding: '16px 16px 12px' }}>
+      {/* ── Sticky header ──────────────────────────────────────────────────────── */}
+      <div
+        id="sticky-header"
+        style={{ position: 'sticky', top: 0, zIndex: 50, background: '#111110', paddingTop: 'calc(env(safe-area-inset-top, 0px) + 8px)' }}
+      >
+        {/* Heading + search bar */}
+        <div style={{ padding: '0 16px' }}>
+          <h1 style={{ color: '#F0EEE9', fontSize: '30px', fontWeight: 800, lineHeight: 1.1, marginBottom: '14px', letterSpacing: '-0.02em' }}>
+            Find your next{' '}
+            <span style={{ color: '#FF6B35' }}>gathering.</span>
+          </h1>
 
-        <h1 style={{
-          color: '#F0EEE9',
-          fontSize: '30px',
-          fontWeight: 800,
-          lineHeight: 1.1,
-          marginBottom: '14px',
-          letterSpacing: '-0.02em',
-        }}>
-          Find your next{' '}
-          <span style={{ color: '#FF6B35' }}>gathering.</span>
-        </h1>
-
-        {/* Search bar */}
-        <div style={{
-          backgroundColor: '#1C1C1A',
-          border: '1px solid #242422',
-          borderRadius: '14px',
-          padding: '12px 14px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-        }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <circle cx="11" cy="11" r="8" stroke="#6B6B63" strokeWidth="2"/>
-            <path d="M21 21l-4.35-4.35" stroke="#6B6B63" strokeWidth="2" strokeLinecap="round"/>
-          </svg>
-          <input
-            ref={inputRef}
-            type="text"
-            placeholder="Events, places, areas..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => {}}
-            onBlur={() => {}}
-            style={{
-              flex: 1,
-              backgroundColor: 'transparent',
-              border: 'none',
-              outline: 'none',
-              color: '#F0EEE9',
-              fontSize: '16px',
-              WebkitTextFillColor: '#F0EEE9',
-            }}
-          />
-          {query && (
-            <button
-              onClick={() => setQuery('')}
-              style={{ background: 'none', border: 'none', color: '#6B6B63', fontSize: '16px', cursor: 'pointer', padding: 0 }}
-            >
-              ✕
-            </button>
-          )}
+          <div style={{ backgroundColor: '#1C1C1A', border: '1px solid #242422', borderRadius: '14px', padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <circle cx="11" cy="11" r="8" stroke="#6B6B63" strokeWidth="2"/>
+              <path d="M21 21l-4.35-4.35" stroke="#6B6B63" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+            <input
+              ref={inputRef}
+              type="text"
+              placeholder="Events, places, areas..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onFocus={() => {}}
+              onBlur={() => {}}
+              style={{ flex: 1, backgroundColor: 'transparent', border: 'none', outline: 'none', color: '#F0EEE9', fontSize: '16px', WebkitTextFillColor: '#F0EEE9' }}
+            />
+            {query && (
+              <button onClick={() => setQuery('')} style={{ background: 'none', border: 'none', color: '#6B6B63', fontSize: '16px', cursor: 'pointer', padding: 0 }}>
+                ✕
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Vibe pills */}
-        <div style={{ display: 'flex', gap: '6px', marginTop: '12px', overflowX: 'auto', scrollbarWidth: 'none' }}>
-          {VIBES.map((v) => (
-            <button
-              key={v}
-              onClick={() => setSelectedVibe(v === 'All' ? '' : v.toLowerCase())}
-              style={{
-                padding: '6px 14px',
-                borderRadius: '20px',
-                fontSize: '12px',
-                fontWeight: 600,
-                whiteSpace: 'nowrap',
-                flexShrink: 0,
-                border: '1px solid #2A2A28',
-                cursor: 'pointer',
-                backgroundColor: (selectedVibe === v.toLowerCase() || (v === 'All' && !selectedVibe)) ? '#F0EEE9' : 'transparent',
-                color: (selectedVibe === v.toLowerCase() || (v === 'All' && !selectedVibe)) ? '#111110' : '#6B6B63',
-              }}
-            >
-              {v}
-            </button>
-          ))}
+        {/* Vibe pills — collapsible, edge-to-edge */}
+        <div style={{ maxHeight: pillsVisible ? '60px' : '0px', opacity: pillsVisible ? 1 : 0, overflow: 'hidden', transition: 'max-height 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease', marginTop: pillsVisible ? '12px' : '0px' }}>
+          <style>{`.vibe-row::-webkit-scrollbar { display: none; }`}</style>
+          <div className="vibe-row" style={{ marginLeft: '-16px', marginRight: '-16px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none' as any }}>
+            <div style={{ display: 'flex', gap: 8, padding: '0 16px', width: 'max-content' }}>
+              {VIBES.map((v) => (
+                <button
+                  key={v}
+                  onClick={() => setSelectedVibe(v === 'All' ? '' : v.toLowerCase())}
+                  style={{
+                    padding: '6px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: 600,
+                    whiteSpace: 'nowrap', flexShrink: 0, border: '1px solid #2A2A28', cursor: 'pointer',
+                    backgroundColor: (selectedVibe === v.toLowerCase() || (v === 'All' && !selectedVibe)) ? '#F0EEE9' : 'transparent',
+                    color: (selectedVibe === v.toLowerCase() || (v === 'All' && !selectedVibe)) ? '#111110' : '#6B6B63',
+                  }}
+                >
+                  {v}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
+
+        <div style={{ height: 12 }} />
       </div>
 
-      {/* ── Section 2: Scrollable content ─────────────────────────────────────── */}
-      <div style={{
-        flex: 1,
-        overflowY: 'auto',
-        WebkitOverflowScrolling: 'touch',
-        overscrollBehavior: 'none',
-        padding: '0 16px',
-        paddingBottom: '100px',
-      }}>
+      {/* ── Scroll content ──────────────────────────────────────────────────────── */}
+      <div id="scroll-content" style={{ padding: '0 16px', paddingBottom: '100px' }}>
 
         {/* Loading skeletons */}
         {showLoading && (
@@ -351,7 +338,6 @@ export function SearchPage() {
                     @keyframes heartbeat-glow { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.9; } }
                   `}</style>
                   <div style={{ background: '#0A0A09', border: '0.5px solid #2A2A28', borderRadius: 18, padding: '18px 16px', position: 'relative', overflow: 'hidden' }}>
-                    {/* Top row */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
                       <div>
                         <div style={{ color: '#6B6B63', fontSize: 9, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>Currently</div>
@@ -362,13 +348,9 @@ export function SearchPage() {
                         <Activity size={18} color="#FF6B35" />
                       </div>
                     </div>
-
-                    {/* Heartbeat line */}
                     <svg viewBox="0 0 200 60" style={{ width: '100%', height: 50, marginBottom: 14, display: 'block' }}>
                       <path d="M 0 30 L 30 30 L 35 30 L 40 30 L 45 15 L 50 45 L 55 30 L 80 30 L 100 30 L 105 30 L 110 22 L 115 38 L 120 30 L 200 30" stroke="#FF6B35" strokeWidth="1.5" fill="none" strokeLinecap="round" style={{ animation: 'heartbeat-glow 2s ease-in-out infinite' }} />
                     </svg>
-
-                    {/* Stats */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                       {[
                         { Icon: Users, label: 'Active hosts', value: pulseHosts },
