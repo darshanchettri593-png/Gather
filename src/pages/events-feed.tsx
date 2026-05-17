@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router";
 import { format } from "date-fns";
-import { CalendarDays, AlertCircle, MapPin, Loader2, Search } from "lucide-react";
+import { CalendarDays, AlertCircle, MapPin, Loader2 } from "lucide-react";
 import { useEvents } from "@/hooks/useEvents";
 import { LiveBadge } from "@/components/ui/live-badge";
 import { useAuth } from "@/lib/auth-context";
@@ -577,14 +577,7 @@ export function EventFeedPage() {
         <h2 style={{ fontSize: 22, fontWeight: 700, color: '#F0EEE9', letterSpacing: -0.3, lineHeight: 1.15, marginBottom: 14 }}>
           {greeting}{profile?.display_name ? <>, <span style={{ color: '#FF6B35' }}>{profile.display_name}</span></> : ''}
         </h2>
-        <div
-          onClick={() => navigate('/search')}
-          style={{ background: '#1C1C1A', border: '0.5px solid #2A2A28', borderRadius: 16, padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14, cursor: 'pointer' }}
-          className="active:opacity-70 transition-opacity"
-        >
-          <Search size={16} color="#6B6B63" />
-          <span style={{ fontSize: 14, color: '#3D3D38' }}>Search events, places...</span>
-        </div>
+
       </div>
 
       {/* Vibe pills */}
