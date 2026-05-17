@@ -5,6 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { format } from "date-fns";
 import { useAuth } from "@/lib/auth-context";
+import { MapContainer, TileLayer, Circle, useMap } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 
 function getVibeLabel(vibe: string) {
   return vibe.charAt(0).toUpperCase() + vibe.slice(1);
@@ -113,10 +115,32 @@ function SkeletonCard() {
 
 const VIBES = ['All', 'Move', 'Create', 'Hang', 'Learn', 'Explore'];
 
+const FALLBACK: [number, number] = [27.0660, 88.4757];
+
+function ReCenter({ coords }: { coords: [number, number] }) {
+  const map = useMap();
+  useEffect(() => { map.setView(coords, 14); }, [coords]);
+  return null;
+}
+
 export function SearchPage() {
   const { user } = useAuth();
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+
+  useEffect(() => {
+    const lat = localStorage.getItem('gather_lat');
+    const lng = localStorage.getItem('gather_lng');
+    if (lat && lng) {
+      setUserLocation([parseFloat(lat), parseFloat(lng)]);
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => setUserLocation([pos.coords.latitude, pos.coords.longitude]),
+      () => setUserLocation(FALLBACK)
+    );
+  }, []);
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [selectedVibe, setSelectedVibe] = useState("");
 
@@ -319,38 +343,35 @@ export function SearchPage() {
                   <EventCard key={event.id} event={event} />
                 ))
               ) : (
-                <div style={{ background: '#141412', border: '0.5px solid #2A2A28', borderRadius: '20px', overflow: 'hidden', position: 'relative', width: '100%', aspectRatio: '4/3' }}>
-                  <svg viewBox="0 0 308 231" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: '100%' }}>
-                    <rect width="308" height="231" fill="#141412"/>
-                    <defs>
-                      <pattern id="mapgrid" width="20" height="20" patternUnits="userSpaceOnUse">
-                        <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#1E1E1C" strokeWidth="0.8"/>
-                      </pattern>
-                    </defs>
-                    <rect width="308" height="231" fill="url(#mapgrid)"/>
-                    <path d="M 10 60 Q 40 80 55 110 Q 70 140 90 165 Q 110 188 130 205 Q 150 218 170 224 Q 190 228 220 226" stroke="#4A9EBF" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.85"/>
-                    <path d="M 10 68 Q 38 88 52 118 Q 66 148 86 172" stroke="#4A9EBF" strokeWidth="1.2" fill="none" strokeLinecap="round" opacity="0.3"/>
-                    <path d="M 30 10 L 44 38 L 62 68 L 82 98 L 104 122 L 128 142 L 154 156 L 182 162 L 218 160 L 260 156 L 308 152" stroke="#2A2A28" strokeWidth="1.8" fill="none" strokeLinecap="round"/>
-                    <path d="M 0 88 L 60 85 L 120 83 L 180 86 L 240 83 L 308 80" stroke="#222220" strokeWidth="0.8" fill="none"/>
-                    <path d="M 50 0 L 54 50 L 58 100 L 62 150 L 66 200 L 70 231" stroke="#222220" strokeWidth="0.7" fill="none"/>
-                    <path d="M 140 0 L 142 60 L 145 120 L 148 180 L 151 231" stroke="#222220" strokeWidth="0.7" fill="none"/>
-                    <path d="M 210 0 L 211 60 L 213 120 L 215 180 L 217 231" stroke="#222220" strokeWidth="0.6" fill="none"/>
-                    <text x="228" y="148" fill="#FF6B35" fontSize="8" fontFamily="sans-serif" fontWeight="700" opacity="0.9" letterSpacing="0.06em">NH10</text>
-                    <text x="82" y="224" fill="#3D3D38" fontSize="7" fontFamily="sans-serif" letterSpacing="0.06em">KALIMPONG</text>
-                    <text x="70" y="82" fill="#3D3D38" fontSize="6.5" fontFamily="sans-serif">9TH MILE</text>
-                    <text x="32" y="46" fill="#3D3D38" fontSize="6.5" fontFamily="sans-serif">MOTOR STAND</text>
-                    <text x="148" y="52" fill="#3D3D38" fontSize="6" fontFamily="sans-serif">MANGAL DHAM</text>
-                    <text x="18" y="138" fill="#4A9EBF" fontSize="6.5" fontFamily="sans-serif" opacity="0.75">Teesta</text>
-                    <circle cx="154" cy="115" r="30" fill="#FF6B35" opacity="0.05"/>
-                    <circle cx="154" cy="115" r="18" fill="#FF6B35" opacity="0.08"/>
-                    <circle cx="154" cy="115" r="5" fill="#FF6B35"/>
-                    <circle cx="154" cy="115" r="9" fill="none" stroke="#FF6B35" strokeWidth="1" opacity="0.4"/>
-                    <rect x="44" y="200" width="220" height="24" rx="12" fill="#1C1C1A" stroke="#2A2A28" strokeWidth="0.5"/>
-                    <text x="154" y="216" fill="#6B6B63" fontSize="9.5" fontFamily="sans-serif" textAnchor="middle">No gatherings near you yet.</text>
-                  </svg>
-                  <div style={{ position: 'absolute', top: 10, right: 10, background: '#1C1C1A', border: '0.5px solid #2A2A28', borderRadius: 8, padding: '5px 9px', display: 'flex', alignItems: 'center', gap: 4 }}>
+                <div style={{ width: '100%', aspectRatio: '4/3', borderRadius: 20, overflow: 'hidden', border: '0.5px solid #2A2A28', position: 'relative' }}>
+                  <MapContainer
+                    center={userLocation ?? FALLBACK}
+                    zoom={14}
+                    zoomControl={false}
+                    scrollWheelZoom={false}
+                    dragging={false}
+                    attributionControl={false}
+                    style={{ height: '100%', width: '100%' }}
+                  >
+                    <TileLayer
+                      url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+                      attribution=""
+                    />
+                    {userLocation && <ReCenter coords={userLocation} />}
+                    <Circle center={userLocation ?? FALLBACK} radius={80} pathOptions={{ color: '#FF6B35', fillColor: '#FF6B35', fillOpacity: 0.08, weight: 0 }} />
+                    <Circle center={userLocation ?? FALLBACK} radius={40} pathOptions={{ color: '#FF6B35', fillColor: '#FF6B35', fillOpacity: 0.12, weight: 0 }} />
+                    <Circle center={userLocation ?? FALLBACK} radius={8} pathOptions={{ color: '#FF6B35', fillColor: '#FF6B35', fillOpacity: 1, weight: 0 }} />
+                  </MapContainer>
+
+                  {/* Location badge */}
+                  <div style={{ position: 'absolute', top: 10, right: 10, zIndex: 1000, background: '#1C1C1A', border: '0.5px solid #2A2A28', borderRadius: 8, padding: '5px 9px', display: 'flex', alignItems: 'center', gap: 4 }}>
                     <span style={{ fontSize: 10, color: '#FF6B35' }}>📍</span>
-                    <span style={{ fontSize: 10, fontWeight: 600, color: '#F0EEE9' }}>Kalimpong</span>
+                    <span style={{ fontSize: 10, fontWeight: 600, color: '#F0EEE9' }}>{localStorage.getItem('gather_city') || 'Near you'}</span>
+                  </div>
+
+                  {/* No events pill */}
+                  <div style={{ position: 'absolute', bottom: 12, left: '50%', transform: 'translateX(-50%)', zIndex: 1000, background: 'rgba(28,28,26,0.9)', border: '0.5px solid #2A2A28', borderRadius: 50, padding: '8px 16px', whiteSpace: 'nowrap' }}>
+                    <span style={{ fontSize: 11, color: '#6B6B63' }}>No gatherings near you yet.</span>
                   </div>
                 </div>
               )}
