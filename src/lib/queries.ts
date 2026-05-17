@@ -453,3 +453,65 @@ export function useIsVerifiedHost(userId?: string) {
     staleTime: 1000 * 60 * 10,
   });
 }
+
+function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+export function useCityPulse(userLat: number | null, userLng: number | null, radiusKm = 50) {
+  return useQuery({
+    queryKey: ['city-pulse', userLat, userLng, radiusKm],
+    queryFn: async () => {
+      try {
+        const now = new Date();
+        const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+        const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+        const withinRadius = (lat: number | null, lng: number | null) => {
+          if (!userLat || !userLng || !lat || !lng) return true;
+          return haversineKm(userLat, userLng, lat, lng) <= radiusKm;
+        };
+
+        const { data: rpcData } = await supabase.rpc('get_active_events', { current_user_uuid: null });
+        const futureEvents = (rpcData || []).filter((e: any) => withinRadius(e.latitude, e.longitude));
+
+        const eventsThisWeek = futureEvents.filter((e: any) => {
+          const dt = new Date(e.event_datetime);
+          return dt >= now && dt <= nextWeek;
+        }).length;
+
+        const vibeCounts: Record<string, number> = {};
+        for (const e of futureEvents) {
+          if (e.vibe) vibeCounts[e.vibe] = (vibeCounts[e.vibe] || 0) + 1;
+        }
+        const topVibe = Object.entries(vibeCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+        const trendingVibe = topVibe ? topVibe.charAt(0).toUpperCase() + topVibe.slice(1) : null;
+
+        const { data: recentEvents } = await supabase
+          .from('events')
+          .select('host_id, latitude, longitude')
+          .gte('created_at', thirtyDaysAgo.toISOString());
+
+        const activeHostIds = new Set(
+          (recentEvents || [])
+            .filter((e: any) => withinRadius(e.latitude, e.longitude))
+            .map((e: any) => e.host_id)
+        );
+        const activeHostsCount = activeHostIds.size;
+
+        let status = 'Quiet';
+        if (eventsThisWeek >= 4) status = 'Buzzing';
+        else if (eventsThisWeek >= 1) status = 'Active';
+
+        return { activeHostsCount, eventsThisWeek, trendingVibe, status };
+      } catch {
+        return { activeHostsCount: 0, eventsThisWeek: 0, trendingVibe: null, status: 'Quiet' };
+      }
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+}

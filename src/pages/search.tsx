@@ -1,12 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router";
-import { CalendarDays, MapPin } from "lucide-react";
+import { CalendarDays, MapPin, Activity, Users, Flame } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { format } from "date-fns";
 import { useAuth } from "@/lib/auth-context";
-import { MapContainer, TileLayer, Circle, useMap } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
+import { useCityPulse } from "@/lib/queries";
 
 function getVibeLabel(vibe: string) {
   return vibe.charAt(0).toUpperCase() + vibe.slice(1);
@@ -115,14 +114,6 @@ function SkeletonCard() {
 
 const VIBES = ['All', 'Move', 'Create', 'Hang', 'Learn', 'Explore'];
 
-const FALLBACK: [number, number] = [27.0660, 88.4757];
-
-function ReCenter({ coords }: { coords: [number, number] }) {
-  const map = useMap();
-  useEffect(() => { map.setView(coords, 14); }, [coords]);
-  return null;
-}
-
 export function SearchPage() {
   const { user } = useAuth();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -138,9 +129,17 @@ export function SearchPage() {
     }
     navigator.geolocation.getCurrentPosition(
       (pos) => setUserLocation([pos.coords.latitude, pos.coords.longitude]),
-      () => setUserLocation(FALLBACK)
+      () => {}
     );
   }, []);
+
+  const cityName = localStorage.getItem('gather_city') || '';
+  const radiusKm = parseInt(localStorage.getItem('gather_radius') || '50', 10);
+  const { data: pulse } = useCityPulse(userLocation?.[0] ?? null, userLocation?.[1] ?? null, radiusKm);
+  const pulseStatus = pulse?.status ?? 'Loading...';
+  const pulseHosts = pulse?.activeHostsCount ?? '—';
+  const pulseWeek = pulse?.eventsThisWeek ?? '—';
+  const pulseVibe = pulse?.trendingVibe ?? '—';
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [selectedVibe, setSelectedVibe] = useState("");
 
@@ -331,9 +330,11 @@ export function SearchPage() {
         {!query && (
           <>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-              <span style={{ fontSize: 10, fontWeight: 600, color: '#6B6B63', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Trending near you</span>
+              <span style={{ fontSize: 10, fontWeight: 600, color: '#6B6B63', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                {cityName ? `${cityName}'s pulse` : "Your city's pulse"}
+              </span>
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#34C759' }}></div>
+                <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#34C759', animation: 'pulse-dot 1.5s infinite' }}></div>
                 <span style={{ fontSize: 10, fontWeight: 600, color: '#34C759' }}>Live</span>
               </div>
             </div>
@@ -343,37 +344,48 @@ export function SearchPage() {
                   <EventCard key={event.id} event={event} />
                 ))
               ) : (
-                <div style={{ width: '100%', aspectRatio: '4/3', borderRadius: 20, overflow: 'hidden', border: '0.5px solid #2A2A28', position: 'relative' }}>
-                  <MapContainer
-                    center={userLocation ?? FALLBACK}
-                    zoom={14}
-                    zoomControl={false}
-                    scrollWheelZoom={false}
-                    dragging={false}
-                    attributionControl={false}
-                    style={{ height: '100%', width: '100%' }}
-                  >
-                    <TileLayer
-                      url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-                      attribution=""
-                    />
-                    {userLocation && <ReCenter coords={userLocation} />}
-                    <Circle center={userLocation ?? FALLBACK} radius={80} pathOptions={{ color: '#FF6B35', fillColor: '#FF6B35', fillOpacity: 0.08, weight: 0 }} />
-                    <Circle center={userLocation ?? FALLBACK} radius={40} pathOptions={{ color: '#FF6B35', fillColor: '#FF6B35', fillOpacity: 0.12, weight: 0 }} />
-                    <Circle center={userLocation ?? FALLBACK} radius={8} pathOptions={{ color: '#FF6B35', fillColor: '#FF6B35', fillOpacity: 1, weight: 0 }} />
-                  </MapContainer>
+                <>
+                  <style>{`
+                    @keyframes pulse-ring { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(2); opacity: 0; } }
+                    @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+                    @keyframes heartbeat-glow { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.9; } }
+                  `}</style>
+                  <div style={{ background: '#0A0A09', border: '0.5px solid #2A2A28', borderRadius: 18, padding: '18px 16px', position: 'relative', overflow: 'hidden' }}>
+                    {/* Top row */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                      <div>
+                        <div style={{ color: '#6B6B63', fontSize: 9, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>Currently</div>
+                        <div style={{ color: '#F0EEE9', fontSize: 18, fontWeight: 700, letterSpacing: '-0.3px' }}>{pulseStatus}</div>
+                      </div>
+                      <div style={{ position: 'relative', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', border: '1px solid #FF6B35', opacity: 0.4, animation: 'pulse-ring 2.5s ease-out infinite' }} />
+                        <Activity size={18} color="#FF6B35" />
+                      </div>
+                    </div>
 
-                  {/* Location badge */}
-                  <div style={{ position: 'absolute', top: 10, right: 10, zIndex: 1000, background: '#1C1C1A', border: '0.5px solid #2A2A28', borderRadius: 8, padding: '5px 9px', display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <span style={{ fontSize: 10, color: '#FF6B35' }}>📍</span>
-                    <span style={{ fontSize: 10, fontWeight: 600, color: '#F0EEE9' }}>{localStorage.getItem('gather_city') || 'Near you'}</span>
-                  </div>
+                    {/* Heartbeat line */}
+                    <svg viewBox="0 0 200 60" style={{ width: '100%', height: 50, marginBottom: 14, display: 'block' }}>
+                      <path d="M 0 30 L 30 30 L 35 30 L 40 30 L 45 15 L 50 45 L 55 30 L 80 30 L 100 30 L 105 30 L 110 22 L 115 38 L 120 30 L 200 30" stroke="#FF6B35" strokeWidth="1.5" fill="none" strokeLinecap="round" style={{ animation: 'heartbeat-glow 2s ease-in-out infinite' }} />
+                    </svg>
 
-                  {/* No events pill */}
-                  <div style={{ position: 'absolute', bottom: 12, left: '50%', transform: 'translateX(-50%)', zIndex: 1000, background: 'rgba(28,28,26,0.9)', border: '0.5px solid #2A2A28', borderRadius: 50, padding: '8px 16px', whiteSpace: 'nowrap' }}>
-                    <span style={{ fontSize: 11, color: '#6B6B63' }}>No gatherings near you yet.</span>
+                    {/* Stats */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {[
+                        { Icon: Users, label: 'Active hosts', value: pulseHosts },
+                        { Icon: CalendarDays, label: 'Events this week', value: pulseWeek },
+                        { Icon: Flame, label: 'Trending vibe', value: pulseVibe },
+                      ].map(({ Icon, label, value }) => (
+                        <div key={label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: '#141412', borderRadius: 10 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <Icon size={12} color="#6B6B63" />
+                            <span style={{ color: '#F0EEE9', fontSize: 11 }}>{label}</span>
+                          </div>
+                          <span style={{ color: '#FF6B35', fontSize: 11, fontWeight: 700 }}>{value}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                </>
               )}
             </div>
           </>
