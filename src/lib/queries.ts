@@ -99,16 +99,6 @@ export function useToggleRSVP() {
           }
           throw error;
         }
-        fetch('https://tnpxyljkppqrpwrjcfcz.supabase.co/functions/v1/notify-host-rsvp', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          },
-          body: JSON.stringify({
-            record: { event_id: eventId, user_id: userId }
-          }),
-        }).catch(() => {});
       }
     },
     onMutate: async ({ eventId, userId, isAttending }) => {
@@ -224,16 +214,6 @@ export function usePostAnnouncement() {
         .select()
         .single();
       if (error) throw error;
-      fetch('https://tnpxyljkppqrpwrjcfcz.supabase.co/functions/v1/notify-announcement', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-        },
-        body: JSON.stringify({
-          record: { event_id: eventId, content: content, host_id: hostId }
-        }),
-      }).catch(() => {});
       return data;
     },
     onSuccess: (_data, variables) => {
@@ -339,16 +319,6 @@ export function useToggleFollow() {
           .eq('following_id', followingId);
       } else {
         await supabase.from('follows').insert({ follower_id: followerId, following_id: followingId });
-        fetch('https://tnpxyljkppqrpwrjcfcz.supabase.co/functions/v1/notify-new-follower', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          },
-          body: JSON.stringify({
-            record: { follower_id: followerId, following_id: followingId }
-          }),
-        }).catch(() => {});
       }
     },
     onSuccess: (_, { followingId, followerId }) => {
