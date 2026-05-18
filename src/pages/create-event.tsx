@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { useNavigate } from "react-router";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import { useAuth } from "@/lib/auth-context";
@@ -6,7 +6,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { EventVibe } from "@/types";
 import { useToast } from "@/components/ui/toast";
-import { MapPicker } from "@/components/ui/map-picker";
+const MapPicker = lazy(() => import("@/components/ui/map-picker"));
 import { sanitizeText } from "@/lib/sanitize";
 
 const VIBES: { id: EventVibe; label: string; helper: string; emoji: string; short: string }[] = [
@@ -582,12 +582,14 @@ export function CreateEventPage() {
             <div>
               <label style={LABEL}>Pin Location</label>
               <div style={{ maxHeight: '280px', overflow: 'hidden', borderRadius: '12px' }}>
-                <MapPicker
-                  mode="picker"
-                  lat={mapCoords?.lat}
-                  lng={mapCoords?.lng}
-                  onLocationSelect={(coords) => setMapCoords(coords)}
-                />
+                <Suspense fallback={<div style={{ height: 280, background: '#1C1C1A', borderRadius: 16, border: '0.5px solid #2A2A28', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B6B63', fontSize: 12 }}>Loading map...</div>}>
+                  <MapPicker
+                    mode="picker"
+                    lat={mapCoords?.lat}
+                    lng={mapCoords?.lng}
+                    onLocationSelect={(coords) => setMapCoords(coords)}
+                  />
+                </Suspense>
               </div>
             </div>
           </div>

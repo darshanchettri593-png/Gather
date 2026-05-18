@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { useParams, useNavigate, Link } from "react-router";
 import {
   ArrowLeft, CalendarRange, MapPin, Check,
@@ -17,7 +17,7 @@ import { useMessages, useSendMessage, subscribeToMessages } from "@/hooks/useMes
 import { useQueryClient } from "@tanstack/react-query";
 import { Countdown } from "@/components/ui/countdown";
 import { formatDuration } from "@/lib/event-status";
-import { MapPicker } from "@/components/ui/map-picker";
+const MapPicker = lazy(() => import("@/components/ui/map-picker"));
 import { sanitizeText } from "@/lib/sanitize";
 import { CheckInCard } from "@/components/CheckInCard";
 import { ReportSheet } from "@/components/ReportSheet";
@@ -645,11 +645,13 @@ export function EventDetailPage() {
         {/* Map view */}
         {event.latitude && event.longitude && (
           <div className="mb-6">
-            <MapPicker
-              mode="view"
-              lat={event.latitude}
-              lng={event.longitude}
-            />
+            <Suspense fallback={<div style={{ height: 280, background: '#1C1C1A', borderRadius: 16, border: '0.5px solid #2A2A28', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B6B63', fontSize: 12 }}>Loading map...</div>}>
+              <MapPicker
+                mode="view"
+                lat={event.latitude}
+                lng={event.longitude}
+              />
+            </Suspense>
           </div>
         )}
 

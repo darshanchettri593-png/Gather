@@ -27,7 +27,7 @@ interface OlaResult {
   place_id?: string;
 }
 
-export function MapPicker({ mode, lat, lng, onLocationSelect }: MapPickerProps) {
+function MapPicker({ mode, lat, lng, onLocationSelect }: MapPickerProps) {
   const mapRef = useRef<L.Map | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -438,3 +438,6 @@ export function MapPicker({ mode, lat, lng, onLocationSelect }: MapPickerProps) 
     </div>
   );
 }
+
+export { MapPicker };
+export default MapPicker;
