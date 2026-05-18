@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { CalendarDays, MapPin, Activity, Users, Flame, Sun, CloudSun, Cloud, CloudFog, CloudDrizzle, CloudRain, CloudLightning, CloudSnow, Wind, Droplet, Sunset, Sparkles } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
@@ -11,6 +11,30 @@ import { getSmartSuggestions } from "@/lib/suggestions/suggestionEngine";
 
 function getVibeLabel(vibe: string) {
   return vibe.charAt(0).toUpperCase() + vibe.slice(1);
+}
+
+function getVibeColor(vibe: string): string {
+  const colors: Record<string, string> = {
+    move: '#FF6B35',
+    create: 'rgba(168,85,247,1)',
+    hang: 'rgba(59,130,246,1)',
+    learn: 'rgba(16,185,129,1)',
+    explore: 'rgba(245,158,11,1)',
+  };
+  return colors[vibe] || '#FF6B35';
+}
+
+function formatDate(iso: string): string {
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
+}
+
+function haversineKmLocal(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
 function EventCard({ event }: { event: any }) {
@@ -117,6 +141,7 @@ function SkeletonCard() {
 const VIBES = ['All', 'Move', 'Create', 'Hang', 'Learn', 'Explore'];
 
 export function SearchPage() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
@@ -143,10 +168,28 @@ export function SearchPage() {
     if (!user) return []
     return getSmartSuggestions({ weather: weather?.condition ?? null, cityName, userId: user.id }, 3)
   }, [weather, cityName, user]);
-  const pulseStatus = pulse?.status ?? 'Loading...';
+  const pulseStatus = pulse?.status ?? '...';
   const pulseHosts = pulse?.activeHostsCount ?? '—';
-  const pulseWeek = pulse?.eventsThisWeek ?? '—';
-  const pulseVibe = pulse?.trendingVibe ?? '—';
+  const pulseWeek = pulse?.eventsThisWeek ?? 0;
+  const pulseVibe = pulse?.trendingVibe ?? null;
+
+  const { data: nearbyEvents = [] } = useQuery({
+    queryKey: ['nearby-events', userLocation?.[0], userLocation?.[1], radiusKm, user?.id],
+    queryFn: async () => {
+      const { data } = await supabase.rpc('get_active_events', { current_user_uuid: user?.id || null });
+      const events: any[] = data || [];
+      const filtered = events.filter((e: any) => {
+        if (!userLocation) return true;
+        if (!e.latitude || !e.longitude) return false;
+        return haversineKmLocal(userLocation[0], userLocation[1], e.latitude, e.longitude) <= radiusKm;
+      });
+      return filtered
+        .sort((a: any, b: any) => new Date(a.event_datetime).getTime() - new Date(b.event_datetime).getTime())
+        .slice(0, 5);
+    },
+    enabled: true,
+    staleTime: 60 * 1000,
+  });
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [selectedVibe, setSelectedVibe] = useState("");
   const [pillsVisible, setPillsVisible] = useState(true);
@@ -320,143 +363,135 @@ export function SearchPage() {
           </>
         )}
 
-        {/* Weather mood card */}
-        {!query && weather && (
-          <div style={{ marginBottom: 16 }}>
+        {/* Combined city cards + nearby events — only when not searching */}
+        {!query && (
+          <>
+            <style>{`
+              @keyframes pulse-dot { 0%, 100% { opacity: 1 } 50% { opacity: 0.3 } }
+              @keyframes ping { 0% { transform: scale(1); opacity: 0.5 } 100% { transform: scale(2); opacity: 0 } }
+            `}</style>
+
+            {/* Label row */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
               <span style={{ color: '#6B6B63', fontSize: 10, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                {cityName ? `${cityName}'s mood` : "Your city's mood"}
+                {cityName ? `${cityName} right now` : 'Your city right now'}
               </span>
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#34C759', animation: 'pulse-dot 1.5s infinite' }} />
                 <span style={{ color: '#34C759', fontSize: 10, fontWeight: 600 }}>Live</span>
               </div>
             </div>
-            <div style={{ background: '#1C1C1A', border: '0.5px solid #2A2A28', borderRadius: 20, padding: '18px 16px', position: 'relative', overflow: 'hidden' }}>
-              {/* Top row */}
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
-                <div>
-                  <div style={{ color: '#6B6B63', fontSize: 9, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>Right now</div>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                    <span style={{ color: '#F0EEE9', fontSize: 32, fontWeight: 700, letterSpacing: '-0.8px', lineHeight: 1 }}>{weather.temp}°</span>
-                    <span style={{ color: '#6B6B63', fontSize: 11 }}>{weather.conditionLabel}</span>
-                  </div>
-                </div>
-                <div style={{ position: 'relative', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', border: '1px solid currentColor', opacity: 0.25, animation: 'pulse-ring 2.5s ease-out infinite' }} />
-                  {weather.condition === 'sunny' && <Sun size={22} color="#FFB830" />}
-                  {weather.condition === 'partly_cloudy' && <CloudSun size={22} color="#4A9EBF" />}
-                  {weather.condition === 'cloudy' && <Cloud size={22} color="#4A9EBF" />}
-                  {weather.condition === 'foggy' && <CloudFog size={22} color="#6B6B63" />}
-                  {weather.condition === 'drizzle' && <CloudDrizzle size={22} color="#4A9EBF" />}
-                  {weather.condition === 'rainy' && <CloudRain size={22} color="#4A9EBF" />}
-                  {weather.condition === 'thunderstorm' && <CloudLightning size={22} color="#FFB830" />}
-                  {weather.condition === 'snow' && <CloudSnow size={22} color="#F0EEE9" />}
-                  {weather.condition === 'windy' && <Wind size={22} color="#6B6B63" />}
-                </div>
-              </div>
-              {/* Divider */}
-              <div style={{ height: 1, background: '#2A2A28', margin: '0 -16px 14px' }} />
-              {/* Stats */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: '#242422', borderRadius: 10, marginBottom: 8 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <Droplet size={12} color="#4A9EBF" />
-                  <span style={{ color: '#F0EEE9', fontSize: 11 }}>Rain chance</span>
-                </div>
-                <span style={{ color: '#4A9EBF', fontSize: 11, fontWeight: 700 }}>{weather.rainChance}%</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: '#242422', borderRadius: 10, marginBottom: 8 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <Sunset size={12} color="#FF6B35" />
-                  <span style={{ color: '#F0EEE9', fontSize: 11 }}>Sunset</span>
-                </div>
-                <span style={{ color: '#FF6B35', fontSize: 11, fontWeight: 700 }}>{weather.sunsetTime}</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: '#242422', borderRadius: 10 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <Wind size={12} color="#6B6B63" />
-                  <span style={{ color: '#F0EEE9', fontSize: 11 }}>Wind</span>
-                </div>
-                <span style={{ color: '#6B6B63', fontSize: 11, fontWeight: 700 }}>{weather.windKmh} km/h</span>
-              </div>
-              {/* Suggestions */}
-              {suggestions.length > 0 && (
-                <>
-                  <div style={{ height: 1, background: '#2A2A28', margin: '14px -16px' }} />
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-                    <Sparkles size={11} color="#FF6B35" />
-                    <span style={{ color: '#6B6B63', fontSize: 9, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>Good day to host</span>
-                  </div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-                    {suggestions.map((s, i) => (
-                      <div key={i} style={{ background: '#242422', border: '0.5px solid #2A2A28', color: '#F0EEE9', padding: '5px 11px', borderRadius: 50, fontSize: 10, fontWeight: 500 }}>
-                        {s.text}
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        )}
 
-        {/* Trending when no query */}
-        {!query && (
-          <>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-              <span style={{ fontSize: 10, fontWeight: 600, color: '#6B6B63', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                {cityName ? `${cityName}'s pulse` : "Your city's pulse"}
-              </span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#34C759', animation: 'pulse-dot 1.5s infinite' }}></div>
-                <span style={{ fontSize: 10, fontWeight: 600, color: '#34C759' }}>Live</span>
+            {/* 2-column mini cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 20 }}>
+
+              {/* Weather mini card */}
+              <div style={{ background: '#1C1C1A', border: '0.5px solid #2A2A28', borderRadius: 16, padding: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <span style={{ color: '#6B6B63', fontSize: 8, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>Weather</span>
+                  {weather?.condition === 'sunny' && <Sun size={14} color="#FFB830" />}
+                  {weather?.condition === 'partly_cloudy' && <CloudSun size={14} color="#4A9EBF" />}
+                  {weather?.condition === 'cloudy' && <Cloud size={14} color="#4A9EBF" />}
+                  {weather?.condition === 'foggy' && <CloudFog size={14} color="#6B6B63" />}
+                  {weather?.condition === 'drizzle' && <CloudDrizzle size={14} color="#4A9EBF" />}
+                  {weather?.condition === 'rainy' && <CloudRain size={14} color="#4A9EBF" />}
+                  {weather?.condition === 'thunderstorm' && <CloudLightning size={14} color="#FFB830" />}
+                  {weather?.condition === 'snow' && <CloudSnow size={14} color="#F0EEE9" />}
+                  {weather?.condition === 'windy' && <Wind size={14} color="#6B6B63" />}
+                  {!weather && <Cloud size={14} color="#3D3D38" />}
+                </div>
+                <div style={{ color: '#F0EEE9', fontSize: 24, fontWeight: 700, letterSpacing: '-0.5px', lineHeight: 1 }}>{weather?.temp ?? '—'}°</div>
+                <div style={{ color: '#6B6B63', fontSize: 9, marginTop: 2 }}>{weather?.conditionLabel ?? 'Loading'}</div>
+                <div style={{ height: 1, background: '#2A2A28', margin: '10px -12px' }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ color: '#6B6B63', fontSize: 9 }}>Rain</span>
+                    <span style={{ color: '#4A9EBF', fontSize: 10, fontWeight: 700 }}>{weather?.rainChance ?? 0}%</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ color: '#6B6B63', fontSize: 9 }}>Sunset</span>
+                    <span style={{ color: '#FF6B35', fontSize: 10, fontWeight: 700 }}>{weather?.sunsetTime ?? '—'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ color: '#6B6B63', fontSize: 9 }}>Wind</span>
+                    <span style={{ color: '#F0EEE9', fontSize: 10, fontWeight: 700 }}>{weather?.windKmh ?? 0} km</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Pulse mini card */}
+              <div style={{ background: '#1C1C1A', border: '0.5px solid #2A2A28', borderRadius: 16, padding: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <span style={{ color: '#6B6B63', fontSize: 8, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>Pulse</span>
+                  <div style={{ position: 'relative', width: 14, height: 14, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', border: '1px solid #FF6B35', opacity: 0.4, animation: 'ping 2.5s ease-out infinite' }} />
+                    <Activity size={10} color="#FF6B35" />
+                  </div>
+                </div>
+                <div style={{ color: '#F0EEE9', fontSize: 24, fontWeight: 700, letterSpacing: '-0.5px', lineHeight: 1 }}>{pulseStatus}</div>
+                <div style={{ color: '#6B6B63', fontSize: 9, marginTop: 2 }}>City vibe</div>
+                <div style={{ height: 1, background: '#2A2A28', margin: '10px -12px' }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ color: '#6B6B63', fontSize: 9 }}>Hosts</span>
+                    <span style={{ color: '#FF6B35', fontSize: 10, fontWeight: 700 }}>{pulseHosts}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ color: '#6B6B63', fontSize: 9 }}>Events</span>
+                    <span style={{ color: '#FF6B35', fontSize: 10, fontWeight: 700 }}>{pulseWeek}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ color: '#6B6B63', fontSize: 9 }}>Vibe</span>
+                    <span style={{ color: '#FF6B35', fontSize: 10, fontWeight: 700 }}>{pulseVibe ? pulseVibe.charAt(0).toUpperCase() + pulseVibe.slice(1) : '—'}</span>
+                  </div>
+                </div>
               </div>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {filteredUpcoming.length > 0 ? (
-                filteredUpcoming.map((event: any) => (
-                  <EventCard key={event.id} event={event} />
-                ))
-              ) : (
-                <>
-                  <style>{`
-                    @keyframes pulse-ring { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(2); opacity: 0; } }
-                    @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-                    @keyframes heartbeat-glow { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.9; } }
-                  `}</style>
-                  <div style={{ background: '#0A0A09', border: '0.5px solid #2A2A28', borderRadius: 18, padding: '18px 16px', position: 'relative', overflow: 'hidden' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                      <div>
-                        <div style={{ color: '#6B6B63', fontSize: 9, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>Currently</div>
-                        <div style={{ color: '#F0EEE9', fontSize: 18, fontWeight: 700, letterSpacing: '-0.3px' }}>{pulseStatus}</div>
-                      </div>
-                      <div style={{ position: 'relative', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', border: '1px solid #FF6B35', opacity: 0.4, animation: 'pulse-ring 2.5s ease-out infinite' }} />
-                        <Activity size={18} color="#FF6B35" />
-                      </div>
+
+            {/* Happening near you */}
+            {nearbyEvents.length > 0 && (
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                  <span style={{ color: '#6B6B63', fontSize: 10, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Happening near you</span>
+                  {(pulseWeek as number) > 0 && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#34C759', animation: 'pulse-dot 1.5s infinite' }} />
+                      <span style={{ color: '#34C759', fontSize: 10, fontWeight: 600 }}>{pulseWeek} this week</span>
                     </div>
-                    <svg viewBox="0 0 200 60" style={{ width: '100%', height: 50, marginBottom: 14, display: 'block' }}>
-                      <path d="M 0 30 L 30 30 L 35 30 L 40 30 L 45 15 L 50 45 L 55 30 L 80 30 L 100 30 L 105 30 L 110 22 L 115 38 L 120 30 L 200 30" stroke="#FF6B35" strokeWidth="1.5" fill="none" strokeLinecap="round" style={{ animation: 'heartbeat-glow 2s ease-in-out infinite' }} />
-                    </svg>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                      {[
-                        { Icon: Users, label: 'Active hosts', value: pulseHosts },
-                        { Icon: CalendarDays, label: 'Events this week', value: pulseWeek },
-                        { Icon: Flame, label: 'Trending vibe', value: pulseVibe },
-                      ].map(({ Icon, label, value }) => (
-                        <div key={label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: '#141412', borderRadius: 10 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <Icon size={12} color="#6B6B63" />
-                            <span style={{ color: '#F0EEE9', fontSize: 11 }}>{label}</span>
+                  )}
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {nearbyEvents.map((event: any) => {
+                    const distKm = (userLocation && event.latitude && event.longitude)
+                      ? Math.round(haversineKmLocal(userLocation[0], userLocation[1], event.latitude, event.longitude))
+                      : null;
+                    return (
+                      <div
+                        key={event.id}
+                        onClick={() => navigate(`/event/${event.id}`)}
+                        className="active:opacity-70 transition-opacity"
+                        style={{ background: '#1C1C1A', border: '0.5px solid #2A2A28', borderRadius: 14, padding: 10, display: 'flex', gap: 10, alignItems: 'center', cursor: 'pointer' }}
+                      >
+                        {event.cover_image_url ? (
+                          <img src={event.cover_image_url} alt="" style={{ width: 48, height: 48, borderRadius: 10, objectFit: 'cover', flexShrink: 0 }} />
+                        ) : (
+                          <div style={{ width: 48, height: 48, borderRadius: 10, flexShrink: 0, background: `linear-gradient(135deg, ${getVibeColor(event.vibe)}22, ${getVibeColor(event.vibe)}44)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <span style={{ fontSize: 18, fontWeight: 700, color: getVibeColor(event.vibe) }}>{event.vibe?.charAt(0)?.toUpperCase()}</span>
                           </div>
-                          <span style={{ color: '#FF6B35', fontSize: 11, fontWeight: 700 }}>{value}</span>
+                        )}
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ color: getVibeColor(event.vibe), fontSize: 9, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{event.vibe}</div>
+                          <div style={{ color: '#F0EEE9', fontSize: 12, fontWeight: 600, lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{event.title}</div>
+                          <div style={{ color: '#6B6B63', fontSize: 9 }}>
+                            {formatDate(event.event_datetime)} · {event.district || event.location_text}{distKm !== null ? ` · ${distKm} km` : ''}
+                          </div>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>
