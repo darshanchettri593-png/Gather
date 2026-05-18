@@ -500,6 +500,40 @@ export function CreateEventPage() {
               </div>
             </div>
 
+            {/* Duration progress bar — only when both start and end are filled */}
+            {(() => {
+              const startDT = (date && time) ? new Date(`${date}T${time}`) : null;
+              const endDT = (endDate && endTime) ? new Date(`${endDate}T${endTime}`) : null;
+              const durationHours = (startDT && endDT && endDT > startDT)
+                ? (endDT.getTime() - startDT.getTime()) / (1000 * 60 * 60)
+                : 0;
+              if (!startDT || !endDT || durationHours <= 0) return null;
+              const durationPercent = Math.min((durationHours / 12) * 100, 100);
+              const barColor = durationHours > 12
+                ? '#FF3B30'
+                : durationHours >= 11
+                  ? '#FF3B30'
+                  : durationHours >= 8
+                    ? '#FF6B35'
+                    : '#34C759';
+              const hours = Math.floor(durationHours);
+              const minutes = Math.round((durationHours - hours) * 60);
+              const formattedDuration = minutes === 0 ? `${hours}h` : `${hours}h ${minutes}m`;
+              return (
+                <div style={{ background: '#1C1C1A', border: '0.5px solid #2A2A28', borderRadius: 12, padding: '11px 12px', marginTop: 12 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                    <span style={{ color: '#6B6B63', fontSize: 10, fontWeight: 600 }}>Duration</span>
+                    <span style={{ color: barColor, fontSize: 11, fontWeight: 700 }}>
+                      {durationHours > 12 ? 'Exceeds 12h limit' : `${formattedDuration} / 12h`}
+                    </span>
+                  </div>
+                  <div style={{ height: 4, background: '#2A2A28', borderRadius: 2, overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: `${durationPercent}%`, background: barColor, borderRadius: 2, transition: 'width 0.3s ease, background-color 0.3s ease' }} />
+                  </div>
+                </div>
+              );
+            })()}
+
             {endTimeError && (
               <p style={{ color: "#FF3B30", fontSize: "13px", marginTop: "-12px" }}>
                 {endTimeError}
