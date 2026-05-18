@@ -1,11 +1,13 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Link } from "react-router";
-import { CalendarDays, MapPin, Activity, Users, Flame } from "lucide-react";
+import { CalendarDays, MapPin, Activity, Users, Flame, Sun, CloudSun, Cloud, CloudFog, CloudDrizzle, CloudRain, CloudLightning, CloudSnow, Wind, Droplet, Sunset, Sparkles } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { format } from "date-fns";
 import { useAuth } from "@/lib/auth-context";
 import { useCityPulse } from "@/lib/queries";
+import { useWeather } from "@/lib/weather";
+import { getSmartSuggestions } from "@/lib/suggestions/suggestionEngine";
 
 function getVibeLabel(vibe: string) {
   return vibe.charAt(0).toUpperCase() + vibe.slice(1);
@@ -136,6 +138,11 @@ export function SearchPage() {
   const cityName = localStorage.getItem('gather_city') || '';
   const radiusKm = parseInt(localStorage.getItem('gather_radius') || '50', 10);
   const { data: pulse } = useCityPulse(userLocation?.[0] ?? null, userLocation?.[1] ?? null, radiusKm);
+  const { weather } = useWeather(userLocation?.[0], userLocation?.[1]);
+  const suggestions = useMemo(() => {
+    if (!user) return []
+    return getSmartSuggestions({ weather: weather?.condition ?? null, cityName, userId: user.id }, 3)
+  }, [weather, cityName, user]);
   const pulseStatus = pulse?.status ?? 'Loading...';
   const pulseHosts = pulse?.activeHostsCount ?? '—';
   const pulseWeek = pulse?.eventsThisWeek ?? '—';
@@ -311,6 +318,86 @@ export function SearchPage() {
               ))}
             </div>
           </>
+        )}
+
+        {/* Weather mood card */}
+        {!query && weather && (
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+              <span style={{ color: '#6B6B63', fontSize: 10, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                {cityName ? `${cityName}'s mood` : "Your city's mood"}
+              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#34C759', animation: 'pulse-dot 1.5s infinite' }} />
+                <span style={{ color: '#34C759', fontSize: 10, fontWeight: 600 }}>Live</span>
+              </div>
+            </div>
+            <div style={{ background: '#1C1C1A', border: '0.5px solid #2A2A28', borderRadius: 20, padding: '18px 16px', position: 'relative', overflow: 'hidden' }}>
+              {/* Top row */}
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
+                <div>
+                  <div style={{ color: '#6B6B63', fontSize: 9, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>Right now</div>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+                    <span style={{ color: '#F0EEE9', fontSize: 32, fontWeight: 700, letterSpacing: '-0.8px', lineHeight: 1 }}>{weather.temp}°</span>
+                    <span style={{ color: '#6B6B63', fontSize: 11 }}>{weather.conditionLabel}</span>
+                  </div>
+                </div>
+                <div style={{ position: 'relative', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', border: '1px solid currentColor', opacity: 0.25, animation: 'pulse-ring 2.5s ease-out infinite' }} />
+                  {weather.condition === 'sunny' && <Sun size={22} color="#FFB830" />}
+                  {weather.condition === 'partly_cloudy' && <CloudSun size={22} color="#4A9EBF" />}
+                  {weather.condition === 'cloudy' && <Cloud size={22} color="#4A9EBF" />}
+                  {weather.condition === 'foggy' && <CloudFog size={22} color="#6B6B63" />}
+                  {weather.condition === 'drizzle' && <CloudDrizzle size={22} color="#4A9EBF" />}
+                  {weather.condition === 'rainy' && <CloudRain size={22} color="#4A9EBF" />}
+                  {weather.condition === 'thunderstorm' && <CloudLightning size={22} color="#FFB830" />}
+                  {weather.condition === 'snow' && <CloudSnow size={22} color="#F0EEE9" />}
+                  {weather.condition === 'windy' && <Wind size={22} color="#6B6B63" />}
+                </div>
+              </div>
+              {/* Divider */}
+              <div style={{ height: 1, background: '#2A2A28', margin: '0 -16px 14px' }} />
+              {/* Stats */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: '#242422', borderRadius: 10, marginBottom: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <Droplet size={12} color="#4A9EBF" />
+                  <span style={{ color: '#F0EEE9', fontSize: 11 }}>Rain chance</span>
+                </div>
+                <span style={{ color: '#4A9EBF', fontSize: 11, fontWeight: 700 }}>{weather.rainChance}%</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: '#242422', borderRadius: 10, marginBottom: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <Sunset size={12} color="#FF6B35" />
+                  <span style={{ color: '#F0EEE9', fontSize: 11 }}>Sunset</span>
+                </div>
+                <span style={{ color: '#FF6B35', fontSize: 11, fontWeight: 700 }}>{weather.sunsetTime}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: '#242422', borderRadius: 10 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <Wind size={12} color="#6B6B63" />
+                  <span style={{ color: '#F0EEE9', fontSize: 11 }}>Wind</span>
+                </div>
+                <span style={{ color: '#6B6B63', fontSize: 11, fontWeight: 700 }}>{weather.windKmh} km/h</span>
+              </div>
+              {/* Suggestions */}
+              {suggestions.length > 0 && (
+                <>
+                  <div style={{ height: 1, background: '#2A2A28', margin: '14px -16px' }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+                    <Sparkles size={11} color="#FF6B35" />
+                    <span style={{ color: '#6B6B63', fontSize: 9, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>Good day to host</span>
+                  </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                    {suggestions.map((s, i) => (
+                      <div key={i} style={{ background: '#242422', border: '0.5px solid #2A2A28', color: '#F0EEE9', padding: '5px 11px', borderRadius: 50, fontSize: 10, fontWeight: 500 }}>
+                        {s.text}
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
         )}
 
         {/* Trending when no query */}
