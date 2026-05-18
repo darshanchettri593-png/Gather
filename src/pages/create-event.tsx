@@ -181,7 +181,29 @@ export function CreateEventPage() {
       document.body.scrollTop = 0;
     }, 300);
   };
+  const getStepError = (currentStep: number): string | null => {
+    if (currentStep === 1) {
+      if (!coverUrl) return "Please add a cover photo";
+      if (!title.trim()) return "Please add an event title";
+    }
+    if (currentStep === 3) {
+      if (!date) return "Please pick a start date";
+      if (!time) return "Please pick a start time";
+      if (!endDate) return "Please pick an end date";
+      if (!endTime) return "Please pick an end time";
+    }
+    if (currentStep === 4) {
+      if (!locationStr.trim()) return "Please set the event location";
+    }
+    return null;
+  };
+
   const goNext = () => {
+    const stepError = getStepError(step);
+    if (stepError) {
+      toast(stepError, 'error');
+      return;
+    }
     setStep(s => s + 1);
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'instant' });
@@ -796,6 +818,8 @@ export function CreateEventPage() {
   };
 
   // ── Render ────────────────────────────────────────────────────────────────────
+  const isStepValid = !getStepError(step);
+
   return (
     <div style={{ backgroundColor: "#111110", overflow: step < 6 ? 'hidden' : 'auto', height: '100dvh', WebkitOverflowScrolling: 'touch' }}>
 
@@ -914,12 +938,13 @@ export function CreateEventPage() {
               flex: 1,
               height: "52px",
               borderRadius: "999px",
-              backgroundColor: "#FF6B35",
+              backgroundColor: isStepValid ? "#FF6B35" : "#2A2A28",
               border: "none",
-              color: "white",
+              color: isStepValid ? "white" : "#6B6B63",
               fontSize: "15px",
               fontWeight: 600,
-              cursor: "pointer",
+              cursor: isStepValid ? "pointer" : "not-allowed",
+              opacity: isStepValid ? 1 : 0.6,
             }}
           >
             Continue →
