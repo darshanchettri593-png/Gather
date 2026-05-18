@@ -255,12 +255,12 @@ export function SearchPage() {
     staleTime: 60 * 1000,
   });
 
-  const showEmpty = debouncedQuery.length >= 2 && !isLoading && results.length === 0;
-  const showResults = debouncedQuery.length >= 2 && !isLoading && results.length > 0;
-  const showLoading = debouncedQuery.length >= 2 && isLoading;
-
   const filteredResults = results.filter((e: any) => !selectedVibe || e.vibe === selectedVibe);
   const filteredUpcoming = upcomingEvents.filter((e: any) => !selectedVibe || e.vibe === selectedVibe);
+
+  const showEmpty = debouncedQuery.length >= 2 && !isLoading && filteredResults.length === 0;
+  const showResults = debouncedQuery.length >= 2 && !isLoading && filteredResults.length > 0;
+  const showLoading = debouncedQuery.length >= 2 && isLoading;
 
   return (
     <div
@@ -449,7 +449,10 @@ export function SearchPage() {
             </div>
 
             {/* Happening near you */}
-            {nearbyEvents.length > 0 && (
+            {(() => {
+              const filteredNearbyEvents = nearbyEvents.filter((e: any) => !selectedVibe || e.vibe === selectedVibe);
+              if (filteredNearbyEvents.length === 0) return null;
+              return (
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
                   <span style={{ color: '#6B6B63', fontSize: 10, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Happening near you</span>
@@ -461,7 +464,7 @@ export function SearchPage() {
                   )}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {nearbyEvents.map((event: any) => {
+                  {filteredNearbyEvents.map((event: any) => {
                     const distKm = (userLocation && event.latitude && event.longitude)
                       ? Math.round(haversineKmLocal(userLocation[0], userLocation[1], event.latitude, event.longitude))
                       : null;
@@ -491,7 +494,8 @@ export function SearchPage() {
                   })}
                 </div>
               </div>
-            )}
+              );
+            })()}
           </>
         )}
       </div>
