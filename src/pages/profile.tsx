@@ -124,6 +124,7 @@ export function ProfilePage() {
   // ── All existing queries/hooks — untouched ──────────────────────────────────
   const { data: userEvents, isLoading: isEventsLoading } = useUserEvents();
   const { data: profile, isLoading: isProfileLoading } = useProfile();
+  const isProfileDataLoading = isProfileLoading || isEventsLoading;
   const { data: profileRatings } = useProfileRatings(user?.id);
   const { data: isVerified } = useIsVerifiedHost(user?.id);
   const { data: followerCount } = useFollowerCount(user?.id || "");
@@ -395,7 +396,7 @@ export function ProfilePage() {
                   </span>
                 )}
                 {/* New here badge */}
-                {(userEvents?.hosted?.length || 0) === 0 && (userEvents?.joined?.length || 0) === 0 && (
+                {!isProfileDataLoading && (userEvents?.hosted?.length || 0) === 0 && (userEvents?.joined?.length || 0) === 0 && (
                   <span style={{ display: 'inline-flex', alignItems: 'center', background: 'rgba(255,107,53,0.1)', border: '0.5px solid rgba(255,107,53,0.3)', color: '#FF6B35', fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 50 }}>
                     New here
                   </span>
@@ -489,7 +490,7 @@ export function ProfilePage() {
         )}
 
         {/* Get Started checklist */}
-        {user && (!profile?.avatar_url || (userEvents?.hosted?.length || 0) === 0 || (userEvents?.joined?.length || 0) === 0) && (
+        {user && !isProfileDataLoading && (!profile?.avatar_url || (userEvents?.hosted?.length || 0) === 0 || (userEvents?.joined?.length || 0) === 0) && (
           <div style={{ marginTop: 14, marginBottom: 14, padding: '0 16px' }}>
             <div style={{ marginBottom: 10 }}>
               <span style={{ color: '#6B6B63', fontSize: 9, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Get started</span>
