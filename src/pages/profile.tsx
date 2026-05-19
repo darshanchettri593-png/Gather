@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import { format } from "date-fns";
-import { Settings as SettingsIcon, MapPin, CalendarDays, Users, User as UserIcon } from "lucide-react";
+import { Settings as SettingsIcon, MapPin, CalendarDays, Users, User as UserIcon, Camera, Compass, ChevronRight, Plus } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useUserEvents, useProfile } from "@/hooks/useUser";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -326,6 +326,14 @@ export function ProfilePage() {
                     />
                   </div>
                 </div>
+                {!profile?.avatar_url && (
+                  <button
+                    onClick={() => setShowEditModal(true)}
+                    style={{ position: 'absolute', bottom: -2, right: -2, width: 18, height: 18, borderRadius: '50%', background: '#FF6B35', border: '2px solid #111110', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
+                  >
+                    <Plus size={9} color="white" />
+                  </button>
+                )}
               </div>
 
               {/* Info */}
@@ -384,6 +392,12 @@ export function ProfilePage() {
                 {user?.created_at && (
                   <span style={{ fontSize: '11px', color: '#6B6B63' }}>
                     Joined {new Date(user.created_at).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}
+                  </span>
+                )}
+                {/* New here badge */}
+                {(userEvents?.hosted?.length || 0) === 0 && (userEvents?.joined?.length || 0) === 0 && (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', background: 'rgba(255,107,53,0.1)', border: '0.5px solid rgba(255,107,53,0.3)', color: '#FF6B35', fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 50 }}>
+                    New here
                   </span>
                 )}
               </div>
@@ -471,6 +485,66 @@ export function ProfilePage() {
                 </span>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Get Started checklist */}
+        {user && (!profile?.avatar_url || (userEvents?.hosted?.length || 0) === 0 || (userEvents?.joined?.length || 0) === 0) && (
+          <div style={{ marginTop: 14, marginBottom: 14, padding: '0 16px' }}>
+            <div style={{ marginBottom: 10 }}>
+              <span style={{ color: '#6B6B63', fontSize: 9, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Get started</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+
+              {!profile?.avatar_url && (
+                <button
+                  onClick={() => setShowEditModal(true)}
+                  style={{ background: '#1C1C1A', border: '0.5px solid #2A2A28', borderRadius: 14, padding: 12, display: 'flex', alignItems: 'center', gap: 10, width: '100%', cursor: 'pointer', textAlign: 'left' }}
+                >
+                  <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(255,107,53,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Camera size={14} color="#FF6B35" />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ color: '#F0EEE9', fontSize: 12, fontWeight: 600 }}>Add a photo</div>
+                    <div style={{ color: '#6B6B63', fontSize: 10 }}>People connect with faces.</div>
+                  </div>
+                  <ChevronRight size={14} color="#6B6B63" />
+                </button>
+              )}
+
+              {(userEvents?.joined?.length || 0) === 0 && (
+                <button
+                  onClick={() => navigate('/')}
+                  style={{ background: '#1C1C1A', border: '0.5px solid #2A2A28', borderRadius: 14, padding: 12, display: 'flex', alignItems: 'center', gap: 10, width: '100%', cursor: 'pointer', textAlign: 'left' }}
+                >
+                  <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(59,130,246,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Compass size={14} color="rgb(59,130,246)" />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ color: '#F0EEE9', fontSize: 12, fontWeight: 600 }}>Join your first event</div>
+                    <div style={{ color: '#6B6B63', fontSize: 10 }}>See what's happening near you.</div>
+                  </div>
+                  <ChevronRight size={14} color="#6B6B63" />
+                </button>
+              )}
+
+              {(userEvents?.hosted?.length || 0) === 0 && (
+                <button
+                  onClick={() => navigate('/host')}
+                  style={{ background: 'linear-gradient(135deg, #FF6B35, #E55525)', border: 'none', borderRadius: 14, padding: 12, display: 'flex', alignItems: 'center', gap: 10, width: '100%', cursor: 'pointer', textAlign: 'left' }}
+                >
+                  <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Plus size={14} color="white" />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ color: 'white', fontSize: 12, fontWeight: 700 }}>Host your first gathering</div>
+                    <div style={{ color: 'rgba(255,255,255,0.75)', fontSize: 10 }}>Start small. A chai meetup works.</div>
+                  </div>
+                  <ChevronRight size={14} color="white" />
+                </button>
+              )}
+
+            </div>
           </div>
         )}
 
