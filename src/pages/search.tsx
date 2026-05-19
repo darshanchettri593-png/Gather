@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Link, useNavigate } from "react-router";
-import { CalendarDays, MapPin, Activity, Users, Flame, Sun, CloudSun, Cloud, CloudFog, CloudDrizzle, CloudRain, CloudLightning, CloudSnow, Wind, Droplet, Sunset, Sparkles } from "lucide-react";
+import { CalendarDays, MapPin, Activity, Users, Flame, Sun, CloudSun, Cloud, CloudFog, CloudDrizzle, CloudRain, CloudLightning, CloudSnow, Wind, Droplet, Sunset, Sparkles, Zap, Palette, Coffee, BookOpen, Mountain } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { format } from "date-fns";
@@ -140,6 +140,15 @@ function SkeletonCard() {
 
 const VIBES = ['All', 'Move', 'Create', 'Hang', 'Learn', 'Explore'];
 
+const vibeIcons: Record<string, JSX.Element> = {
+  All: <Sparkles size={12} />,
+  Move: <Zap size={12} />,
+  Create: <Palette size={12} />,
+  Hang: <Coffee size={12} />,
+  Learn: <BookOpen size={12} />,
+  Explore: <Mountain size={12} />,
+};
+
 export function SearchPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -274,9 +283,9 @@ export function SearchPage() {
       >
         {/* Heading + search bar */}
         <div style={{ padding: '0 16px' }}>
-          <h1 style={{ color: '#F0EEE9', fontSize: '30px', fontWeight: 800, lineHeight: 1.1, marginBottom: '14px', letterSpacing: '-0.02em' }}>
-            Find your next{' '}
-            <span style={{ color: '#FF6B35' }}>gathering.</span>
+          <h1 style={{ fontSize: 30, fontWeight: 800, color: '#F0EEE9', letterSpacing: '-0.8px', lineHeight: 1, margin: '0 0 14px' }}>
+            Pick a <span style={{ color: '#FF6B35' }}>vibe.</span><br/>
+            Show up.
           </h1>
 
           <div style={{ backgroundColor: '#1C1C1A', border: '1px solid #242422', borderRadius: '14px', padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -306,7 +315,7 @@ export function SearchPage() {
         <div style={{ transform: pillsVisible ? 'translateY(0)' : 'translateY(-100%)', opacity: pillsVisible ? 1 : 0, height: pillsVisible ? 'auto' : '0px', overflow: 'hidden', transition: 'transform 0.28s cubic-bezier(0.4,0,0.2,1), opacity 0.2s ease, height 0.28s cubic-bezier(0.4,0,0.2,1)', willChange: 'transform, opacity', marginTop: pillsVisible ? '12px' : '0px' }}>
           <style>{`.vibe-row::-webkit-scrollbar { display: none; }`}</style>
           <div className="vibe-row" style={{ marginLeft: '-16px', marginRight: '-16px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none' as any }}>
-            <div style={{ display: 'flex', gap: 8, padding: '0 16px', width: 'max-content' }}>
+            <div style={{ display: 'flex', gap: 8, paddingLeft: 16, paddingRight: 16, width: 'max-content' }}>
               {VIBES.map((v) => (
                 <button
                   key={v}
@@ -314,10 +323,12 @@ export function SearchPage() {
                   style={{
                     padding: '6px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: 600,
                     whiteSpace: 'nowrap', flexShrink: 0, border: '1px solid #2A2A28', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', gap: 5,
                     backgroundColor: (selectedVibe === v.toLowerCase() || (v === 'All' && !selectedVibe)) ? '#F0EEE9' : 'transparent',
                     color: (selectedVibe === v.toLowerCase() || (v === 'All' && !selectedVibe)) ? '#111110' : '#6B6B63',
                   }}
                 >
+                  {vibeIcons[v]}
                   {v}
                 </button>
               ))}
