@@ -380,6 +380,7 @@ export function SearchPage() {
             <style>{`
               @keyframes pulse-dot { 0%, 100% { opacity: 1 } 50% { opacity: 0.3 } }
               @keyframes ping { 0% { transform: scale(1); opacity: 0.5 } 100% { transform: scale(2); opacity: 0 } }
+              @keyframes float { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-6px) } }
             `}</style>
 
             {/* Label row */}
@@ -462,48 +463,78 @@ export function SearchPage() {
             {/* Happening near you */}
             {(() => {
               const filteredNearbyEvents = nearbyEvents.filter((e: any) => !selectedVibe || e.vibe === selectedVibe);
-              if (filteredNearbyEvents.length === 0) return null;
               return (
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
                   <span style={{ color: '#6B6B63', fontSize: 10, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Happening near you</span>
-                  {(pulseWeek as number) > 0 && (
+                  {filteredNearbyEvents.length > 0 ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                       <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#34C759', animation: 'pulse-dot 1.5s infinite' }} />
-                      <span style={{ color: '#34C759', fontSize: 10, fontWeight: 600 }}>{pulseWeek} this week</span>
+                      <span style={{ color: '#34C759', fontSize: 10, fontWeight: 600 }}>{filteredNearbyEvents.length} this week</span>
                     </div>
+                  ) : (
+                    <span style={{ color: '#6B6B63', fontSize: 10, fontWeight: 600 }}>—</span>
                   )}
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {filteredNearbyEvents.map((event: any) => {
-                    const distKm = (userLocation && event.latitude && event.longitude)
-                      ? Math.round(haversineKmLocal(userLocation[0], userLocation[1], event.latitude, event.longitude))
-                      : null;
-                    return (
-                      <div
-                        key={event.id}
-                        onClick={() => navigate(`/event/${event.id}`)}
-                        className="active:opacity-70 transition-opacity"
-                        style={{ background: '#1C1C1A', border: '0.5px solid #2A2A28', borderRadius: 14, padding: 10, display: 'flex', gap: 10, alignItems: 'center', cursor: 'pointer' }}
-                      >
-                        {event.cover_image_url ? (
-                          <img src={event.cover_image_url} alt="" style={{ width: 48, height: 48, borderRadius: 10, objectFit: 'cover', flexShrink: 0 }} />
-                        ) : (
-                          <div style={{ width: 48, height: 48, borderRadius: 10, flexShrink: 0, background: `linear-gradient(135deg, ${getVibeColor(event.vibe)}22, ${getVibeColor(event.vibe)}44)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <span style={{ fontSize: 18, fontWeight: 700, color: getVibeColor(event.vibe) }}>{event.vibe?.charAt(0)?.toUpperCase()}</span>
-                          </div>
-                        )}
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ color: getVibeColor(event.vibe), fontSize: 9, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{event.vibe}</div>
-                          <div style={{ color: '#F0EEE9', fontSize: 12, fontWeight: 600, lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{event.title}</div>
-                          <div style={{ color: '#6B6B63', fontSize: 9 }}>
-                            {formatDate(event.event_datetime)} · {event.district || event.location_text}{distKm !== null ? ` · ${distKm} km` : ''}
+
+                {filteredNearbyEvents.length > 0 && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {filteredNearbyEvents.map((event: any) => {
+                      const distKm = (userLocation && event.latitude && event.longitude)
+                        ? Math.round(haversineKmLocal(userLocation[0], userLocation[1], event.latitude, event.longitude))
+                        : null;
+                      return (
+                        <div
+                          key={event.id}
+                          onClick={() => navigate(`/event/${event.id}`)}
+                          className="active:opacity-70 transition-opacity"
+                          style={{ background: '#1C1C1A', border: '0.5px solid #2A2A28', borderRadius: 14, padding: 10, display: 'flex', gap: 10, alignItems: 'center', cursor: 'pointer' }}
+                        >
+                          {event.cover_image_url ? (
+                            <img src={event.cover_image_url} alt="" style={{ width: 48, height: 48, borderRadius: 10, objectFit: 'cover', flexShrink: 0 }} />
+                          ) : (
+                            <div style={{ width: 48, height: 48, borderRadius: 10, flexShrink: 0, background: `linear-gradient(135deg, ${getVibeColor(event.vibe)}22, ${getVibeColor(event.vibe)}44)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <span style={{ fontSize: 18, fontWeight: 700, color: getVibeColor(event.vibe) }}>{event.vibe?.charAt(0)?.toUpperCase()}</span>
+                            </div>
+                          )}
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ color: getVibeColor(event.vibe), fontSize: 9, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{event.vibe}</div>
+                            <div style={{ color: '#F0EEE9', fontSize: 12, fontWeight: 600, lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{event.title}</div>
+                            <div style={{ color: '#6B6B63', fontSize: 9 }}>
+                              {formatDate(event.event_datetime)} · {event.district || event.location_text}{distKm !== null ? ` · ${distKm} km` : ''}
+                            </div>
                           </div>
                         </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {filteredNearbyEvents.length === 0 && (
+                  <div style={{ background: '#1C1C1A', border: '0.5px solid #2A2A28', borderRadius: 16, padding: '24px 18px', textAlign: 'center' }}>
+                    <div style={{ position: 'relative', width: 56, height: 56, margin: '0 auto 14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', border: '1px solid #FF6B35', opacity: 0.4, animation: 'ping 2s ease-out infinite' }} />
+                      <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', border: '1px solid #FF6B35', opacity: 0.4, animation: 'ping 2s ease-out 0.6s infinite' }} />
+                      <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#242422', border: '0.5px solid #2A2A28', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'float 3s ease-in-out infinite' }}>
+                        <CalendarDays size={16} color="#FF6B35" />
                       </div>
-                    );
-                  })}
-                </div>
+                    </div>
+                    <div style={{ color: '#F0EEE9', fontSize: 14, fontWeight: 600, marginBottom: 4 }}>
+                      {selectedVibe ? `No ${selectedVibe} events nearby` : 'Nothing here yet'}
+                    </div>
+                    <div style={{ color: '#6B6B63', fontSize: 11, lineHeight: 1.5, marginBottom: 16, padding: '0 8px' }}>
+                      {selectedVibe
+                        ? 'Try a different vibe or be the first one to host.'
+                        : 'Be the one who starts something.'}
+                    </div>
+                    <button
+                      onClick={() => navigate('/host')}
+                      style={{ background: '#FF6B35', color: 'white', border: 'none', padding: '10px 22px', borderRadius: 50, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+                    >
+                      Host a gathering
+                    </button>
+                  </div>
+                )}
               </div>
               );
             })()}
