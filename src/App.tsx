@@ -12,6 +12,7 @@ import TermsPage from './pages/terms';
 import PrivacyPage from './pages/privacy';
 import { PublicProfilePage } from "@/pages/profile-public";
 import ResetPassword from "@/pages/ResetPassword"; // REMOVED BRACKETS
+import NotFound from "@/pages/NotFound";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router"; // Reverted to react-router for v7 compatibility
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ToastProvider } from "@/components/ui/toast";
@@ -41,8 +42,8 @@ export default function App() {
                 <Route path="/terms" element={<TermsPage />} />
                 <Route path="/privacy" element={<PrivacyPage />} />
                 <Route path="/user/:id" element={<PublicProfilePage />} />
-                <Route path="*" element={<Navigate to="/" replace />} />
               </Route>
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
         </AuthProvider>
