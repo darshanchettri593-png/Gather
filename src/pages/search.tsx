@@ -315,7 +315,7 @@ export function SearchPage() {
         <div style={{ transform: pillsVisible ? 'translateY(0)' : 'translateY(-100%)', opacity: pillsVisible ? 1 : 0, height: pillsVisible ? 'auto' : '0px', overflow: 'hidden', transition: 'transform 0.28s cubic-bezier(0.4,0,0.2,1), opacity 0.2s ease, height 0.28s cubic-bezier(0.4,0,0.2,1)', willChange: 'transform, opacity', marginTop: pillsVisible ? '12px' : '0px' }}>
           <style>{`.vibe-row::-webkit-scrollbar { display: none; }`}</style>
           <div className="vibe-row" style={{ marginLeft: '-16px', marginRight: '-16px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none' as any }}>
-            <div style={{ display: 'flex', gap: 8, paddingLeft: 16, paddingRight: 16, width: 'max-content' }}>
+            <div style={{ display: 'flex', gap: 8, paddingLeft: 20, paddingRight: 20, width: 'max-content' }}>
               {VIBES.map((v) => (
                 <button
                   key={v}
@@ -488,19 +488,19 @@ export function SearchPage() {
                           key={event.id}
                           onClick={() => navigate(`/event/${event.id}`)}
                           className="active:opacity-70 transition-opacity"
-                          style={{ background: '#1C1C1A', border: '0.5px solid #2A2A28', borderRadius: 14, padding: 10, display: 'flex', gap: 10, alignItems: 'center', cursor: 'pointer' }}
+                          style={{ background: '#1C1C1A', border: '0.5px solid #2A2A28', borderRadius: 14, padding: 14, display: 'flex', gap: 12, alignItems: 'center', cursor: 'pointer' }}
                         >
                           {event.cover_image_url ? (
-                            <img src={event.cover_image_url} alt="" style={{ width: 48, height: 48, borderRadius: 10, objectFit: 'cover', flexShrink: 0 }} />
+                            <img src={event.cover_image_url} alt="" style={{ width: 64, height: 64, borderRadius: 12, objectFit: 'cover', flexShrink: 0 }} />
                           ) : (
-                            <div style={{ width: 48, height: 48, borderRadius: 10, flexShrink: 0, background: `linear-gradient(135deg, ${getVibeColor(event.vibe)}22, ${getVibeColor(event.vibe)}44)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                              <span style={{ fontSize: 18, fontWeight: 700, color: getVibeColor(event.vibe) }}>{event.vibe?.charAt(0)?.toUpperCase()}</span>
+                            <div style={{ width: 64, height: 64, borderRadius: 12, flexShrink: 0, background: `linear-gradient(135deg, ${getVibeColor(event.vibe)}22, ${getVibeColor(event.vibe)}44)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <span style={{ fontSize: 22, fontWeight: 700, color: getVibeColor(event.vibe) }}>{event.vibe?.charAt(0)?.toUpperCase()}</span>
                             </div>
                           )}
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ color: getVibeColor(event.vibe), fontSize: 9, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{event.vibe}</div>
-                            <div style={{ color: '#F0EEE9', fontSize: 12, fontWeight: 600, lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{event.title}</div>
-                            <div style={{ color: '#6B6B63', fontSize: 9 }}>
+                            <div style={{ color: getVibeColor(event.vibe), fontSize: 10, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{event.vibe}</div>
+                            <div style={{ color: '#F0EEE9', fontSize: 14, fontWeight: 600, lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{event.title}</div>
+                            <div style={{ color: '#6B6B63', fontSize: 11 }}>
                               {formatDate(event.event_datetime)} · {event.district || event.location_text}{distKm !== null ? ` · ${distKm} km` : ''}
                             </div>
                           </div>
