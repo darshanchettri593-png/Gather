@@ -312,10 +312,10 @@ export function SearchPage() {
         </div>
 
         {/* Vibe pills — collapsible, edge-to-edge */}
-        <div style={{ transform: pillsVisible ? 'translateY(0)' : 'translateY(-100%)', opacity: pillsVisible ? 1 : 0, height: pillsVisible ? 'auto' : '0px', overflow: 'visible', transition: 'transform 0.28s cubic-bezier(0.4,0,0.2,1), opacity 0.2s ease, height 0.28s cubic-bezier(0.4,0,0.2,1)', willChange: 'transform, opacity', marginTop: pillsVisible ? '12px' : '0px' }}>
+        <div style={{ transform: pillsVisible ? 'translateY(0)' : 'translateY(-100%)', opacity: pillsVisible ? 1 : 0, height: pillsVisible ? 'auto' : '0px', overflow: 'hidden', transition: 'transform 0.28s cubic-bezier(0.4,0,0.2,1), opacity 0.2s ease, height 0.28s cubic-bezier(0.4,0,0.2,1)', willChange: 'transform, opacity', marginTop: pillsVisible ? '12px' : '0px' }}>
           <style>{`.vibe-row::-webkit-scrollbar { display: none; }`}</style>
-          <div className="vibe-row" style={{ marginLeft: '-16px', marginRight: '-16px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none' as any }}>
-            <div style={{ display: 'flex', gap: 8, paddingLeft: 16, paddingRight: 16, width: 'max-content' }}>
+          <div className="vibe-row" style={{ marginLeft: '-16px', marginRight: '-16px', overflowX: 'auto', overflowY: 'hidden', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none' as any }}>
+            <div style={{ display: 'flex', gap: 8, paddingLeft: 24, paddingRight: 24, width: 'max-content' }}>
               {VIBES.map((v) => (
                 <button
                   key={v}
